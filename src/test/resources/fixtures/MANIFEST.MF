@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Implementation-Title: lobsang
+Implementation-Version: 0.5-8-gf42a285
+Built-By: jong@mayurasana on Linux 4.13.0-39-generic
+Implementation-Vendor-Id: nl.knaw.huygens.lobsang
+Build-Time: 2018-04-25T12:15:54.123Z[UTC]
+Created-By: Gradle 4.7
+Main-Class: nl.knaw.huygens.lobsang.LobsangApplication
+

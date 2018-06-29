@@ -1,0 +1,102 @@
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.1.1'
+    }
+}
+
+apply plugin: 'application'
+apply plugin: 'checkstyle'
+apply plugin: 'org.junit.platform.gradle.plugin'
+
+// Warns: "- No value has been specified for property 'mainClassName'."
+// Fix pending: https://github.com/johnrengelman/shadow/issues/336
+mainClassName = 'nl.knaw.huygens.lobsang.LobsangApplication'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+repositories {
+    jcenter()
+}
+
+def getVersionName = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'describe', '--always'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
+}
+
+def getBuiltBy = { ->
+    def user = System.getProperty("user.name")
+    def host = InetAddress.localHost.hostName
+    def os = System.getProperty("os.name") + ' ' + System.getProperty("os.version")
+    return user + '@' + host + ' on ' + os
+}
+
+ext {
+    dropwizardVersion = '1.3.2'
+    junitVersion = '5.1+'
+    mockitoVersion = '2.+'
+    gitTag = getVersionName()
+}
+
+checkstyle {
+    toolVersion = '8.9+'
+}
+
+version = "${gitTag}"
+group = 'nl.knaw.huygens.lobsang'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+compileJava {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+}
+
+dependencies {
+    implementation group: 'io.dropwizard', name: 'dropwizard-core', version: dropwizardVersion
+    implementation group: 'io.dropwizard', name: 'dropwizard-forms', version: dropwizardVersion
+    implementation group: 'io.dropwizard', name: 'dropwizard-json-logging', version: dropwizardVersion
+    implementation group: 'io.dropwizard', name: 'dropwizard-testing', version: dropwizardVersion
+
+    implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-csv', version: '2.8.8'
+
+    // CSV uploads handling
+    implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.5'
+
+    // Excel
+//    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '3.14'
+
+//    testCompile group: "org.mockito", name: "mockito-core", version: mockitoVersion
+    testImplementation group: "org.junit.jupiter", name: "junit-jupiter-api", version: junitVersion
+    testRuntime group: "org.junit.jupiter", name: "junit-jupiter-engine", version: junitVersion
+}
+
+run() {
+    args = ['server', 'config-template.yml']
+}
+
+shadowJar {
+    mergeServiceFiles()
+    exclude 'META-INF/*.DSA', 'META-INF/*.RSA', 'META-INF/*.SF'
+    manifest {
+        attributes 'Implementation-Title': rootProject.name
+        attributes 'Implementation-Version': rootProject.version
+        attributes 'Implementation-Vendor-Id': rootProject.group
+        attributes 'Build-Time': ZonedDateTime.now(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_ZONED_DATE_TIME)
+        attributes 'Built-By': getBuiltBy()
+        attributes 'Created-By': 'Gradle ' + gradle.gradleVersion
+        attributes 'Main-Class': mainClassName
+    }
+    archiveName 'lobsang-full.jar'
+}
+
