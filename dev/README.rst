@@ -105,4 +105,3 @@ Examples:
 __ https://en.wikipedia.org/wiki/Old_Style_and_New_Style_dates#Start_of_the_year_in_the_historical_records_of_Britain_and_its_colonies_and_possessions
 .. _this note: https://en.wikipedia.org/wiki/Charles_I_of_England#cite_note-1 
 .. _Charles I: https://en.wikipedia.org/wiki/Charles_I_of_England
-
