@@ -40,13 +40,18 @@ import java.net.URLDecoder;
 import java.time.MonthDay;
 import java.time.Year;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Spliterators;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
@@ -57,7 +62,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Path("convert")
 @Produces(MediaType.APPLICATION_JSON)
 public class ConversionResource {
-  public static final int MAX_CONVERSION_LIMIT = 10;
+  private static final int MAX_CONVERSION_LIMIT = 10;
   private static final int DEFAULT_MAX_CONVERSIONS = 3;
   private static final Logger LOG = getLogger(ConversionResource.class);
   private final PlaceMatcher places;
@@ -74,19 +79,24 @@ public class ConversionResource {
     return str -> format("\"%s\"", str);
   }
 
+  private static <T> Stream<T> defaultIfEmpty(Stream<T> stream, Supplier<T> supplier) {
+    Iterator<T> iterator = stream.iterator();
+    if (iterator.hasNext()) {
+      return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, 0), false);
+    } else {
+      return Stream.of(supplier.get());
+    }
+  }
+
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   public DateResult convert(@NotNull DateRequest dateRequest) {
     LOG.info("dateRequest: {}", dateRequest);
 
-    final List<Place> candidates = new ArrayList<>();
+    final List<Place> consideredPlaces = new ArrayList<>();
 
-    final Map<YearMonthDay, Set<String>> results
-      = places.match(termBuilder.build(dateRequest))
-              .peek(candidates::add)
-              .map(convertForPlace(dateRequest))
-              .flatMap(Function.identity())
-              .collect(Collectors.toMap(ymd -> ymd, YearMonthDay::getNotes, Sets::union));
+    final Map<YearMonthDay, Set<String>> results = convertForMatchingPlaces(dateRequest, consideredPlaces::add)
+      .collect(Collectors.toMap(ymd -> ymd, YearMonthDay::getNotes, Sets::union));
 
     // collate notes
     results.keySet().forEach(yearMonthDay -> yearMonthDay.setNotes(results.get(yearMonthDay)));
@@ -102,10 +112,10 @@ public class ConversionResource {
       result = new DateResult(Lists.newArrayList(results.keySet()));
     }
 
-    if (candidates.size() > 1) {
-      final String candidateNames = joinPlaces(candidates);
+    if (consideredPlaces.size() > 1) {
+      final String names = joinPlaces(consideredPlaces);
       final String format = "Multiple places matched '%s': %s. Being more specific may increase accuracy.";
-      result.addHint(format(format, dateRequest.getPlaceTerms(), candidateNames));
+      result.addHint(format(format, dateRequest.getPlaceTerms(), names));
     }
 
     return result;
@@ -154,7 +164,11 @@ public class ConversionResource {
                        printer.print(format("%s_%d", fieldNames.getDayFieldName(), i));
                      }
                      printer.println();
-                     reader.read(record -> copyAndConvert(reader, dateRequestBuilder, maxConversions, record, printer));
+                     reader.read(record -> {
+                       copyExistingColumns(reader, record, printer);
+                       convertToColumns(convertForMatchingPlaces(dateRequestBuilder.build(record)),
+                         maxConversions, printer);
+                     });
                      printer.flush();
                      printer.close();
                    })
@@ -189,33 +203,48 @@ public class ConversionResource {
     return maxConversions;
   }
 
-  private void copyAndConvert(CsvReader reader, DateRequestBuilder dateRequestBuilder, int maxConversions,
-                              CSVRecord record, CSVPrinter printer) throws IOException {
-    final DateRequest dateRequest = dateRequestBuilder.build(record);
-
+  private void copyExistingColumns(CsvReader reader, CSVRecord record, CSVPrinter printer) throws IOException {
     final int columnCount = reader.getColumnNames().size();
     for (int i = 0; i < columnCount; i++) {
       printer.print(record.get(i));
     }
+  }
 
-    // TODO: partial duplicate, clean up
-    final List<YearMonthDay> conversions = places.match(termBuilder.build(dateRequest))
-                                                 .map(convertForPlace(dateRequest))
-                                                 .flatMap(Function.identity())
-                                                 .limit(maxConversions)
-                                                 .collect(Collectors.toList());
+  private Stream<YearMonthDay> convertForMatchingPlaces(DateRequest dateRequest) {
+    return convertForMatchingPlaces(dateRequest, null);
+  }
 
-    if (conversions.isEmpty()) {
-      conversions.add(defaultConversion(dateRequest));
+  private Stream<YearMonthDay> convertForMatchingPlaces(DateRequest dateRequest, Consumer<Place> peepingTom) {
+    Stream<Place> matchingPlaces = places.match(termBuilder.build(dateRequest));
+
+    if (peepingTom != null) {
+      matchingPlaces = matchingPlaces.peek(peepingTom);
     }
 
-    for (YearMonthDay ymd : conversions) {
+    return defaultIfEmpty(matchingPlaces.map(convertForPlace(dateRequest)).flatMap(Function.identity()),
+      () -> defaultConversion(dateRequest));
+  }
+
+  private void convertToColumns(final Stream<YearMonthDay> conversions, int maxConversions, CSVPrinter printer)
+    throws IOException {
+
+    Stream<YearMonthDay> todo = conversions;
+
+    if (maxConversions > 0) {
+      LOG.trace("limiting # conversions to: {}", maxConversions);
+      todo = todo.limit(maxConversions);
+    }
+
+    int shortBy = maxConversions;
+
+    // avoid conversions.foreach() lest we end up with IOExceptions inside lambda
+    for (YearMonthDay ymd : (Iterable<YearMonthDay>) todo::iterator) {
       printer.print(ymd.getYear());
       printer.print(ymd.getMonth());
       printer.print(ymd.getDay());
+      shortBy--;
     }
 
-    int shortBy = maxConversions - conversions.size();
     for (int i = 0; i < shortBy; i++) {
       // print empty fields for Y,M,D
       for (int j = 0; j < 3; j++) {
