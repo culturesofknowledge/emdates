@@ -68,6 +68,11 @@ public class CsvReader {
   }
 
   public static class Builder {
+    static final String DEFAULT_YEAR_FIELD = "Y";
+    static final String DEFAULT_MONTH_FIELD = "M";
+    static final String DEFAULT_DAY_FIELD = "D";
+    static final String DEFAULT_PLACE_NAME = "Place";
+
     private final Map<String, String> config;
 
     public Builder(Map<String, String> config) {
@@ -89,10 +94,10 @@ public class CsvReader {
       applyFormatOption("trailingDelimiter", Boolean::valueOf, format::withTrailingDelimiter);
 
       final FieldNames fieldNames = new FieldNames(
-        config.getOrDefault("yearField", "Y"),
-        config.getOrDefault("monthField", "M"),
-        config.getOrDefault("dayField", "D"),
-        config.getOrDefault("placeField", "Place"));
+        config.getOrDefault("yearField", DEFAULT_YEAR_FIELD),
+        config.getOrDefault("monthField", DEFAULT_MONTH_FIELD),
+        config.getOrDefault("dayField", DEFAULT_DAY_FIELD),
+        config.getOrDefault("placeField", DEFAULT_PLACE_NAME));
 
       return new CsvReader(format.withAllowMissingColumnNames().withHeader(), fieldNames);
     }
