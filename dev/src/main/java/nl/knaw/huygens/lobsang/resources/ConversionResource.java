@@ -131,7 +131,6 @@ public class ConversionResource {
   @Produces("text/csv")
   public Response convertTable(@FormDataParam("file") final InputStream inputStream,
                                @FormDataParam("file") final FormDataBodyPart body,
-                               // @FormDataParam("file") final FormDataContentDisposition fileInfo,
                                FormDataMultiPart formData) {
 
     if (inputStream == null || body == null) {
