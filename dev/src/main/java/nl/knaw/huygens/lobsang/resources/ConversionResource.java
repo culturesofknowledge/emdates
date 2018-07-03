@@ -16,7 +16,6 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.glassfish.jersey.message.internal.MediaTypes;
@@ -50,6 +49,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.lang.String.format;
 import static java.util.Comparator.comparing;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -71,7 +71,7 @@ public class ConversionResource {
   }
 
   private static Function<String, String> asQuotedString() {
-    return str -> String.format("\"%s\"", str);
+    return str -> format("\"%s\"", str);
   }
 
   @POST
@@ -105,7 +105,7 @@ public class ConversionResource {
     if (candidates.size() > 1) {
       final String candidateNames = joinPlaces(candidates);
       final String format = "Multiple places matched '%s': %s. Being more specific may increase accuracy.";
-      result.addHint(String.format(format, dateRequest.getPlaceTerms(), candidateNames));
+      result.addHint(format(format, dateRequest.getPlaceTerms(), candidateNames));
     }
 
     return result;
@@ -121,39 +121,37 @@ public class ConversionResource {
   @Produces("text/csv")
   public Response convertTable(@FormDataParam("file") final InputStream inputStream,
                                @FormDataParam("file") final FormDataBodyPart body,
-                               @FormDataParam("file") final FormDataContentDisposition fileInfo,
+                               // @FormDataParam("file") final FormDataContentDisposition fileInfo,
                                FormDataMultiPart formData) {
-    LOG.debug("inputStream: {}, body: {}, fileInfo: {}", inputStream, body, fileInfo);
 
-    if (inputStream == null || body == null || fileInfo == null) {
-      throw new BadRequestException("Missing form param 'file=@<some_file>'");
+    if (inputStream == null || body == null) {
+      throw new BadRequestException("missing form param 'file=@<some_file>'");
     }
 
-    LOG.debug("mediaType: {}", body.getMediaType());
-    LOG.debug("fileName: {}", fileInfo.getFileName());
-    LOG.debug("formData: {}", formData.getFields().keySet());
     final Map<String, String> options = extractOptions(formData);
     LOG.debug("options: {}", options);
 
+    final int maxConversions = clampMaxConversions(options.get("maxConversions"));
+
     final CsvReader reader = new CsvReader.Builder(options).build();
+    prepareReader(inputStream, reader);
 
     // TODO: pass targetCalendar based on request parameters
-    final DateRequestBuilder dateRequestBuilder = new DateRequestBuilder();
+    final CsvReader.FieldNames fieldNames = reader.getFieldNames();
+    final DateRequestBuilder dateRequestBuilder = new DateRequestBuilder(fieldNames);
 
-    final int maxConversions = clampMaxConversions(options.get("maxConversions"));
 
     return Response.ok()
                    .type("text/csv")
                    .entity((StreamingOutput) output -> {
                      final CSVPrinter printer = new CSVPrinter(new PrintWriter(output), CSVFormat.EXCEL);
-                     reader.parse(inputStream);
                      for (String column : reader.getColumnNames()) {
                        printer.print(column);
                      }
                      for (int i = 0; i < maxConversions; i++) {
-                       printer.print(String.format("Y_%d", i));
-                       printer.print(String.format("M_%d", i));
-                       printer.print(String.format("D_%d", i));
+                       printer.print(format("%s_%d", fieldNames.getYearFieldName(), i));
+                       printer.print(format("%s_%d", fieldNames.getMonthFieldName(), i));
+                       printer.print(format("%s_%d", fieldNames.getDayFieldName(), i));
                      }
                      printer.println();
                      reader.read(record -> copyAndConvert(reader, dateRequestBuilder, maxConversions, record, printer));
@@ -163,14 +161,29 @@ public class ConversionResource {
                    .build();
   }
 
+  private void prepareReader(InputStream inputStream, CsvReader reader) {
+    try {
+      reader.parse(inputStream);
+    } catch (IOException e) {
+      LOG.warn(e.getMessage());
+      throw new BadRequestException(format("failed to parse CSV content: %s", e.getMessage()));
+    }
+
+    try {
+      reader.validate();
+    } catch (IllegalStateException e) {
+      LOG.warn(e.getMessage());
+      throw new BadRequestException(format("requested field names inconsistent with CSV content: %s", e.getMessage()));
+    }
+  }
+
   private int clampMaxConversions(@Nullable String maxConversionsParam) {
     int maxConversions = Optional.ofNullable(maxConversionsParam).map(Integer::valueOf).orElse(DEFAULT_MAX_CONVERSIONS);
 
     if (maxConversions < 1 || MAX_CONVERSION_LIMIT < maxConversions) {
-      String msg = String.format("parameter 'maxConversions' must be 1 <= maxConversions <= %d, but got: %d",
-        MAX_CONVERSION_LIMIT, maxConversions);
-      LOG.warn(msg);
-      throw new BadRequestException(msg);
+      throw new BadRequestException(
+        format("illegal value for parameter 'maxConversions': must be 1 <= maxConversions <= %d, but got: %d",
+          MAX_CONVERSION_LIMIT, maxConversions));
     }
 
     return maxConversions;
@@ -254,7 +267,7 @@ public class ConversionResource {
   }
 
   private YearMonthDay addPlaceNameNote(YearMonthDay result, Place place) {
-    result.addNote(String.format("Based on data for place: '%s'", place.getName()));
+    result.addNote(format("Based on data for place: '%s'", place.getName()));
     return result;
   }
 
@@ -287,22 +300,25 @@ public class ConversionResource {
   }
 
   private class DateRequestBuilder {
+    private final CsvReader.FieldNames fieldNames;
     private final String targetCalendar;
 
-    private DateRequestBuilder() {
-      this("gregorian");
+    private DateRequestBuilder(CsvReader.FieldNames fieldNames) {
+      this(fieldNames, "gregorian");
     }
 
-    private DateRequestBuilder(String targetCalendar) {
+    private DateRequestBuilder(CsvReader.FieldNames fieldNames, String targetCalendar) {
+      this.fieldNames = fieldNames;
       this.targetCalendar = targetCalendar;
     }
 
     DateRequest build(CSVRecord record) {
+      LOG.debug("record: {}, fieldNames: {}", record, fieldNames);
       return new DateRequest(
-        Integer.valueOf(record.get("Y")),
-        Integer.valueOf(record.get("M")),
-        Integer.valueOf(record.get("D")),
-        record.get("Place"),
+        Integer.valueOf(record.get(fieldNames.getYearFieldName())),
+        Integer.valueOf(record.get(fieldNames.getMonthFieldName())),
+        Integer.valueOf(record.get(fieldNames.getDayFieldName())),
+        record.get(fieldNames.getPlaceFieldName()),
         targetCalendar);
     }
 

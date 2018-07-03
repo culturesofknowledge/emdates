@@ -1,5 +1,6 @@
 package nl.knaw.huygens.lobsang.core.readers;
 
+import com.google.common.base.MoreObjects;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -21,16 +23,33 @@ public class CsvReader {
   private static final Logger LOG = getLogger(CsvReader.class);
 
   private final CSVFormat format;
-
+  private final FieldNames fieldNames;
   private CSVParser parser;
 
-  private CsvReader(CSVFormat format) {
+  private CsvReader(CSVFormat format, FieldNames fieldNames) {
     this.format = format;
-    LOG.debug("format: {}", format);
+    this.fieldNames = fieldNames;
+  }
+
+  public FieldNames getFieldNames() {
+    return fieldNames;
   }
 
   public void parse(InputStream inputStream) throws IOException {
     parser = format.parse(new InputStreamReader(inputStream));
+  }
+
+  public void validate() {
+    if (parser == null) {
+      throw new IllegalStateException("parser not yet initialised");
+    }
+
+    final Map<String, Integer> headerMap = parser.getHeaderMap();
+    fieldNames.stream().forEach(fieldName -> {
+      if (!headerMap.containsKey(fieldName)) {
+        throw new IllegalStateException(String.format("field '%s' not found in CSV header", fieldName));
+      }
+    });
   }
 
   public List<String> getColumnNames() {
@@ -51,39 +70,43 @@ public class CsvReader {
   public static class Builder {
     private final Map<String, String> config;
 
-    CSVFormat format;
-
     public Builder(Map<String, String> config) {
       this.config = config;
     }
 
     public CsvReader build() {
-      format = CSVFormat.EXCEL;
+      final CSVFormat format = CSVFormat.EXCEL;
+      applyFormatOption("delimiter", format::withDelimiter);
+      applyFormatOption("quoteChar", format::withQuote);
+      applyFormatOption("commentStart", format::withCommentMarker);
+      applyFormatOption("escape", format::withEscape);
+      applyFormatOption("recordSeparator", Function.identity(), format::withRecordSeparator);
+      applyFormatOption("nullString", Function.identity(), format::withNullString);
+      applyFormatOption("quoteMode", QuoteMode::valueOf, format::withQuoteMode);
+      applyFormatOption("ignoreSurroundingSpaces", Boolean::valueOf, format::withIgnoreSurroundingSpaces);
+      applyFormatOption("ignoreEmptyLines", Boolean::valueOf, format::withIgnoreEmptyLines);
+      applyFormatOption("trim", Boolean::valueOf, format::withTrim);
+      applyFormatOption("trailingDelimiter", Boolean::valueOf, format::withTrailingDelimiter);
 
-      applyOption("delimiter", format::withDelimiter);
-      applyOption("quoteChar", format::withQuote);
-      applyOption("commentStart", format::withCommentMarker);
-      applyOption("escape", format::withEscape);
-      applyOption("recordSeparator", Function.identity(), format::withRecordSeparator);
-      applyOption("nullString", Function.identity(), format::withNullString);
-      applyOption("quoteMode", QuoteMode::valueOf, format::withQuoteMode);
-      applyOption("ignoreSurroundingSpaces", Boolean::valueOf, format::withIgnoreSurroundingSpaces);
-      applyOption("ignoreEmptyLines", Boolean::valueOf, format::withIgnoreEmptyLines);
-      applyOption("trim", Boolean::valueOf, format::withTrim);
-      applyOption("trailingDelimiter", Boolean::valueOf, format::withTrailingDelimiter);
+      final FieldNames fieldNames = new FieldNames(
+        config.getOrDefault("yearField", "Y"),
+        config.getOrDefault("monthField", "M"),
+        config.getOrDefault("dayField", "D"),
+        config.getOrDefault("placeField", "Place"));
 
-      return new CsvReader(format.withAllowMissingColumnNames().withHeader());
+      return new CsvReader(format.withAllowMissingColumnNames().withHeader(), fieldNames);
     }
 
-    private <T> void applyOption(String key, Function<String, T> convert, Function<T, CSVFormat> setFormatOption) {
-      find(key).ifPresent(convert.andThen(peek(key)).andThen(setFormatOption)::apply);
+    private <T> void applyFormatOption(String key, Function<String, T> convertIt,
+                                       Function<T, CSVFormat> formatOptionSetter) {
+      find(key).ifPresent(convertIt.andThen(logIt(key)).andThen(formatOptionSetter)::apply);
     }
 
-    private void applyOption(String key, Function<Character, CSVFormat> setFormatOption) {
-      applyOption(key, value -> asSingleChar(key, value), setFormatOption);
+    private void applyFormatOption(String key, Function<Character, CSVFormat> formatOptionSetter) {
+      applyFormatOption(key, value -> asSingleChar(key, value), formatOptionSetter);
     }
 
-    private <T> Function<T, T> peek(String key) {
+    private <T> Function<T, T> logIt(String key) {
       return val -> {
         LOG.debug("Setting option {} to {}", key, val);
         return val;
@@ -102,6 +125,50 @@ public class CsvReader {
       }
 
       return value.charAt(0);
+    }
+  }
+
+  public static class FieldNames {
+    private final String yearFieldName;
+    private final String monthFieldName;
+    private final String dayFieldName;
+    private final String placeFieldName;
+
+    FieldNames(String yearFieldName, String monthFieldName, String dayFieldName, String placeFieldName) {
+      this.yearFieldName = yearFieldName;
+      this.monthFieldName = monthFieldName;
+      this.dayFieldName = dayFieldName;
+      this.placeFieldName = placeFieldName;
+    }
+
+    public String getYearFieldName() {
+      return yearFieldName;
+    }
+
+    public String getMonthFieldName() {
+      return monthFieldName;
+    }
+
+    public String getDayFieldName() {
+      return dayFieldName;
+    }
+
+    public String getPlaceFieldName() {
+      return placeFieldName;
+    }
+
+    public Stream<String> stream() {
+      return Stream.of(yearFieldName, monthFieldName, dayFieldName, placeFieldName);
+    }
+
+    @Override
+    public String toString() {
+      return MoreObjects.toStringHelper(this)
+                        .add("yearFieldName", yearFieldName)
+                        .add("monthFieldName", monthFieldName)
+                        .add("dayFieldName", dayFieldName)
+                        .add("placeFieldName", placeFieldName)
+                        .toString();
     }
   }
 }
