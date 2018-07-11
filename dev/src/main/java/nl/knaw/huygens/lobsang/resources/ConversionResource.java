@@ -15,7 +15,6 @@ import nl.knaw.huygens.lobsang.core.readers.CsvReader;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
-import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.glassfish.jersey.message.internal.MediaTypes;
@@ -129,11 +128,8 @@ public class ConversionResource {
   @Path("table")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces("text/csv")
-  public Response convertTable(@FormDataParam("file") final InputStream inputStream,
-                               @FormDataParam("file") final FormDataBodyPart body,
-                               FormDataMultiPart formData) {
-
-    if (inputStream == null || body == null) {
+  public Response convertTable(@FormDataParam("file") final InputStream inputStream, FormDataMultiPart formData) {
+    if (inputStream == null) {
       throw new BadRequestException("missing form param 'file=@<some_file>'");
     }
 
