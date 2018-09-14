@@ -6,6 +6,10 @@ EM Dates is an early modern calendar conversion service for the sixteenth- to ei
 
 Text to follow
 
+## Feedback and Comments
+
+We are keen to get your feedback and comments on EM Dates. Please get in touch by contacting Arno Bosse (Digital Project Manager, [Cultures of Knowledge][12]) by email [arno.bosse@history.ox.ac.uk][13] via [@kintopp][14] on Twitter or by creating a new GitHub issue in the repository with your comment/question.
+
 ## Team
 
 Arno Bosse (Oxford - Project Management), Howard Hotson (Oxford - Director), Graham Klyne (Oxford – Data Modelling), Miranda Lewis (Oxford - Editor), Martijn Maas (Huygens – Systems Development), Glauco Mantegari (Design Consultant), Jauco Noordzij (Huygens – Systems Development), Marnix van Berchum (Huygens - Project Management), Mat Wilcoxson (Oxford – Systems Development).
@@ -18,3 +22,5 @@ Arno Bosse (Oxford - Project Management), Howard Hotson (Oxford - Director), Gra
 [2]:  http://www.culturesofknowledge.org/?p=8455
 [3]:  https://github.com/HuygensING/timbuctoo
 [4]:  https://www.huygens.knaw.nl/?lang=en
+[12]: http://culturesofknowledge.org
+[14]: http://twitter.com/kintopp
