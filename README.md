@@ -23,4 +23,5 @@ Arno Bosse (Oxford - Project Management), Howard Hotson (Oxford - Director), Gra
 [3]:  https://github.com/HuygensING/timbuctoo
 [4]:  https://www.huygens.knaw.nl/?lang=en
 [12]: http://culturesofknowledge.org
+[13]: mailto:arno.bosse@history.ox.ac.uk
 [14]: http://twitter.com/kintopp
