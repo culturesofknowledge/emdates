@@ -4,7 +4,9 @@ EM Dates is an early modern calendar conversion service for the sixteenth- to ei
 
 ## Goals
 
-Text to follow
+EM Dates is designed to provide a locale aware resource for individual and bulk early modern date conversions. To accomplish this, EM Dates draws on data collected in [EM Places][1] for the date(s) at which a historical entity (e.g. the 'Republic of Venice') transitioned from one calendrical system to another (e.g. Julian to Gregorian). Given a [well-formatted date][5] and and an authority reference to either a known historical place entity (in EM Places) or to a place name (in [GeoNames][6]) associated with a known entity in EM Places, EM Dates is able to infer the appropriate calendar and offer to make the suggested date conversion. Initially, EM Dates will provide support for conversion to the Gregorian from the Julian, Roman, Ottoman, and Hebrew calendars. 
+
+The tool will offer a web form for converting single dates as well as bulk conversion facility for uploading metadata on a series of dates and locations in a tabular file format (Excel, CSV), and receiving back from the application, also in tabular format, the converted dates, alongside the initial inputs. As part of this workflow, EM Dates will provide an intermediate review stage, where a user can examine the inferred confidence level for each suggested conversion. The review stage will provide an opportunity for a user to revise (e.g. incomplete) input data as well as a means to override the suggested conversion before export. Access to the tool for individual and bulk conversions will also be provided via an open API. 
 
 ## Feedback and Comments
 
@@ -22,6 +24,8 @@ Arno Bosse (Oxford - Project Management), Howard Hotson (Oxford - Director), Gra
 [2]:  http://www.culturesofknowledge.org/?p=8455
 [3]:  https://github.com/HuygensING/timbuctoo
 [4]:  https://www.huygens.knaw.nl/?lang=en
+[5]: https://en.wikipedia.org/wiki/ISO_8601
+[6]: https://geonames.org
 [12]: http://culturesofknowledge.org
 [13]: mailto:arno.bosse@history.ox.ac.uk
 [14]: http://twitter.com/kintopp
