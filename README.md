@@ -18,7 +18,7 @@ Arno Bosse (Oxford - Project Management), Howard Hotson (Oxford - Director), Gra
 
 ## Acknowledgements
 
-[EM Places, EM People, and EM Dates][2] are funded by a grant to the University of Oxford from the Andrew W. Mellon Foundation.
+EM Places, EM People, and EM Dates are [funded by a grant][2] to the University of Oxford from the Andrew W. Mellon Foundation.
 
 [1]: https://github.com/culturesofknowledge/emplaces
 [2]:  http://www.culturesofknowledge.org/?p=8455
