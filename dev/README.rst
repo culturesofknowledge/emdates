@@ -18,14 +18,21 @@ On start-of-year:
 * https://en.wikipedia.org/wiki/Calendar_(New_Style)_Act_1750
 * https://en.wikipedia.org/wiki/Julian_calendar#New_Year's_Day
 
+Building and running emdates
+----------------------------
+To build and run the Docker image ::
+
+$ docker build --no-cache -t emdates https://raw.githubusercontent.com/culturesofknowledge/emdates/master/dev/docker/Dockerfile
+$ docker run -p 8080:8080 --name emdates emdates
+
+
 Examples:
 
 * Given a date "March 24, 1751" sourced somewhere in England, when was this on the Gregorian calendar we use today? ::
 
     $ curl -s localhost:8080/convert -H 'Content-type: application/json' \
-           -d '{"targetCalendar": "gregorian", \
-                "year": "1751", "month": "3", "day": "24", 
-                "place": "england"}' | jq -C .
+           -d '{"targetCalendar": "gregorian", "year": "1751", "month": "3", "day": "24", "place": "england"}' \
+           | jq -C .
     {
       "dates": [
         {
@@ -54,9 +61,8 @@ Examples:
   of continental Europe have recorded his execution by? ::
 
     curl -s localhost:8080/convert -H 'Content-type: application/json' \
-         -d '{"targetCalendar": "gregorian", \
-              "year": "1648", "month": "1", "day": "30", \
-              "place": "england"}' | jq -C . 
+         -d '{"targetCalendar": "gregorian", "year": "1648", "month": "1", "day": "30", "place": "england"}' \
+         | jq -C .
     {
       "dates": [
         {
@@ -79,9 +85,8 @@ Examples:
   the following result ::
 
     $ curl -s localhost:8080/convert -H 'Content-type: application/json' \
-           -d '{"targetCalendar": "julian", \
-                "year": "1648", "month": "1", "day": "30", \
-                "place": "england"}' | jq -C . 
+           -d '{"targetCalendar": "julian", "year": "1648", "month": "1", "day": "30", "place": "england"}' \
+           | jq -C .
     {
       "dates": [
         {
