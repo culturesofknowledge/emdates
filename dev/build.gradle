@@ -45,7 +45,7 @@ ext {
     dropwizardVersion = '1.3.2'
     junitVersion = '5.1+'
     mockitoVersion = '2.+'
-    gitTag = project.hasProperty('projVersion') ? project['projVersion'] : getVersionName()
+    gitTag = getVersionName()
 }
 
 checkstyle {

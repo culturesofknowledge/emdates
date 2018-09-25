@@ -1,7 +1,6 @@
 FROM gradle:jdk8 as builder
 
-#local: COPY --chown=gradle:gradle . /home/gradle/emdates
-#RUN svn export https://github.com/culturesofknowledge/emdates/trunk/dev /home/gradle/emdates
+#local: COPY --chown=gradle:gradle /path/to/local/emdates /home/gradle/emdates
 RUN git clone --depth=1 https://github.com/culturesofknowledge/emdates /home/gradle/emdates
 WORKDIR /home/gradle/emdates/dev
 RUN gradle build
