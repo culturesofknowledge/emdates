@@ -45,7 +45,7 @@ ext {
     dropwizardVersion = '1.3.2'
     junitVersion = '5.1+'
     mockitoVersion = '2.+'
-    gitTag = getVersionName()
+    gitTag = "1.0" // getVersionName() does not work in Docker
 }
 
 checkstyle {
