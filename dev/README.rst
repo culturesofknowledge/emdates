@@ -110,3 +110,30 @@ Examples:
 __ https://en.wikipedia.org/wiki/Old_Style_and_New_Style_dates#Start_of_the_year_in_the_historical_records_of_Britain_and_its_colonies_and_possessions
 .. _this note: https://en.wikipedia.org/wiki/Charles_I_of_England#cite_note-1 
 .. _Charles I: https://en.wikipedia.org/wiki/Charles_I_of_England
+
+
+Uploading CSV files
+-------------------
+
+Suppose we have a CSV file ``example.csv``:
+
+======= ===== ===== ===
+Place   Year  Month Day
+======= ===== ===== ===
+Austria 1584  1     5
+England 1648  1     30
+======= ===== ===== ===
+
+then we can have this spreadsheet converted via the ``/convert/table`` API endpoint ::
+
+  $ curl -s localhost:8080/convert/table -F file=@example.csv \
+    -F yearField=Year -F monthField=Month -F dayField=Day
+
+and end up with a converted CSV:
+
+======= ====== ======= ===== ====== ======= ===== ====== ======= =====
+Place   Year_0 Month_0 Day_0 Year_1 Month_1 Day_1 Year_2 Month_2 Day_2
+======= ====== ======= ===== ====== ======= ===== ====== ======= =====
+Austria 1584   1       5     1584   1       5     1584   1       5
+England 1648   1       30    1649   2       9
+======= ====== ======= ===== ====== ======= ===== ====== ======= =====
