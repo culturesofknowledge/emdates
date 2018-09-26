@@ -1,23 +1,3 @@
-Lobsang
-=======
-
-Lobsang deals with Julian / Gregorian calendar issues given specific geographic
-locations and the Time at which they switched between using either calendar
-system.
-
-Nomen est omen
---------------
-* https://wiki.lspace.org/mediawiki/Lobsang_Ludd
-* https://wiki.lspace.org/mediawiki/Time
-
-Background hints
-~~~~~~~~~~~~~~~~
-On start-of-year:
-
-* https://en.wikipedia.org/wiki/Old_Style_and_New_Style_dates
-* https://en.wikipedia.org/wiki/Calendar_(New_Style)_Act_1750
-* https://en.wikipedia.org/wiki/Julian_calendar#New_Year's_Day
-
 Building and running emdates
 ----------------------------
 To build and run the Docker image ::
@@ -131,9 +111,33 @@ then we can have this spreadsheet converted via the ``/convert/table`` API endpo
 
 and end up with a converted CSV:
 
-======= ====== ======= ===== ====== ======= ===== ====== ======= =====
-Place   Year_0 Month_0 Day_0 Year_1 Month_1 Day_1 Year_2 Month_2 Day_2
-======= ====== ======= ===== ====== ======= ===== ====== ======= =====
-Austria 1584   1       5     1584   1       5     1584   1       5
-England 1648   1       30    1649   2       9
-======= ====== ======= ===== ====== ======= ===== ====== ======= =====
+======= ==== ===== === ====== ======= ===== ====== ======= ===== ====== ======= =====
+Place   Year Month Day Year_0 Month_0 Day_0 Year_1 Month_1 Day_1 Year_2 Month_2 Day_2
+======= ==== ===== === ====== ======= ===== ====== ======= ===== ====== ======= =====
+Austria 1584 1     5   1584   1       5     1584   1       5     1584   1       5
+England 1648 1     30  1649   2       9
+======= ==== ===== === ====== ======= ===== ====== ======= ===== ====== ======= =====
+
+
+Background info
+===============
+This Emdates implementation, before being moved over to the Github
+culturesofknowledge account, was named Lobsang (a character from the Discworld series).
+It deals with Julian / Gregorian calendar conversions given specific geographic
+locations and the Time at which they switched between using either calendar
+system.
+
+Notes
+~~~~~
+On start-of-year:
+
+* https://en.wikipedia.org/wiki/Old_Style_and_New_Style_dates
+* https://en.wikipedia.org/wiki/Calendar_(New_Style)_Act_1750
+* https://en.wikipedia.org/wiki/Julian_calendar#New_Year's_Day
+
+On Lobsang:
+
+* https://wiki.lspace.org/mediawiki/Lobsang_Ludd
+* https://wiki.lspace.org/mediawiki/Time
+
+
