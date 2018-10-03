@@ -8,13 +8,11 @@ buildscript {
     }
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
-        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.1.1'
     }
 }
 
 apply plugin: 'application'
 apply plugin: 'checkstyle'
-apply plugin: 'org.junit.platform.gradle.plugin'
 
 // Warns: "- No value has been specified for property 'mainClassName'."
 // Fix pending: https://github.com/johnrengelman/shadow/issues/336
@@ -97,3 +95,12 @@ shadowJar {
     archiveName 'lobsang-full.jar'
 }
 
+test {
+    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+    systemProperties = [
+        'junit.jupiter.execution.parallel.enabled': 'true'
+    ]
+    useJUnitPlatform {
+        includeEngines 'junit-jupiter'
+    }
+}
