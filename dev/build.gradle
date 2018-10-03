@@ -73,10 +73,7 @@ dependencies {
     // CSV uploads handling
     implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.5'
 
-    // Excel
-//    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '3.14'
-
-//    testCompile group: "org.mockito", name: "mockito-core", version: mockitoVersion
+    testCompile group: "org.junit.jupiter", name: "junit-jupiter-params", version: junitVersion
     testImplementation group: "org.junit.jupiter", name: "junit-jupiter-api", version: junitVersion
     testRuntime group: "org.junit.jupiter", name: "junit-jupiter-engine", version: junitVersion
 }
