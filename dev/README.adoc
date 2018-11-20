@@ -1,0 +1,180 @@
+= Building and running emdates
+
+== To build and run the Docker image
+
+----
+$ docker build --no-cache -t emdates https://raw.githubusercontent.com/culturesofknowledge/emdates/master/dev/docker/Dockerfile
+$ docker run -p 8080:8080 --name emdates emdates
+----
+
+== Examples
+
+=== Example 1
+Given a date "March 24, 1751" sourced somewhere in England, when was this on the Gregorian calendar we use today?
+
+----
+$ curl -s localhost:8080/convert -H 'Content-type: application/json' \
+       -d '{"targetCalendar": "gregorian", "year": "1751", "month": "3", "day": "24", "place": "england"}' \
+       | jq -C .
+----
+
+Yields:
+
+----
+{
+  "dates": [
+    {
+      "year": 1752,
+      "month": 4,
+      "day": 4,
+      "notes": [
+        "Based on data for place: 'England and Wales'",
+        "Date after 1 January, but in this period, new year started on 03-25, so one year was added.",
+        "Date on or before end of Julian calendar"
+      ]
+    }
+  ]
+}
+----
+
+Answer: *4 April 1752*.
+
+Because in 1751, the New Year started on March 25th (as opposed to January
+1st which we are accustomed to nowadays), the subject date of 24 March was by
+our current accounts actually in 1752.  Also, eleven days have to be added
+because the Julian calendar was in effect which, at that time, was 11 days
+behind the Gregorian calendar.
+
+
+=== Example 2
+link:https://en.wikipedia.org/wiki/Old_Style_and_New_Style_dates#Start_of_the_year_in_the_historical_records_of_Britain_and_its_colonies_and_possessions[The execution of Charles I]
+was recorded at the time in parliament as happening on 30 January 1648. What date would his contemporaries in parts
+of continental Europe have recorded his execution by?
+
+----
+curl -s localhost:8080/convert -H 'Content-type: application/json' \
+     -d '{"targetCalendar": "gregorian", "year": "1648", "month": "1", "day": "30", "place": "england"}' \
+     | jq -C .
+----
+
+Yields:
+
+----
+{
+  "dates": [
+    {
+      "year": 1649,
+      "month": 2,
+      "day": 9,
+      "notes": [
+        "Based on data for place: 'England and Wales'",
+        "Date after 1 January, but in this period, new year started on 03-25, so one year was added.",
+        "Date on or before end of Julian calendar"
+      ]
+    }
+  ]
+}
+----
+
+Answer: *9 February 1649*.
+
+=== Example 3
+If we wanted the date in Julian, but with the year corrected to start on 1
+January, we ask for `"targetCalendar": "julian"` which yields
+the following result:
+
+----
+$ curl -s localhost:8080/convert -H 'Content-type: application/json' \
+       -d '{"targetCalendar": "julian", "year": "1648", "month": "1", "day": "30", "place": "england"}' \
+       | jq -C .
+----
+
+Yields:
+
+----
+{
+  "dates": [
+    {
+      "year": 1649,
+      "month": 1,
+      "day": 30,
+      "notes": [
+        "Based on data for place: 'England and Wales'",
+        "Date after 1 January, but in this period, new year started on 03-25, so one year was added.",
+        "Date on or before end of Julian calendar"
+      ]
+    }
+  ]
+}
+----
+
+Answer: *30 January, 1649*
+
+As link:https://en.wikipedia.org/wiki/Charles_I_of_England#cite_note-1[this note] on link:https://en.wikipedia.org/wiki/Charles_I_of_England[Charles I] explains, this is sometimes referred to as
+*Old Style Julian calendar*.
+
+
+== Uploading CSV files
+
+Suppose we have a CSV file `example.csv`:
+|===
+|Place |Year |Month |Day
+
+|Austria |1584  |1     |5
+
+|England |1648  |1     |30
+
+|===
+
+then we can have this spreadsheet converted via the ``/convert/table`` API endpoint:
+
+----
+$ curl -s localhost:8080/convert/table -F file=@example.csv \
+  -F yearField=Year -F monthField=Month -F dayField=Day
+----
+and end up with a converted CSV:
+
+|====
+|Place   |Year |Month |Day |Year_0 |Month_0 |Day_0 |Year_1 |Month_1 |Day_1 |Year_2 |Month_2 |Day_2
+
+|Austria |1584 |1     |5   |1584   |1       |5     |1584   |1       |5     |1584   |1       |5
+
+|England |1648 |1     |30  |1649   |2       |9     |       |        |      |       |        |
+|====
+
+
+== Background info
+This Emdates implementation, before being moved over to the Github
+culturesofknowledge account, was named Lobsang (a character from the Discworld series).
+It deals with Julian / Gregorian calendar conversions given specific geographic
+locations and the Time at which they switched between using either calendar
+system.
+
+=== Notes
+On start-of-year:
+
+* https://en.wikipedia.org/wiki/Old_Style_and_New_Style_dates
+* https://en.wikipedia.org/wiki/Calendar_(New_Style)_Act_1750
+* https://en.wikipedia.org/wiki/Julian_calendar#New_Year's_Day
+
+On Lobsang:
+
+* https://wiki.lspace.org/mediawiki/Lobsang_Ludd
+* https://wiki.lspace.org/mediawiki/Time
+
+=== Technical notes
+
+To compile the Java code:
+
+----
+./gradlew clean build
+----
+
+Starting the application without docker execute (from the same folder as this file):
+
+----
+java -jar build/libs/lobsang-full.jar server config-template.yml
+----
+
+The application uses the link:https://www.dropwizard.io/1.3.5/docs/getting-started.html[Dropwizard] framework.
+It is set up after the https://www.dropwizard.io/1.3.5/docs/getting-started.html#tutorial[Getting started tutorial] on the website.
