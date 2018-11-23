@@ -10,12 +10,12 @@ public class RomanConverter implements CalendarConverter {
   }
 
   @Override
-  public int toJulianDay(YearMonthDay dateRequest) {
+  public int toRataDie(YearMonthDay dateRequest) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public YearMonthDay fromJulianDay(int julianDay) {
+  public YearMonthDay fromRataDie(int rataDie) {
     throw new UnsupportedOperationException();
   }
 }
