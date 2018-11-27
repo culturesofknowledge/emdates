@@ -3,6 +3,7 @@ package nl.knaw.huygens.lobsang.core.converters;
 import nl.knaw.huygens.lobsang.api.YearMonthDay;
 
 import static java.lang.Math.floor;
+import static nl.knaw.huygens.lobsang.core.converters.CalendricalMath.mod;
 
 public class GregorianConverter implements CalendarConverter {
   private static final int LAST_DAY_LEAP_YEAR_400 = 146097;
@@ -75,14 +76,4 @@ public class GregorianConverter implements CalendarConverter {
     return cycle100YearNotIn400 == 4 || yearsNotIn400Or100Or4 == 4 ? year : year + 1;
   }
 
-  // mod function that will always return a positive value, that is more like the lisp mod function
-  // see: https://stackoverflow.com/a/4403642
-  // see: http://jtra.cz/stuff/lisp/sclr/mod.html
-  private int mod(int value, int modBase) {
-    while (value < 0) {
-      value += modBase;
-    }
-    int mod = value % modBase;
-    return mod;
-  }
 }
