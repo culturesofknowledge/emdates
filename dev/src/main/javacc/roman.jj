@@ -1,0 +1,132 @@
+options {
+  IGNORE_CASE = true;
+}
+PARSER_BEGIN(RomanDateParser)
+package nl.knaw.huygens.lobsang.core.parsers;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.time.Month;
+import java.time.MonthDay;
+
+public class RomanDateParser {
+  private static final RomanDateTable table = new RomanDateTable();
+  private static RomanDateParser parser = null;
+
+  public static MonthDay parse(String input) throws ParseException {
+    final InputStream is = new ByteArrayInputStream(input.getBytes());
+
+    // handle JavaCC's instantiation / reinitialisation contract
+    if (parser == null) {
+      parser = new RomanDateParser(is);
+    }
+    else {
+      ReInit(is);
+    }
+
+    return parser.parseDate();
+  }
+}
+PARSER_END(RomanDateParser)
+
+SKIP :
+{
+    " "
+|   "\n"
+|   "\r"
+|   "\t"
+}
+
+TOKEN :
+{
+  < Arabic : (["0"-"9"])+ >
+| < Roman: (["I","X","C","M","V","L","D"])+ >
+}
+
+TOKEN :
+{
+  < Jan: ("ian" | "jan") (("uari") | ("."))? >
+| < Feb: ("feb") (".")? >
+| < Mar: ("mar" (["t"] (["i"])? (["i"])?)? (".")?) | "m." >
+| < Apr: "apr" (".")? >
+| < May: "mai" (".")? >
+| < Jun: ("iun"|"ivn") (".")? >
+| < Jul: ("iul"|"ivl") (".")? >
+| < Aug: ("aug"|"avg") (".")? >
+| < Sep: "sep" (".")? >
+| < Oct: ("oct"|"okt") (".")? >
+| < Nov: "nov" (".")? >
+| < Dec: "dec" (".")? >
+}
+
+TOKEN :
+{
+  < Ante: ("ante" | ("a" ".")) >
+| < Bis:  "bis" >
+| < Diem: ("diem" | ("d" ".")) >
+| < Ides   : "id" ("es" | ".") >
+| < Kalends: (["c", "k"]) "al" ("ends" | ".")? >
+| < Nones  : "non" ("es" | ".")  >
+| < Pridie: ("pr") ("." | (("id") ("." | "ie"))) >
+}
+
+MonthDay parseDate() :
+{
+  final String event;
+  final String month;
+  final Token token;
+  Token bis = null;
+}
+{
+  // e.g., "Kal. Mart."
+  (<Kalends>)? month=normalizedMonth() <EOF>
+  {
+    return table.lookup("KAL. " + month);
+  }
+|
+  // e.g., "A.D. VII Ides Mart."
+  <Ante> <Diem> (bis=<Bis>)? token=<Roman> event=normalizedEvent() month=normalizedMonth() <EOF>
+  {
+    if (bis == null) {
+      return table.lookup("A.D. " + token.image + " " + event + " " + month);
+    }
+
+    if (month.equals("MART.") && "VI".equals(token.image) && "KAL.".equals(event)) {
+      return table.lookup("A.D. BIS VI KAL. M.");
+    }
+
+    throw new ParseException("BIS only defined on A.D. BIS VI KALENDS MARTIUS!");
+  }
+|
+  // e.g., "Prid. Kal. Mart.", "Prid. Non. Apr."
+  <Pridie> event=normalizedEvent() month=normalizedMonth() <EOF>
+  {
+    return table.lookup("PRID. " + event + " " + month);
+  }
+}
+
+String normalizedEvent() :
+{}
+{
+  <Kalends> { return "KAL."; }
+| <Ides>    { return "ID."; }
+| <Nones>   { return "NON."; }
+}
+
+String normalizedMonth() :
+{}
+{
+  <Jan> { return "IAN."; }
+| <Feb> { return "FEB."; }
+| <Mar> { return "MART."; }
+| <Apr> { return "APR."; }
+| <May> { return "MAI."; }
+| <Jun> { return "IVN."; }
+| <Jul> { return "IVL."; }
+| <Aug> { return "AUG."; }
+| <Sep> { return "SEP."; }
+| <Oct> { return "OKT."; }
+| <Nov> { return "NOV."; }
+| <Dec> { return "DEC."; }
+}
+

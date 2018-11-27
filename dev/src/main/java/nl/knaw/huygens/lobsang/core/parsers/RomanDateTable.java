@@ -11,12 +11,12 @@ import java.time.MonthDay;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RomanDateParser {
-  private static final Logger LOG = LoggerFactory.getLogger(RomanDateParser.class);
+public class RomanDateTable {
+  private static final Logger LOG = LoggerFactory.getLogger(RomanDateTable.class);
 
   private final Map<String, MonthDay> romanDates = new HashMap<>();
 
-  public RomanDateParser() {
+  public RomanDateTable() {
     int month = 1;
     int day = 1;
     try (BufferedReader br = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/roman.txt")))) {
@@ -42,7 +42,7 @@ public class RomanDateParser {
     }
   }
 
-  public MonthDay parse(String date) {
+  public MonthDay lookup(String date) {
     return romanDates.get(date);
   }
 }
