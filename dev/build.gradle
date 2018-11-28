@@ -14,7 +14,6 @@ buildscript {
 
 apply plugin: 'application'
 apply plugin: 'ca.coglinc.javacc'
-apply plugin: 'checkstyle'
 apply plugin: 'idea'
 
 // Warns: "- No value has been specified for property 'mainClassName'."
@@ -48,10 +47,6 @@ ext {
     junitVersion = '5.1+'
     mockitoVersion = '2.+'
     gitTag = getVersionName()
-}
-
-checkstyle {
-    toolVersion = '8.9+'
 }
 
 version = "${gitTag}"
