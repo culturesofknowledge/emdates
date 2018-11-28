@@ -60,9 +60,13 @@ public abstract class AbstractConverterTest {
     return TestData.getData("dates1.csv").map(mapData());
   }
 
+  private Stream<Arguments> dataAddedDates() throws Exception {
+    return TestData.getData("added_dates.csv").map(mapData());
+  }
+
   @ParameterizedTest
   @MethodSource({"data2019", "data2018", "data2017", "data2016", "data2015", "data2014", "data2013", "data2012",
-      "data2011", "data2010", "dataDates1"
+      "data2011", "data2010", "dataDates1", "dataAddedDates"
   })
   public void testToRataDie(YearMonthDay gregorianDate, int expectedRataDie) {
     int rataDie = getInstance().toRataDie(gregorianDate);
@@ -72,7 +76,7 @@ public abstract class AbstractConverterTest {
 
   @ParameterizedTest
   @MethodSource({"data2019", "data2018", "data2017", "data2016", "data2015", "data2014", "data2013", "data2012",
-      "data2011", "data2010", "dataDates1"
+      "data2011", "data2010", "dataDates1", "dataAddedDates"
   })
   public void testFromRataDie(YearMonthDay expectedGregorianDate, int rataDie) {
     YearMonthDay gregorian = getInstance().fromRataDie(rataDie);
