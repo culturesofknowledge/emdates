@@ -9,11 +9,13 @@ import java.io.InputStream;
 import java.time.Month;
 import java.time.MonthDay;
 
+import nl.knaw.huygens.lobsang.api.YearMonthDay;
+
 public class RomanDateParser {
   private static final RomanDateTable table = new RomanDateTable();
   private static RomanDateParser parser = null;
 
-  public static MonthDay parse(String input) throws ParseException {
+  public static YearMonthDay parse(String input) throws ParseException {
     final InputStream is = new ByteArrayInputStream(input.getBytes());
 
     // handle JavaCC's instantiation / reinitialisation contract
@@ -26,37 +28,55 @@ public class RomanDateParser {
 
     return parser.parseDate();
   }
+
+  // Thanks! https://stackoverflow.com/a/29218799
+  private static int evaluateRomanNumerals(String roman) {
+      return (int) evaluateNextRomanNumeral(roman, roman.length() - 1, 0);
+  }
+
+  private static double evaluateNextRomanNumeral(String roman, int pos, double rightNumeral) {
+      if (pos < 0) return 0;
+      char ch = roman.charAt(pos);
+      double value = Math.floor(Math.pow(10, "IXCM".indexOf(ch))) + 5 * Math.floor(Math.pow(10, "VLD".indexOf(ch)));
+      return value * Math.signum(value + 0.5 - rightNumeral) + evaluateNextRomanNumeral(roman, pos - 1, value);
+  }
 }
 PARSER_END(RomanDateParser)
 
 SKIP :
 {
-    " "
-|   "\n"
-|   "\r"
-|   "\t"
+  " "
+| "\n"
+| "\r"
+| "\t"
 }
 
 TOKEN :
 {
-  < Arabic : (["0"-"9"])+ >
-| < Roman: (["I","X","C","M","V","L","D"])+ >
+  < Arabic: (["0"-"9"])+ >
+| < Roman : (["I","X","C","M","V","L","D"])+ >
 }
 
 TOKEN :
 {
-  < Jan: ("ian" | "jan") (("uari") | ("."))? >
+  <#Ius  : "ius">
+| <#Ember: (["b","e","m","r","."])+ >
+}
+
+TOKEN :
+{
+  < Jan: ("ian" | "jan") (["a","i","r","s","u","."])* >
 | < Feb: ("feb") (".")? >
 | < Mar: ("mar" (["t"] (["i"])? (["i"])?)? (".")?) | "m." >
 | < Apr: "apr" (".")? >
-| < May: "mai" (".")? >
-| < Jun: ("iun"|"ivn") (".")? >
-| < Jul: ("iul"|"ivl") (".")? >
-| < Aug: ("aug"|"avg") (".")? >
-| < Sep: "sep" (".")? >
-| < Oct: ("oct"|"okt") (".")? >
-| < Nov: "nov" (".")? >
-| < Dec: "dec" (".")? >
+| < May: "ma" (["i","j"])* (".")? >
+| < Jun: ("iun"|"ivn") ("." | <Ius>)? >
+| < Jul: ("iul"|"ivl") ("." | <Ius>)? >
+| < Aug: ("aug"|"avg") (["i","s","t","u"])* (".")? >
+| < Sep: "sep" (["b","e","m","r","t"])* (".")? >
+| < Oct: ("oct"|"okt") (["o","b","e","r"])* (".")? >
+| < Nov: ("nov"|"nou") (["b","e","m","r"])* (".")? >
+| < Dec: "dec" (<Ember>)? >
 }
 
 TOKEN :
@@ -64,48 +84,59 @@ TOKEN :
   < Ante: ("ante" | ("a" ".")) >
 | < Bis:  "bis" >
 | < Diem: ("diem" | ("d" ".")) >
-| < Ides   : "id" ("es" | ".") >
+| < Ides   : ("e")? "id" ("es" | ".") >
 | < Kalends: (["c", "k"]) "al" ("ends" | ".")? >
-| < Nones  : "non" ("es" | ".")  >
-| < Pridie: ("pr") ("." | (("id") ("." | "ie"))) >
+| < Nones  : "non" (["a","e","i"] "s")? (".")? >
+| < Pridie: ("pr") (["d","e","i"])* (".")? >
 }
 
-MonthDay parseDate() :
+YearMonthDay parseDate() :
 {
-  final String event;
-  final String month;
-  final Token token;
+  String event = null;
+  String month = null;
+  String roman;
   Token bis = null;
+  Integer day = null;
+  Integer year = null;
 }
 {
-  // e.g., "Kal. Mart."
-  (<Kalends>)? month=normalizedMonth() <EOF>
+  // e.g., "Kal. Mart.", "Id. Feb", also accept "<Month>" as "Kal. <Month>"
+  [event = event()] month=month() [year=number()] <EOF>
   {
-    return table.lookup("KAL. " + month);
+    final MonthDay md = table.lookup((event == null ? "KAL." : event) + " " + month);
+    return new YearMonthDay(year == null ? -1 : year, md.getMonthValue(), md.getDayOfMonth());
   }
 |
   // e.g., "A.D. VII Ides Mart."
-  <Ante> <Diem> (bis=<Bis>)? token=<Roman> event=normalizedEvent() month=normalizedMonth() <EOF>
+  [<Ante> <Diem>] [bis=<Bis>] roman=roman() [event=event()] month=month() [year=number()] <EOF>
   {
-    if (bis == null) {
-      return table.lookup("A.D. " + token.image + " " + event + " " + month);
+    if (event == null) {
+      final MonthDay md = table.lookup("KAL. " + month);
+      return new YearMonthDay(year == null ? -1 : year, md.getMonthValue(), evaluateRomanNumerals(roman));
     }
 
-    if (month.equals("MART.") && "VI".equals(token.image) && "KAL.".equals(event)) {
-      return table.lookup("A.D. BIS VI KAL. M.");
+    if (bis == null) {
+      final MonthDay md = table.lookup("A.D. " + roman + " " + event + " " + month);
+      return new YearMonthDay(year == null ? -1 : year, md.getMonthValue(), md.getDayOfMonth());
+    }
+
+    if (month.equals("MART.") && "VI".equals(roman) && "KAL.".equals(event)) {
+      final MonthDay md = table.lookup("A.D. BIS VI KAL. M.");
+      return new YearMonthDay(year == null ? -1 : year, md.getMonthValue(), md.getDayOfMonth());
     }
 
     throw new ParseException("BIS only defined on A.D. BIS VI KALENDS MARTIUS!");
   }
 |
   // e.g., "Prid. Kal. Mart.", "Prid. Non. Apr."
-  <Pridie> event=normalizedEvent() month=normalizedMonth() <EOF>
+  <Pridie> event=event() month=month() year=number() <EOF>
   {
-    return table.lookup("PRID. " + event + " " + month);
+    final MonthDay md = table.lookup("PRID. " + event + " " + month);
+    return new YearMonthDay(year == null ? -1 : year, md.getMonthValue(), md.getDayOfMonth());
   }
 }
 
-String normalizedEvent() :
+String event() :
 {}
 {
   <Kalends> { return "KAL."; }
@@ -113,7 +144,7 @@ String normalizedEvent() :
 | <Nones>   { return "NON."; }
 }
 
-String normalizedMonth() :
+String month() :
 {}
 {
   <Jan> { return "IAN."; }
@@ -123,10 +154,34 @@ String normalizedMonth() :
 | <May> { return "MAI."; }
 | <Jun> { return "IVN."; }
 | <Jul> { return "IVL."; }
-| <Aug> { return "AUG."; }
-| <Sep> { return "SEP."; }
+| <Aug> { return "AVG."; }
+| <Sep> { return "SEPT."; }
 | <Oct> { return "OKT."; }
 | <Nov> { return "NOV."; }
 | <Dec> { return "DEC."; }
 }
 
+String roman() :
+{
+  Token token;
+}
+{
+  token=<Roman> ["."] { return token.image; }
+}
+
+String arabic() :
+{
+  Token token;
+}
+{
+  token=<Arabic> ["."] { return token.image; }
+}
+
+int number() :
+{
+  String str;
+}
+{
+  str=arabic() { return Integer.valueOf(str); }
+| str=roman()  { return evaluateRomanNumerals(str); }
+}
