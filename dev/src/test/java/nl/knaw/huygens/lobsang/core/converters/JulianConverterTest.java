@@ -1,6 +1,7 @@
 package nl.knaw.huygens.lobsang.core.converters;
 
 import nl.knaw.huygens.lobsang.api.YearMonthDay;
+import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -77,6 +78,16 @@ public class JulianConverterTest {
     int rataDie = instance.toRataDie(julianDate);
 
     assertThat(rataDie, is(expectedRataDie));
+  }
+
+  @ParameterizedTest
+  @MethodSource({"data2019", "data2018", "data2017", "data2016", "data2015", "data2014", "data2013", "data2012",
+      "data2011", "data2010", "dataDates1"
+  })
+  public void testFromRataDie(YearMonthDay expectedJulianDate, int rataDie) {
+    YearMonthDay gregorian = instance.fromRataDie(rataDie);
+
+    assertThat(gregorian, is(expectedJulianDate));
   }
 
 }
