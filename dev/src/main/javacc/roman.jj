@@ -13,6 +13,7 @@ import nl.knaw.huygens.lobsang.api.YearMonthDay;
 
 public class RomanDateParser {
   private static final RomanDateTable table = new RomanDateTable();
+
   private static RomanDateParser parser = null;
 
   public static YearMonthDay parse(String input) throws ParseException {
@@ -40,6 +41,21 @@ public class RomanDateParser {
       double value = Math.floor(Math.pow(10, "IXCM".indexOf(ch))) + 5 * Math.floor(Math.pow(10, "VLD".indexOf(ch)));
       return value * Math.signum(value + 0.5 - rightNumeral) + evaluateNextRomanNumeral(roman, pos - 1, value);
   }
+
+  private static MonthDay lookup(String normalizedRomanDate) throws ParseException {
+    final MonthDay md = table.lookup(normalizedRomanDate);
+
+    if (md == null) {
+      throw new ParseException("Unrecognised Roman date: \"" + normalizedRomanDate + "\"");
+    }
+
+    return md;
+  }
+
+  private static YearMonthDay inYear(Integer year, MonthDay md) {
+    return new YearMonthDay(year == null ? -1 : year, md.getMonthValue(), md.getDayOfMonth());
+  }
+
 }
 PARSER_END(RomanDateParser)
 
@@ -63,12 +79,21 @@ TOKEN :
 | <#Ember: (["b","e","m","r","."])+ >
 }
 
+// "Comitis" in dates usually means "sent from". It oftentimes is preceded by the placename where a letter was sent
+// from. E.g., "Hagae comitis" meaning "sent from The Hague". It is not a part of the date itself, so we can ignore
+// it. By recognising it in the parser, we have the option to flag it to the scholar, rather than just saying "parse
+// error".
+TOKEN :
+{
+  <Comitis: "comitis">
+}
+
 TOKEN :
 {
   < Jan: ("ian" | "jan") (["a","i","r","s","u","."])* >
 | < Feb: ("feb") (".")? >
 | < Mar: ("mar" (["t"] (["i"])? (["i"])?)? (".")?) | "m." >
-| < Apr: "apr" (".")? >
+| < Apr: "apr" (["i","l"])* (".")? >
 | < May: "ma" (["i","j"])* (".")? >
 | < Jun: ("iun"|"ivn") ("." | <Ius>)? >
 | < Jul: ("iul"|"ivl") ("." | <Ius>)? >
@@ -90,50 +115,73 @@ TOKEN :
 | < Pridie: ("pr") (["d","e","i"])* (".")? >
 }
 
+// If all of the above fails, it may just be (superfluous) text.
+TOKEN :
+{
+  <Text: (["a"-"z"])+ >
+}
+
 YearMonthDay parseDate() :
 {
+  final String roman;
   String event = null;
   String month = null;
-  String roman;
+  String msg = null;
   Token bis = null;
   Integer day = null;
   Integer year = null;
 }
 {
-  // e.g., "Kal. Mart.", "Id. Feb", also accept "<Month>" as "Kal. <Month>"
-  [event = event()] month=month() [year=number()] <EOF>
+  [msg=superfluous()]
   {
-    final MonthDay md = table.lookup((event == null ? "KAL." : event) + " " + month);
-    return new YearMonthDay(year == null ? -1 : year, md.getMonthValue(), md.getDayOfMonth());
+      if (msg != null) {
+        // Print for now...maybe throw ParseException?
+        System.err.println(msg);
+      }
   }
-|
-  // e.g., "A.D. VII Ides Mart."
-  [<Ante> <Diem>] [bis=<Bis>] roman=roman() [event=event()] month=month() [year=number()] <EOF>
-  {
-    if (event == null) {
-      final MonthDay md = table.lookup("KAL. " + month);
-      return new YearMonthDay(year == null ? -1 : year, md.getMonthValue(), evaluateRomanNumerals(roman));
+  (
+    // e.g., "<Month>" as "Kal. <Month>" (which in turn means "1st of <Month>".
+    month=month() [year=number()] <EOF>
+    {
+      final MonthDay md = lookup("KAL. " + month);
+      return inYear(year, md);
     }
-
-    if (bis == null) {
-      final MonthDay md = table.lookup("A.D. " + roman + " " + event + " " + month);
-      return new YearMonthDay(year == null ? -1 : year, md.getMonthValue(), md.getDayOfMonth());
+  |
+    // e.g., "Kal. Mart.", "Id. Feb".
+    event = event() month=month() [year=number()] <EOF>
+    {
+      final MonthDay md = lookup(event + " " + month);
+      return inYear(year, md);
     }
+  |
+    // e.g., "A.D. VII Ides Mart."
+    [<Ante> <Diem>] [bis=<Bis>] roman=roman() [event=event()] month=month() [year=number()] <EOF>
+    {
+      if (event == null) {
+        final MonthDay md = lookup("KAL. " + month);
+        return inYear(year, md.withDayOfMonth(evaluateRomanNumerals(roman)));
+      }
 
-    if (month.equals("MART.") && "VI".equals(roman) && "KAL.".equals(event)) {
-      final MonthDay md = table.lookup("A.D. BIS VI KAL. M.");
-      return new YearMonthDay(year == null ? -1 : year, md.getMonthValue(), md.getDayOfMonth());
+      if (bis == null) {
+        final MonthDay md = lookup("A.D. " + roman + " " + event + " " + month);
+        return inYear(year, md);
+      }
+
+      if (month.equals("MART.") && "VI".equals(roman) && "KAL.".equals(event)) {
+        final MonthDay md = lookup("A.D. BIS VI KAL. M.");
+        return inYear(year, md);
+      }
+
+      throw new ParseException("BIS only defined on A.D. BIS VI KALENDS MARTIUS!");
     }
-
-    throw new ParseException("BIS only defined on A.D. BIS VI KALENDS MARTIUS!");
-  }
-|
-  // e.g., "Prid. Kal. Mart.", "Prid. Non. Apr."
-  <Pridie> event=event() month=month() year=number() <EOF>
-  {
-    final MonthDay md = table.lookup("PRID. " + event + " " + month);
-    return new YearMonthDay(year == null ? -1 : year, md.getMonthValue(), md.getDayOfMonth());
-  }
+  |
+    // e.g., "Prid. Kal. Mart.", "Prid. Non. Apr."
+    <Pridie> event=event() month=month() year=number() <EOF>
+    {
+      final MonthDay md = table.lookup("PRID. " + event + " " + month);
+      return inYear(year, md);
+    }
+  )
 }
 
 String event() :
@@ -184,4 +232,17 @@ int number() :
 {
   str=arabic() { return Integer.valueOf(str); }
 | str=roman()  { return evaluateRomanNumerals(str); }
+}
+
+String superfluous() :
+{
+  Token text = null;
+}
+{
+  [text=<Text>] <Comitis> {
+    String hint = "Comitis is not part of a date. It means \"sent from\", and is usually preceded by a place";
+    if (text != null) hint += ", \"" + text.image + "\" in this case?";
+    else hint += ". Please remove.";
+    return hint;
+  }
 }

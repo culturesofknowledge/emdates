@@ -45,8 +45,10 @@ class RomanDateParserTest {
 
   @Test
   void inTheWild() throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
-    // this reads 'Comitis Kal. Septemb. 1646.' TODO: deal with 'Comitis'
-    assertEquals(new YearMonthDay(1646, 9, 1), parse("Kal. Septemb. 1646."));
+    // Hagae Comitis meaning "sent from The Hague"
+    assertEquals(new YearMonthDay(1646, 9, 1), parse("Hagae Comitis Kal. Septemb. 1646."));
+    // If scholar omits placename, but leaves 'Comitis'
+    assertEquals(new YearMonthDay(1646, 9, 1), parse("Comitis Kal. Septemb. 1646."));
 
     assertEquals(new YearMonthDay(1646, 10, 31), parse("pridie Kal. Nouemb. 1646."));
     assertEquals(new YearMonthDay(1647, 3, 4), parse("IV. Nonis Mart. 1647."));
@@ -57,8 +59,12 @@ class RomanDateParserTest {
     // Originally read "V Non. Feb. 1657.", but this is actually an "illegal date".
     // Februari 2 would have been "IV Non. Feb."
     assertEquals(new YearMonthDay(1657, 2, 2), parse("IV Non. Feb. 1657."));
-    assertEquals(new YearMonthDay(1658, 8, 1), parse("Kal. Augusti 1658"));
+    Throwable t = assertThrows(nl.knaw.huygens.lobsang.core.parsers.ParseException.class,
+      () -> parse("V Non. Feb. 1657."));
+    assertTrue(t.getMessage().toLowerCase().contains("unrecognised roman date"));
+
     assertEquals(new YearMonthDay(1646, 5, 21), parse("XXI Maj 1646"));
+    assertEquals(new YearMonthDay(1658, 8, 1), parse("Kal. Augusti 1658"));
     assertEquals(new YearMonthDay(1663, 1, 2), parse("IV Nonas Januarias 1663"));
     assertEquals(new YearMonthDay(1657, 12, 23), parse("X. Kal. Jan. MDCLVII"));
   }
