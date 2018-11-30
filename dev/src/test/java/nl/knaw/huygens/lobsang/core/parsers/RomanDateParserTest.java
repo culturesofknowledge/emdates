@@ -14,21 +14,21 @@ class RomanDateParserTest {
   @ParameterizedTest
   @ValueSource(strings = {"ian", "ian.", "ianuari", "januari", "IanuAri"})
   void januaryParses(final String input) throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
-    assertEquals(new YearMonthDay(-1, 1, 1), parse(input));
+    assertEquals(new YearMonthDay(0, 1, 1), parse(input));
   }
 
   @ParameterizedTest
   @ValueSource(strings = {"Mar.", "mart.", "martii"})
   void marchParses(final String input) throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
-    assertEquals(new YearMonthDay(-1, 3, 1), parse(input));
+    assertEquals(new YearMonthDay(0, 3, 1), parse(input));
   }
 
   // etc. for Feb, Apr-Dec
 
   @Test
   void parses() throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
-    assertEquals(new YearMonthDay(-1, 3, 9), parse("a.d. VII Id. Mart."));
-    assertEquals(new YearMonthDay(-1, 2, 25), parse("A.D. BIS VI KAL. M."));
+    assertEquals(new YearMonthDay(0, 3, 9), parse("a.d. VII Id. Mart."));
+    assertEquals(new YearMonthDay(0, 2, 25), parse("A.D. BIS VI KAL. M."));
 
     Throwable t = assertThrows(nl.knaw.huygens.lobsang.core.parsers.ParseException.class,
       () -> parse("A.D. BIS VI KAL. DEC."));

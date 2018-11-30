@@ -8,6 +8,9 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.time.Month;
 import java.time.MonthDay;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 import nl.knaw.huygens.lobsang.api.YearMonthDay;
 
@@ -52,8 +55,18 @@ public class RomanDateParser {
     return md;
   }
 
+  private static YearMonthDay inYear(Optional<Integer> year, MonthDay md) {
+    final YearMonthDay result = new YearMonthDay(year.orElse(0), md.getMonthValue(), md.getDayOfMonth());
+
+    if (!year.isPresent()) {
+      result.addNote("No year was given, only Month and Day of Month to be used.");
+    }
+
+    return result;
+  }
+
   private static YearMonthDay inYear(Integer year, MonthDay md) {
-    return new YearMonthDay(year == null ? -1 : year, md.getMonthValue(), md.getDayOfMonth());
+    return inYear(Optional.ofNullable(year), md);
   }
 
 }
@@ -88,13 +101,7 @@ TOKEN :
   < Arabic: (["0"-"9"])+ >
 }
 
-TOKEN :
-{
-  <#Ius  : "ius">
-| <#Ember: (["b","e","m","r","."])+ >
-}
-
-// "Comitis" in dates usually means "sent from". It oftentimes is preceded by the placename where a letter was sent
+// "Comitis" in dates usually means "sent from". It is often preceded by the placename where a letter was sent
 // from. E.g., "Hagae comitis" meaning "sent from The Hague". It is not a part of the date itself, so we can ignore
 // it. By recognising it in the parser, we have the option to flag it to the scholar, rather than just saying "parse
 // error".
@@ -105,29 +112,34 @@ TOKEN :
 
 TOKEN :
 {
-  < Jan: ("ian" | "jan") (["a","i","r","s","u","."])* >
-| < Feb: ("feb") (".")? >
-| < Mar: ("mar" (["t"] (["i"])? (["i"])?)? (".")?) | "m." >
-| < Apr: "apr" (["i","l"])* (".")? >
-| < May: "ma" (["i","j"])* (".")? >
-| < Jun: ("iun"|"ivn") ("." | <Ius>)? >
-| < Jul: ("iul"|"ivl") ("." | <Ius>)? >
-| < Aug: ("aug"|"avg") (["i","s","t","u"])* (".")? >
-| < Sep: "sep" (["b","e","m","r","t"])* (".")? >
-| < Oct: ("oct"|"okt") (["o","b","e","r"])* (".")? >
-| < Nov: ("nov"|"nou") (["b","e","m","r"])* (".")? >
-| < Dec: "dec" (<Ember>)? >
+  <#OptPeriod: (".")? >
+}
+
+TOKEN :
+{
+  < Jan: ("ian" | "jan") (["a","i","r","s","u"])* <OptPeriod> >
+| < Feb: "feb" (["a","i","r","s","u"])* <OptPeriod> >
+| < Mar: ("mar" (["i","s","t","u"])* <OptPeriod>) | "m." >
+| < Apr: "apr" (["i","l"])* <OptPeriod> >
+| < May: "ma" (["i","j"])* <OptPeriod> >
+| < Jun: ("iun"|"ivn") (["i","u","s"])* <OptPeriod> >
+| < Jul: ("iul"|"ivl") (["i","u","s"])* <OptPeriod> >
+| < Aug: ("aug"|"avg") (["i","s","t","u"])* <OptPeriod> >
+| < Sep: "sep" (["b","e","m","r","t"])* <OptPeriod> >
+| < Oct: ("oct"|"okt") (["o","b","e","r"])* <OptPeriod> >
+| < Nov: ("nov"|"nou") (["b","e","m","r"])* <OptPeriod> >
+| < Dec: "dec" (["b","e","m","r"])* <OptPeriod> >
 }
 
 TOKEN :
 {
   < Ante: ("ante" | ("a" ".")) >
-| < Bis:  "bis" >
+| < Bis:  "bis" <OptPeriod> >
 | < Diem: ("diem" | ("d" ".")) >
-| < Ides   : ("e")? "id" ("es" | ".") >
-| < Kalends: (["c", "k"]) "al" ("ends" | ".")? >
-| < Nones  : "non" (["a","e","i"] "s")? (".")? >
-| < Pridie: ("pr") (["d","e","i"])* (".")? >
+| < Ides   : ("e")? "id" ("es")? <OptPeriod> >
+| < Kalends: (["c", "k"]) "al" ("ends")? <OptPeriod> >
+| < Nones  : "non" (["a","e","i"] "s")? <OptPeriod> >
+| < Pridie: ("pr") (["d","e","i"])* <OptPeriod> >
 }
 
 // If all of the above fails, it may just be (superfluous) text.
@@ -138,6 +150,8 @@ TOKEN :
 
 YearMonthDay parseDate() :
 {
+  final Set<String> notes = new HashSet<String>();
+  final YearMonthDay result;
   final String roman;
   String event = null;
   String month = null;
@@ -150,53 +164,58 @@ YearMonthDay parseDate() :
   [msg=superfluous()]
   {
       if (msg != null) {
-        // Print for now...maybe throw ParseException?
-        System.err.println(msg);
+        notes.add(msg);
       }
   }
   (
-    // e.g., "<Month>" as "Kal. <Month>" (which in turn means "1st of <Month>".
-    month=month() [year=number()] <EOF>
+    // e.g., "<Month>" as "Kal. <Month>" (which in turn means "1st of <Month>").
+    month=month() [year=number()]
     {
-      final MonthDay md = lookup("KAL. " + month);
-      return inYear(year, md);
+      result = inYear(year, lookup("KAL. " + month));
+      notes.add("Missing day of month indication, assuming Kalends (first day of the month).");
     }
   |
     // e.g., "Kal. Mart.", "Id. Feb".
-    event = event() month=month() [year=number()] <EOF>
+    event = event() month=month() [year=number()]
     {
       final MonthDay md = lookup(event + " " + month);
-      return inYear(year, md);
+      result = inYear(year, md);
     }
   |
     // e.g., "A.D. VII Ides Mart."
-    [<Ante> <Diem>] [bis=<Bis>] roman=roman() [event=event()] month=month() [year=number()] <EOF>
+    [<Ante> <Diem>] [bis=<Bis>] roman=roman() [event=event()] month=month() [year=number()]
     {
       if (event == null) {
         final MonthDay md = lookup("KAL. " + month);
-        return inYear(year, md.withDayOfMonth(evaluateRomanNumerals(roman)));
+        result = inYear(year, md.withDayOfMonth(evaluateRomanNumerals(roman)));
       }
-
-      if (bis == null) {
+      else if (bis == null) {
         final MonthDay md = lookup("A.D. " + roman + " " + event + " " + month);
-        return inYear(year, md);
+        result = inYear(year, md);
       }
-
-      if (month.equals("MART.") && "VI".equals(roman) && "KAL.".equals(event)) {
+      else if (month.equals("MART.") && "VI".equals(roman) && "KAL.".equals(event)) {
         final MonthDay md = lookup("A.D. BIS VI KAL. M.");
-        return inYear(year, md);
+        result = inYear(year, md);
       }
-
-      throw new ParseException("BIS only defined on A.D. BIS VI KALENDS MARTIUS!");
+      else {
+        throw new ParseException("BIS only defined on A.D. BIS VI KALENDS MARTIUS!");
+      }
     }
   |
     // e.g., "Prid. Kal. Mart.", "Prid. Non. Apr."
-    <Pridie> event=event() month=month() year=number() <EOF>
+    <Pridie> event=event() month=month() [year=number()]
     {
       final MonthDay md = table.lookup("PRID. " + event + " " + month);
-      return inYear(year, md);
+      result = inYear(year, md);
     }
   )
+  <EOF> {
+    if (!notes.isEmpty()) {
+      result.setNotes(notes);
+    }
+    System.err.println(result);
+    return result;
+  }
 }
 
 String event() :
