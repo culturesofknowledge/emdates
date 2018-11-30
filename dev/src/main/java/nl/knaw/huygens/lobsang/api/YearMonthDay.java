@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.google.common.base.MoreObjects;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -51,6 +52,10 @@ public class YearMonthDay {
     }
 
     notes.add(note);
+  }
+
+  public void addNotes(Collection<String> otherNotes) {
+    otherNotes.forEach(this::addNote);
   }
 
   public void setNotes(Set<String> notes) {

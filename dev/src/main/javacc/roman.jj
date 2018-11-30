@@ -59,7 +59,7 @@ public class RomanDateParser {
     final YearMonthDay result = new YearMonthDay(year.orElse(0), md.getMonthValue(), md.getDayOfMonth());
 
     if (!year.isPresent()) {
-      result.addNote("No year was given, only Month and Day of Month to be used.");
+      result.addNote("Missing year indication. Please specify.");
     }
 
     return result;
@@ -211,7 +211,7 @@ YearMonthDay parseDate() :
   )
   <EOF> {
     if (!notes.isEmpty()) {
-      result.setNotes(notes);
+      result.addNotes(notes);
     }
     System.err.println(result);
     return result;
