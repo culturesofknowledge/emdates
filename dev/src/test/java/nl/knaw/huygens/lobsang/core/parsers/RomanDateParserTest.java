@@ -63,6 +63,15 @@ class RomanDateParserTest {
       () -> parse("V Non. Feb. 1657."));
     assertTrue(t.getMessage().toLowerCase().contains("unrecognised roman date"));
 
+    // "cDDcLXII" is not a roman numeral. Expect parse error.
+    t = assertThrows(nl.knaw.huygens.lobsang.core.parsers.ParseException.class,
+      () -> parse("a.d. VI. Kal. April. cDDcLXII"));
+    assertTrue(t.getMessage().contains("expecting one of"));
+    assertTrue(t.getMessage().contains("<Roman>"));
+
+    // Now retry 'cDDcLXII' assuming it to be 'MDCLXII'. Expect robustness to random uppercase / lowercase changes.
+    assertEquals(new YearMonthDay(1662, 3, 27), parse("a.d. VI. Kal. April. MDcLXII"));
+
     assertEquals(new YearMonthDay(1646, 5, 21), parse("XXI Maj 1646"));
     assertEquals(new YearMonthDay(1658, 8, 1), parse("Kal. Augusti 1658"));
     assertEquals(new YearMonthDay(1663, 1, 2), parse("IV Nonas Januarias 1663"));

@@ -32,7 +32,7 @@ public class RomanDateParser {
 
   // Thanks! https://stackoverflow.com/a/29218799
   private static int evaluateRomanNumerals(String roman) {
-      return (int) evaluateNextRomanNumeral(roman, roman.length() - 1, 0);
+      return (int) evaluateNextRomanNumeral(roman.toUpperCase(), roman.length() - 1, 0);
   }
 
   private static double evaluateNextRomanNumeral(String roman, int pos, double rightNumeral) {
@@ -67,10 +67,25 @@ SKIP :
 | "\t"
 }
 
+// Gleaned from https://github.com/antlr/grammars-v4/blob/master/romannumerals/romannumerals.g4
+TOKEN :
+{
+  <#ONES_REP  : "i" | "ii" | "iii" >
+| <#ONES      : <ONES_REP> | "iv" | "v" (<ONES_REP>)? | "ix" >
+| <#TENS_REP  : "x" | "xx" | "xxx" >
+| <#TENS_PART : <TENS_REP> | "xl" | "l" (<TENS_REP>)? | "xc" >
+| <#TENS      : <TENS_PART> <ONES> | <TENS_PART> | <ONES> >
+| <#HUNS_REP  : "c" | "cc" | "ccc" >
+| <#HUNS_PART : <HUNS_REP> | "cd" | "d" (<HUNS_REP>)? | "cm" >
+| <#HUNS      : <HUNS_PART> <TENS> | <HUNS_PART> | <TENS> >
+| <#THOUS_PART: ("m")+ >
+| <#THOUSANDS : <THOUS_PART> <HUNS> | <THOUS_PART> | <HUNS> >
+| <Roman      : <THOUSANDS> >
+}
+
 TOKEN :
 {
   < Arabic: (["0"-"9"])+ >
-| < Roman : (["I","X","C","M","V","L","D"])+ >
 }
 
 TOKEN :
