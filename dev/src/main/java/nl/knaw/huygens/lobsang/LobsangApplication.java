@@ -7,7 +7,6 @@ import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import nl.knaw.huygens.lobsang.api.KnownCalendar;
-import nl.knaw.huygens.lobsang.api.Place;
 import nl.knaw.huygens.lobsang.core.ConversionService;
 import nl.knaw.huygens.lobsang.core.ConverterRegistry;
 import nl.knaw.huygens.lobsang.core.converters.CalendarConverter;
@@ -76,13 +75,9 @@ public class LobsangApplication extends Application<LobsangConfiguration> {
   public void run(LobsangConfiguration lobsangConfiguration, Environment environment) throws IOException {
     setupLogging(environment);
     registerKnownCalendars(lobsangConfiguration.getKnownCalendars());
-    registerLocations(lobsangConfiguration.getPlaces());
+    placeRegistry = lobsangConfiguration.getPlaceRegistry();
     LOG.warn("registered locations: {}", lobsangConfiguration.getPlaces());
     registerResources(environment.jersey());
-  }
-
-  private void registerLocations(List<Place> places) {
-    placeRegistry = new PlaceRegistry(places);
   }
 
   private void registerKnownCalendars(List<KnownCalendar> knownCalendars) {

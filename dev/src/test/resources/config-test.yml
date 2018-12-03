@@ -30,8 +30,10 @@ knownCalendars:
 - name: julian
   class: nl.knaw.huygens.lobsang.core.converters.JulianConverter
 
-places:
-- name: somewhere
-  calendarPeriods:
-  - calendar: gregorian
-    start: 1584-01-17
+placeRegistry:
+  "@class": nl.knaw.huygens.lobsang.core.places.LocalPlaceRegistry
+  places:
+  - name: somewhere
+    calendarPeriods:
+    - calendar: gregorian
+      start: 1584-01-17
