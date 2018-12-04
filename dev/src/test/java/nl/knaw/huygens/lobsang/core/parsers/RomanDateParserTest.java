@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import static nl.knaw.huygens.lobsang.core.parsers.RomanDateParser.DEFAULT_YEAR_IF_UNPARSABLE;
+import static nl.knaw.huygens.lobsang.core.parsers.RomanDateParser.ILLEGAL_ROMAN_NUMERAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -63,19 +65,26 @@ class RomanDateParserTest {
       () -> parse("V Non. Feb. 1657."));
     assertTrue(t.getMessage().toLowerCase().contains("unrecognised roman date"));
 
-    // "cDDcLXII" is not a roman numeral. Expect parse error.
-    t = assertThrows(nl.knaw.huygens.lobsang.core.parsers.ParseException.class,
-      () -> parse("a.d. VI. Kal. April. cDDcLXII"));
-    assertTrue(t.getMessage().contains("expecting one of"));
-    assertTrue(t.getMessage().contains("<Roman>"));
-
-    // Now retry 'cDDcLXII' assuming it to be 'MDCLXII'. Expect robustness to random uppercase / lowercase changes.
-    assertEquals(new YearMonthDay(1662, 3, 27), parse("a.d. VI. Kal. April. MDcLXII"));
 
     assertEquals(new YearMonthDay(1646, 5, 21), parse("XXI Maj 1646"));
     assertEquals(new YearMonthDay(1658, 8, 1), parse("Kal. Augusti 1658"));
     assertEquals(new YearMonthDay(1663, 1, 2), parse("IV Nonas Januarias 1663"));
     assertEquals(new YearMonthDay(1657, 12, 23), parse("X. Kal. Jan. MDCLVII"));
+  }
+
+  @Test
+  void incorrectRomanNumeralInYearProducesWarning() throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
+    // "cDDcLXII" is not a roman numeral. Expect complaints and default year
+    final YearMonthDay result = parse("a.d. VI. Kal. April. cDDcLXII");
+    assertTrue(result.getNotes().stream().anyMatch(s -> s.startsWith(ILLEGAL_ROMAN_NUMERAL)));
+    assertEquals(new YearMonthDay(DEFAULT_YEAR_IF_UNPARSABLE, 3, 27), result);
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"mdclxii", "MDCLXII", "mDcLxIi", "MdClXiI"})
+  void romanNumeralParsingIgnoresCase(String year) throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
+    // Expect robustness to random uppercase / lowercase changes.
+    assertEquals(new YearMonthDay(1662, 3, 27), parse("a.d. VI. Kal. April. " + year));
   }
 
   private YearMonthDay parse(final String input) throws nl.knaw.huygens.lobsang.core.parsers.ParseException {

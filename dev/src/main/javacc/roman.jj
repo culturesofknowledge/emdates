@@ -15,6 +15,9 @@ import java.util.Set;
 import nl.knaw.huygens.lobsang.api.YearMonthDay;
 
 public class RomanDateParser {
+  public static final String ILLEGAL_ROMAN_NUMERAL = "Illegal Roman numeral: ";
+  public static final int DEFAULT_YEAR_IF_UNPARSABLE = 0;
+
   private static final RomanDateTable table = new RomanDateTable();
 
   private static RomanDateParser parser = null;
@@ -80,6 +83,11 @@ SKIP :
 | "\t"
 }
 
+TOKEN :
+{
+  < Arabic: (["0"-"9"])+ >
+}
+
 // Gleaned from https://github.com/antlr/grammars-v4/blob/master/romannumerals/romannumerals.g4
 TOKEN :
 {
@@ -98,7 +106,7 @@ TOKEN :
 
 TOKEN :
 {
-  < Arabic: (["0"-"9"])+ >
+  <PseudoRoman: (["c","d","i","l","m","x"])+ >
 }
 
 // "Comitis" in dates usually means "sent from". It is often preceded by the placename where a letter was sent
@@ -152,13 +160,15 @@ YearMonthDay parseDate() :
 {
   final Set<String> notes = new HashSet<String>();
   final YearMonthDay result;
-  final String roman;
+  String count = null;
+  Integer day = null;
+  Integer year = null;
   String event = null;
   String month = null;
   String msg = null;
   Token bis = null;
-  Integer day = null;
-  Integer year = null;
+  Token t1 = null;
+  Token t2 = null;
 }
 {
   [msg=superfluous()]
@@ -183,17 +193,24 @@ YearMonthDay parseDate() :
     }
   |
     // e.g., "A.D. VII Ides Mart."
-    [<Ante> <Diem>] [bis=<Bis>] roman=roman() [event=event()] month=month() [year=number()]
+    [<Ante> <Diem>] [bis=<Bis>] (count=roman() | t1=<PseudoRoman>) [event=event()] month=month() [year=number() | t2=<PseudoRoman>]
     {
+if (t1 != null) System.err.println("t1: " + t1);
+
+      if (t2 != null) {
+        notes.add(ILLEGAL_ROMAN_NUMERAL + t2.image);
+        year = DEFAULT_YEAR_IF_UNPARSABLE;
+      }
+
       if (event == null) {
         final MonthDay md = lookup("KAL. " + month);
-        result = inYear(year, md.withDayOfMonth(evaluateRomanNumerals(roman)));
+        result = inYear(year, md.withDayOfMonth(evaluateRomanNumerals(count)));
       }
       else if (bis == null) {
-        final MonthDay md = lookup("A.D. " + roman + " " + event + " " + month);
+        final MonthDay md = lookup("A.D. " + count + " " + event + " " + month);
         result = inYear(year, md);
       }
-      else if (month.equals("MART.") && "VI".equals(roman) && "KAL.".equals(event)) {
+      else if (month.equals("MART.") && "VI".equals(count) && "KAL.".equals(event)) {
         final MonthDay md = lookup("A.D. BIS VI KAL. M.");
         result = inYear(year, md);
       }
@@ -213,7 +230,6 @@ YearMonthDay parseDate() :
     if (!notes.isEmpty()) {
       result.addNotes(notes);
     }
-    System.err.println(result);
     return result;
   }
 }
