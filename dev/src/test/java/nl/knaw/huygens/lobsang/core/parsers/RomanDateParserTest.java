@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static nl.knaw.huygens.lobsang.core.parsers.RomanDateParser.DEFAULT_YEAR_IF_UNPARSABLE;
 import static nl.knaw.huygens.lobsang.core.parsers.RomanDateParser.ILLEGAL_ROMAN_NUMERAL;
+import static nl.knaw.huygens.lobsang.core.parsers.RomanDateParser.INVALID_ROMAN_COUNT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -73,11 +74,34 @@ class RomanDateParserTest {
   }
 
   @Test
-  void incorrectRomanNumeralInYearProducesWarning() throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
+  void illegalRomanNumeralInYearProducesWarning() throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
     // "cDDcLXII" is not a roman numeral. Expect complaints and default year
     final YearMonthDay result = parse("a.d. VI. Kal. April. cDDcLXII");
     assertTrue(result.getNotes().stream().anyMatch(s -> s.startsWith(ILLEGAL_ROMAN_NUMERAL)));
     assertEquals(new YearMonthDay(DEFAULT_YEAR_IF_UNPARSABLE, 3, 27), result);
+  }
+
+  @Test
+  void illegalRomanNumeralInCountProducesWarning() throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
+    final YearMonthDay result = parse("a.d. IIX Kal. April. MDCLVII");
+    assertTrue(result.getNotes().stream().anyMatch(s -> s.startsWith(ILLEGAL_ROMAN_NUMERAL)));
+    assertEquals(new YearMonthDay(1657, 3, 30), result); // III Kal. April = 30 March used instead
+  }
+
+  @Test
+  // legal roman numeral used in count, but invalid in the context of "a.d. <count> <event>" notation
+  void invalidRomanNumeralInCountProducesWarning() throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
+    final YearMonthDay result = parse("a.d. MDC Kal. April. MDCLVII");
+    assertTrue(result.getNotes().stream().anyMatch(s -> s.startsWith(INVALID_ROMAN_COUNT)));
+    assertEquals(new YearMonthDay(1657, 3, 30), result); // III Kal. April = 30 March used instead
+  }
+
+  @Test
+  void multipleRomanNumeralIssuesAccumulateAsWarnings() throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
+    final YearMonthDay result = parse("a.d. MDC Kal. April. cDDcLXII");
+    assertTrue(result.getNotes().stream().anyMatch(s -> s.startsWith(INVALID_ROMAN_COUNT) && s.contains("MDC")));
+    assertTrue(result.getNotes().stream().anyMatch(s -> s.startsWith(ILLEGAL_ROMAN_NUMERAL) && s.contains("cDDcLXII")));
+    assertEquals(2, result.getNotes().size()); // no other issues
   }
 
   @ParameterizedTest

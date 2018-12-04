@@ -16,6 +16,10 @@ import nl.knaw.huygens.lobsang.api.YearMonthDay;
 
 public class RomanDateParser {
   public static final String ILLEGAL_ROMAN_NUMERAL = "Illegal Roman numeral: ";
+  public static final String INVALID_ROMAN_COUNT = "Invalid Roman count ";
+
+  public static final String DEFAULT_COUNT = "III"; // lowest roman used in "ante diem" notations
+
   public static final int DEFAULT_YEAR_IF_UNPARSABLE = 0;
 
   private static final RomanDateTable table = new RomanDateTable();
@@ -195,10 +199,21 @@ YearMonthDay parseDate() :
     // e.g., "A.D. VII Ides Mart."
     [<Ante> <Diem>] [bis=<Bis>] (count=roman() | t1=<PseudoRoman>) [event=event()] month=month() [year=number() | t2=<PseudoRoman>]
     {
-if (t1 != null) System.err.println("t1: " + t1);
+
+      if (t1 != null) {
+        notes.add(ILLEGAL_ROMAN_NUMERAL + t1.image + ", winging it using count=" + DEFAULT_COUNT);
+        count = DEFAULT_COUNT;
+      }
+      else if (event != null) {
+        int num = evaluateRomanNumerals(count);
+        if (num < 3 || num > 18) {
+          notes.add(INVALID_ROMAN_COUNT + count + " in 'ante diem <count> <event>' notation, must be between iii and xviii (inclusive)");
+          count = DEFAULT_COUNT;
+        }
+      }
 
       if (t2 != null) {
-        notes.add(ILLEGAL_ROMAN_NUMERAL + t2.image);
+        notes.add(ILLEGAL_ROMAN_NUMERAL + t2.image + ", winging it using year=" + DEFAULT_YEAR_IF_UNPARSABLE);
         year = DEFAULT_YEAR_IF_UNPARSABLE;
       }
 
