@@ -83,6 +83,8 @@ class RomanDateParserTest {
     assertEquals(new YearMonthDay(1669, 2, 1), parse("Kalendis februarij 1669."));
 
     // Scaliger
+    assertEquals(new YearMonthDay(1595, 9, 12), parse("prid. Idus Sept. MDXCV."));
+    assertEquals(new YearMonthDay(1595, 11, 7), parse("VII Eid. Novemb. MDXCV."));
     assertEquals(new YearMonthDay(1593, 4, 28), parse("Iv Kalend. Maias MDXCIII."));
   }
 
