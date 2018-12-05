@@ -82,6 +82,7 @@ PARSER_END(RomanDateParser)
 SKIP :
 {
   " "
+| ","
 | "\n"
 | "\r"
 | "\t"
@@ -129,11 +130,17 @@ TOKEN :
 
 TOKEN :
 {
+  <Quin: "q" ("u"|"v") "i" ("n")? ("c")? (["i","l","s","t","u"])* <OptPeriod> >
+| <Sext: "sex" (["i","l","s","t","u"])* <OptPeriod> >
+}
+
+TOKEN :
+{
   < Jan: ("ian" | "jan") (["a","i","r","s","u"])* <OptPeriod> >
-| < Feb: "feb" (["a","i","r","s","u"])* <OptPeriod> >
+| < Feb: "feb" (["a","i","j","r","s","u"])* <OptPeriod> >
 | < Mar: ("mar" (["i","s","t","u"])* <OptPeriod>) | "m." >
 | < Apr: "apr" (["i","l"])* <OptPeriod> >
-| < May: "ma" (["i","j"])* <OptPeriod> >
+| < May: "ma" (["a","i","j","s"])* <OptPeriod> >
 | < Jun: ("iun"|"ivn") (["i","u","s"])* <OptPeriod> >
 | < Jul: ("iul"|"ivl") (["i","u","s"])* <OptPeriod> >
 | < Aug: ("aug"|"avg") (["i","s","t","u"])* <OptPeriod> >
@@ -149,7 +156,7 @@ TOKEN :
 | < Bis:  "bis" <OptPeriod> >
 | < Diem: ("diem" | ("d" ".")) >
 | < Ides   : ("e")? "id" ("es")? <OptPeriod> >
-| < Kalends: (["c", "k"]) "al" ("ends")? <OptPeriod> >
+| < Kalends: (["c", "k"]) "al" (["e","i","n","d","s"])* <OptPeriod> >
 | < Nones  : "non" (["a","e","i"] "s")? <OptPeriod> >
 | < Pridie: ("pr") (["d","e","i"])* <OptPeriod> >
 }
@@ -266,10 +273,10 @@ String month() :
 | <Apr> { return "APR."; }
 | <May> { return "MAI."; }
 | <Jun> { return "IVN."; }
-| <Jul> { return "IVL."; }
-| <Aug> { return "AVG."; }
+| (<Jul> | <Quin>) { return "IVL."; }
+| (<Aug> | <Sext>) { return "AVG."; }
 | <Sep> { return "SEPT."; }
-| <Oct> { return "OKT."; }
+| <Oct> { return "OCT."; }
 | <Nov> { return "NOV."; }
 | <Dec> { return "DEC."; }
 }
