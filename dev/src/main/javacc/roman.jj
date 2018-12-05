@@ -229,7 +229,7 @@ YearMonthDay parseDate() :
         result = inYear(year, md.withDayOfMonth(evaluateRomanNumerals(count)));
       }
       else if (bis == null) {
-        final MonthDay md = lookup("A.D. " + count + " " + event + " " + month);
+        final MonthDay md = lookup("A.D. " + count.toUpperCase() + " " + event + " " + month);
         result = inYear(year, md);
       }
       else if (month.equals("MART.") && "VI".equals(count) && "KAL.".equals(event)) {
