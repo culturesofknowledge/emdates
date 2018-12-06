@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>EM Dates SimpleGUI</title>
+</head>
+
+<style>
+    th {
+			background-color: #EEE;
+			text-align: left;
+			padding-right: 5em;
+		}
+
+		td {
+			padding-right: 5em;
+		}
+    #result {
+      padding: 10px;  
+    }
+</style>
+
+<body>
+  <span>Year: </span><input type="number" value="0" name="year" id="year">
+  <span>Month: </span><input type="number" value="1" min="1" max="12" name="month" id="month">
+  <span>Day: </span><input type="number" value="1" min="1" max="31" name="day" id="day">
+  <span>Place: </span><input type="text" value="England" name="place" id="place">
+  <span>Target Calendar: </span><input type="text" value="Gregorian" name="targetCalendar" id="targetCalendar">
+  <button id="convertSingle" on>Convert</button>
+  <script type="application/javascript">
+    document.getElementById("convertSingle").onclick = function(e) {
+      var result = document.getElementById("result");
+      // clear result
+      while(result.firstChild) {
+        result.removeChild(result.firstChild);
+      }
+
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          var responseData = JSON.parse(xhr.response);
+          processResponse(responseData, result);
+        }
+      }
+      xhr.open("POST", "/convert");
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.send(JSON.stringify({
+        "targetCalendar": document.getElementById("targetCalendar").value,
+        "year": document.getElementById("year").value,
+        "month": document.getElementById("month").value,
+        "day": document.getElementById("day").value,
+        "place": document.getElementById("place").value
+      }));
+
+    }
+
+    function processResponse(data, elementToAddTo) {
+      var dates = data["dates"];
+      var message = data["message"];
+      if(dates) {
+        elementToAddTo.appendChild(createTable(dates));     
+      }
+      else if(message) {
+        result.appendChild(createTextElement("span", "errorMessage: " + message));
+      }
+      
+    }
+
+    function createTable(items) {
+  		var headers = Object.keys(items[0]);
+			var table = document.createElement("table");
+			var headerRow = document.createElement("tr");
+			table.appendChild(headerRow);
+			headers.forEach(header => headerRow.appendChild(createTextElement("th", header)));
+			items.forEach(item => {
+        var row = document.createElement("tr");
+        table.appendChild(row);
+        headers.forEach(header => {
+          var field = item[header];
+          if(field instanceof Array) {
+            var td = document.createElement("td");
+            row.appendChild(td);
+            field.forEach(value => {
+              td.appendChild(document.createTextNode(value));
+              td.appendChild(document.createElement("br"));
+            });
+          }
+          else {
+            row.appendChild(createTextElement("td", field));
+          }
+        });
+			});
+			return table;
+    }
+
+    function createTextElement(elementName, value) {
+			var element = document.createElement(elementName);
+			element.appendChild(document.createTextNode(value));
+			return element;
+		}
+  </script>
+  <div id="result">
+
+  </div>
+</body>
+
+</html>
