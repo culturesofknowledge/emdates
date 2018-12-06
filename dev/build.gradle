@@ -65,6 +65,7 @@ dependencies {
     implementation group: 'io.dropwizard', name: 'dropwizard-forms', version: dropwizardVersion
     implementation group: 'io.dropwizard', name: 'dropwizard-json-logging', version: dropwizardVersion
     implementation group: 'io.dropwizard', name: 'dropwizard-testing', version: dropwizardVersion
+    implementation group: 'io.dropwizard', name: 'dropwizard-assets', version: dropwizardVersion
 
     implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-csv', version: '2.8.8'
 

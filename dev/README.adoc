@@ -113,6 +113,8 @@ Answer: *30 January, 1649*
 As link:https://en.wikipedia.org/wiki/Charles_I_of_England#cite_note-1[this note] on link:https://en.wikipedia.org/wiki/Charles_I_of_England[Charles I] explains, this is sometimes referred to as
 *Old Style Julian calendar*.
 
+NOTE: Above examples can also be tested in a simple GUI: http://localhost:8080/static/index.html
+
 
 == Uploading CSV files
 
