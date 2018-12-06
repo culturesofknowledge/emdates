@@ -66,4 +66,8 @@ public class DateRequest {
       .add("targetCalendar", targetCalendar)
       .toString();
   }
+
+  public YearMonthDay asYearMonthDay() {
+    return new YearMonthDay(getYear(), getMonth(), getDay());
+  }
 }

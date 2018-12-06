@@ -16,15 +16,14 @@ server:
       layout:
         type: access-json
 
-knownCalendars:
-- name: default
-  class: nl.knaw.huygens.lobsang.core.converters.JulianConverter
-- name: Gregorian
-  class: nl.knaw.huygens.lobsang.core.converters.GregorianConverter
-- name: Julian
-  class: nl.knaw.huygens.lobsang.core.converters.JulianConverter
-#- name: roman
-#  class: nl.knaw.huygens.lobsang.core.converters.RomanConverter
+converterRegistry:
+  knownCalendars:
+    default:
+      "@class": nl.knaw.huygens.lobsang.core.converters.JulianConverter
+    gregorian:
+      "@class": nl.knaw.huygens.lobsang.core.converters.GregorianConverter
+    julian:
+      "@class": nl.knaw.huygens.lobsang.core.converters.JulianConverter
 
 placeRegistry:
   "@class": nl.knaw.huygens.lobsang.core.places.LocalPlaceRegistry

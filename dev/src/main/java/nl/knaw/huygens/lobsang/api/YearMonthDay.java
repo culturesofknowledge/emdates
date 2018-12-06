@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.google.common.base.MoreObjects;
 
+import java.time.MonthDay;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -95,5 +96,9 @@ public class YearMonthDay {
   @Override
   public int hashCode() {
     return Objects.hash(day, month, year);
+  }
+
+  public MonthDay asMonthDay() {
+    return MonthDay.of(getMonth(), getDay());
   }
 }
