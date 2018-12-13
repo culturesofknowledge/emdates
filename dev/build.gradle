@@ -8,11 +8,13 @@ buildscript {
     }
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
+        classpath group: 'ca.coglinc', name: 'javacc-gradle-plugin', version: '2.4.0'
     }
 }
 
 apply plugin: 'application'
-apply plugin: 'checkstyle'
+apply plugin: 'ca.coglinc.javacc'
+apply plugin: 'idea'
 
 // Warns: "- No value has been specified for property 'mainClassName'."
 // Fix pending: https://github.com/johnrengelman/shadow/issues/336
@@ -40,20 +42,19 @@ def getBuiltBy = { ->
 }
 
 ext {
-    dropwizardVersion = '1.3.2'
+    dropwizardVersion = '1.3.5'
+    jaxbVersion = '2.3.0'
     junitVersion = '5.1+'
     mockitoVersion = '2.+'
     gitTag = getVersionName()
-}
-
-checkstyle {
-    toolVersion = '8.9+'
 }
 
 version = "${gitTag}"
 group = 'nl.knaw.huygens.lobsang'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
+
+sourceSets.main.java.srcDir new File(buildDir, 'generated/javacc')
 
 compileJava {
     options.encoding = 'UTF-8'
@@ -69,12 +70,22 @@ dependencies {
 
     implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-csv', version: '2.8.8'
 
+    compile group: 'javax.activation', name: 'javax.activation-api', version: '1.2.0'
+    compile group: 'javax.xml.bind', name: 'jaxb-api', version: jaxbVersion
+
     // CSV uploads handling
     implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.5'
 
     testCompile group: "org.junit.jupiter", name: "junit-jupiter-params", version: junitVersion
     testImplementation group: "org.junit.jupiter", name: "junit-jupiter-api", version: junitVersion
     testRuntime group: "org.junit.jupiter", name: "junit-jupiter-engine", version: junitVersion
+}
+
+idea {
+    module {
+        // Marks the already(!) added srcDir as "generated"
+        generatedSourceDirs += file('build/generated/javacc')
+    }
 }
 
 run() {

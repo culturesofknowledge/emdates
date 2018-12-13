@@ -1,0 +1,320 @@
+options {
+  IGNORE_CASE = true;
+}
+PARSER_BEGIN(RomanDateParser)
+package nl.knaw.huygens.lobsang.core.parsers;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.time.Month;
+import java.time.MonthDay;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+
+import nl.knaw.huygens.lobsang.api.YearMonthDay;
+
+public class RomanDateParser {
+  public static final String ILLEGAL_ROMAN_NUMERAL = "Illegal Roman numeral: ";
+  public static final String INVALID_ROMAN_COUNT = "Invalid Roman count ";
+
+  public static final String DEFAULT_COUNT = "III"; // lowest roman used in "ante diem" notations
+
+  public static final int DEFAULT_YEAR_IF_UNPARSABLE = 0;
+
+  private static final RomanDateTable table = new RomanDateTable();
+
+  private static RomanDateParser parser = null;
+
+  public static YearMonthDay parse(String input) throws ParseException {
+    final InputStream is = new ByteArrayInputStream(input.getBytes());
+
+    // handle JavaCC's instantiation / reinitialisation contract
+    if (parser == null) {
+      parser = new RomanDateParser(is);
+    }
+    else {
+      ReInit(is);
+    }
+
+    return parser.parseDate();
+  }
+
+  // Thanks! https://stackoverflow.com/a/29218799
+  private static int evaluateRomanNumerals(String roman) {
+      return (int) evaluateNextRomanNumeral(roman.toUpperCase(), roman.length() - 1, 0);
+  }
+
+  private static double evaluateNextRomanNumeral(String roman, int pos, double rightNumeral) {
+      if (pos < 0) return 0;
+      char ch = roman.charAt(pos);
+      double value = Math.floor(Math.pow(10, "IXCM".indexOf(ch))) + 5 * Math.floor(Math.pow(10, "VLD".indexOf(ch)));
+      return value * Math.signum(value + 0.5 - rightNumeral) + evaluateNextRomanNumeral(roman, pos - 1, value);
+  }
+
+  private static MonthDay lookup(String normalizedRomanDate) throws ParseException {
+    final MonthDay md = table.lookup(normalizedRomanDate);
+
+    if (md == null) {
+      throw new ParseException("Unrecognised Roman date: \"" + normalizedRomanDate + "\"");
+    }
+
+    return md;
+  }
+
+  private static YearMonthDay inYear(Optional<Integer> year, MonthDay md) {
+    final YearMonthDay result = new YearMonthDay(year.orElse(0), md.getMonthValue(), md.getDayOfMonth());
+
+    if (!year.isPresent()) {
+      result.addNote("Missing year indication. Please specify.");
+    }
+
+    return result;
+  }
+
+  private static YearMonthDay inYear(Integer year, MonthDay md) {
+    return inYear(Optional.ofNullable(year), md);
+  }
+
+}
+PARSER_END(RomanDateParser)
+
+SKIP :
+{
+  " "
+| ","
+| "\n"
+| "\r"
+| "\t"
+}
+
+TOKEN :
+{
+  < Arabic: (["0"-"9"])+ >
+}
+
+// Gleaned from https://github.com/antlr/grammars-v4/blob/master/romannumerals/romannumerals.g4
+TOKEN :
+{
+  <#ONES_REP  : "i" | "ii" | "iii" >
+| <#ONES      : <ONES_REP> | "iv" | "v" (<ONES_REP>)? | "ix" >
+| <#TENS_REP  : "x" | "xx" | "xxx" >
+| <#TENS_PART : <TENS_REP> | "xl" | "l" (<TENS_REP>)? | "xc" >
+| <#TENS      : <TENS_PART> <ONES> | <TENS_PART> | <ONES> >
+| <#HUNS_REP  : "c" | "cc" | "ccc" >
+| <#HUNS_PART : <HUNS_REP> | "cd" | "d" (<HUNS_REP>)? | "cm" >
+| <#HUNS      : <HUNS_PART> <TENS> | <HUNS_PART> | <TENS> >
+| <#THOUS_PART: ("m")+ >
+| <#THOUSANDS : <THOUS_PART> <HUNS> | <THOUS_PART> | <HUNS> >
+| <Roman      : <THOUSANDS> >
+}
+
+TOKEN :
+{
+  <PseudoRoman: (["c","d","i","l","m","x"])+ >
+}
+
+// "Comitis" in dates usually means "sent from". It is often preceded by the placename where a letter was sent
+// from. E.g., "Hagae comitis" meaning "sent from The Hague". It is not a part of the date itself, so we can ignore
+// it. By recognising it in the parser, we have the option to flag it to the scholar, rather than just saying "parse
+// error".
+TOKEN :
+{
+  <Comitis: "comitis">
+}
+
+TOKEN :
+{
+  <#OptPeriod: (".")? >
+}
+
+TOKEN :
+{
+  <Quin: "q" ("u"|"v") "i" ("n")? ("c")? (["i","l","s","t","u"])* <OptPeriod> >
+| <Sext: "sex" (["i","l","s","t","u"])* <OptPeriod> >
+}
+
+TOKEN :
+{
+  < Jan: ("ian" | "jan") (["a","i","r","s","u"])* <OptPeriod> >
+| < Feb: "feb" (["a","i","j","r","s","u"])* <OptPeriod> >
+| < Mar: ("mar" (["i","s","t","u"])* <OptPeriod>) | "m." >
+| < Apr: "apr" (["i","l"])* <OptPeriod> >
+| < May: "ma" (["a","i","j","s"])* <OptPeriod> >
+| < Jun: ("iun"|"ivn") (["i","u","s"])* <OptPeriod> >
+| < Jul: ("iul"|"ivl") (["i","u","s"])* <OptPeriod> >
+| < Aug: ("aug"|"avg") (["i","s","t","u"])* <OptPeriod> >
+| < Sep: "sep" (["b","e","m","r","t"])* <OptPeriod> >
+| < Oct: ("oct"|"okt") (["o","b","e","r"])* <OptPeriod> >
+| < Nov: ("nov"|"nou") (["b","e","m","r"])* <OptPeriod> >
+| < Dec: "dec" (["b","e","m","r"])* <OptPeriod> >
+}
+
+TOKEN :
+{
+  < Ante: ("ante" | ("a" ".")) >
+| < Bis:  "bis" <OptPeriod> >
+| < Diem: ("diem" | ("d" ".")) >
+| < Ides   : ("e")? "id" ("es"|"us")? <OptPeriod> >
+| < Kalends: (["c", "k"]) "al" (["e","i","n","d","s"])* <OptPeriod> >
+| < Nones  : "non" (["a","e","i"] "s")? <OptPeriod> >
+| < Pridie: ("pr") (["d","e","i"])* <OptPeriod> >
+}
+
+// If all of the above fails, it may just be (superfluous) text.
+TOKEN :
+{
+  <Text: (["a"-"z"])+ >
+}
+
+YearMonthDay parseDate() :
+{
+  final Set<String> notes = new HashSet<String>();
+  final YearMonthDay result;
+  String count = null;
+  Integer day = null;
+  Integer year = null;
+  String event = null;
+  String month = null;
+  String msg = null;
+  Token bis = null;
+  Token t1 = null;
+  Token t2 = null;
+}
+{
+  [msg=superfluous()]
+  {
+      if (msg != null) {
+        notes.add(msg);
+      }
+  }
+  (
+    // e.g., "<Month>" as "Kal. <Month>" (which in turn means "1st of <Month>").
+    month=month() [year=number()]
+    {
+      result = inYear(year, lookup("KAL. " + month));
+      notes.add("Missing day of month indication, assuming Kalends (first day of the month).");
+    }
+  |
+    // e.g., "Kal. Mart.", "Id. Feb".
+    event = event() month=month() [year=number()]
+    {
+      final MonthDay md = lookup(event + " " + month);
+      result = inYear(year, md);
+    }
+  |
+    // e.g., "A.D. VII Ides Mart."
+    [<Ante> <Diem>] [bis=<Bis>] (count=roman() | t1=<PseudoRoman>) [event=event()] month=month() [year=number() | t2=<PseudoRoman>]
+    {
+
+      if (t1 != null) {
+        notes.add(ILLEGAL_ROMAN_NUMERAL + t1.image + ", winging it using count=" + DEFAULT_COUNT);
+        count = DEFAULT_COUNT;
+      }
+      else if (event != null) {
+        int num = evaluateRomanNumerals(count);
+        if (num < 3 || num > 18) {
+          notes.add(INVALID_ROMAN_COUNT + count + " in 'ante diem <count> <event>' notation, must be between iii and xviii (inclusive)");
+          count = DEFAULT_COUNT;
+        }
+      }
+
+      if (t2 != null) {
+        notes.add(ILLEGAL_ROMAN_NUMERAL + t2.image + ", winging it using year=" + DEFAULT_YEAR_IF_UNPARSABLE);
+        year = DEFAULT_YEAR_IF_UNPARSABLE;
+      }
+
+      if (event == null) {
+        final MonthDay md = lookup("KAL. " + month);
+        result = inYear(year, md.withDayOfMonth(evaluateRomanNumerals(count)));
+      }
+      else if (bis == null) {
+        final MonthDay md = lookup("A.D. " + count.toUpperCase() + " " + event + " " + month);
+        result = inYear(year, md);
+      }
+      else if (month.equals("MART.") && "VI".equals(count) && "KAL.".equals(event)) {
+        final MonthDay md = lookup("A.D. BIS VI KAL. M.");
+        result = inYear(year, md);
+      }
+      else {
+        throw new ParseException("BIS only defined on A.D. BIS VI KALENDS MARTIUS!");
+      }
+    }
+  |
+    // e.g., "Prid. Kal. Mart.", "Prid. Non. Apr."
+    <Pridie> event=event() month=month() [year=number()]
+    {
+      final MonthDay md = table.lookup("PRID. " + event + " " + month);
+      result = inYear(year, md);
+    }
+  )
+  <EOF> {
+    if (!notes.isEmpty()) {
+      result.addNotes(notes);
+    }
+    return result;
+  }
+}
+
+String event() :
+{}
+{
+  <Kalends> { return "KAL."; }
+| <Ides>    { return "ID."; }
+| <Nones>   { return "NON."; }
+}
+
+String month() :
+{}
+{
+  <Jan> { return "IAN."; }
+| <Feb> { return "FEB."; }
+| <Mar> { return "MART."; }
+| <Apr> { return "APR."; }
+| <May> { return "MAI."; }
+| <Jun> { return "IVN."; }
+| (<Jul> | <Quin>) { return "IVL."; }
+| (<Aug> | <Sext>) { return "AVG."; }
+| <Sep> { return "SEPT."; }
+| <Oct> { return "OCT."; }
+| <Nov> { return "NOV."; }
+| <Dec> { return "DEC."; }
+}
+
+String roman() :
+{
+  Token token;
+}
+{
+  token=<Roman> ["."] { return token.image; }
+}
+
+String arabic() :
+{
+  Token token;
+}
+{
+  token=<Arabic> ["."] { return token.image; }
+}
+
+int number() :
+{
+  String str;
+}
+{
+  str=arabic() { return Integer.valueOf(str); }
+| str=roman()  { return evaluateRomanNumerals(str); }
+}
+
+String superfluous() :
+{
+  Token text = null;
+}
+{
+  [text=<Text>] <Comitis> {
+    String hint = "Comitis is not part of a date. It means \"sent from\", and is usually preceded by a place";
+    if (text != null) hint += ", \"" + text.image + "\" in this case?";
+    else hint += ". Please remove.";
+    return hint;
+  }
+}

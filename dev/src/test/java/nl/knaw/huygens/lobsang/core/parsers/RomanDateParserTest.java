@@ -1,116 +1,134 @@
 package nl.knaw.huygens.lobsang.core.parsers;
 
-import org.junit.jupiter.api.BeforeAll;
+import nl.knaw.huygens.lobsang.api.YearMonthDay;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.time.MonthDay;
-
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static nl.knaw.huygens.lobsang.core.parsers.RomanDateParser.DEFAULT_YEAR_IF_UNPARSABLE;
+import static nl.knaw.huygens.lobsang.core.parsers.RomanDateParser.ILLEGAL_ROMAN_NUMERAL;
+import static nl.knaw.huygens.lobsang.core.parsers.RomanDateParser.INVALID_ROMAN_COUNT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 class RomanDateParserTest {
-  private static RomanDateParser PARSER;
-
-  @BeforeAll
-  static void setUp() {
-    PARSER = new RomanDateParser();
+  @ParameterizedTest
+  @ValueSource(strings = {"ian", "ian.", "ianuari", "januari", "IanuAri"})
+  void januaryParses(final String input) throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
+    assertEquals(new YearMonthDay(0, 1, 1), parse(input));
   }
 
-  private static MonthDay parse(String date) {
-    return PARSER.parse(date);
+  @ParameterizedTest
+  @ValueSource(strings = {"Mar.", "mart.", "martii"})
+  void marchParses(final String input) throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
+    assertEquals(new YearMonthDay(0, 3, 1), parse(input));
   }
 
-  private static MonthDay parseIdes(String month) {
-    return parse(String.format("ID. %s.", month));
-  }
+  // etc. for Feb, Apr-Dec
 
-  private static MonthDay parsePridIdes(String month) {
-    return parse(String.format("PRID. ID. %s.", month));
-  }
+  @Test
+  void parses() throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
+    assertEquals(new YearMonthDay(0, 3, 9), parse("a.d. VII Id. Mart."));
+    assertEquals(new YearMonthDay(0, 2, 25), parse("A.D. BIS VI KAL. M."));
 
-  private static MonthDay parseNones(String month) {
-    return parse(String.format("NON. %s.", month));
-  }
+    Throwable t = assertThrows(nl.knaw.huygens.lobsang.core.parsers.ParseException.class,
+      () -> parse("A.D. BIS VI KAL. DEC."));
+    assertTrue(t.getMessage().contains("only defined on"));
 
-  private static MonthDay parsePridNones(String month) {
-    return parse(String.format("PRID. NON. %s.", month));
-  }
+    t = assertThrows(nl.knaw.huygens.lobsang.core.parsers.ParseException.class,
+      () -> parse("A.D. BIS VI ID. Mar."));
+    assertTrue(t.getMessage().contains("only defined on"));
 
-  private static MonthDay parseKalends(String month) {
-    return parse(String.format("KAL. %s.", month));
-  }
-
-  private static MonthDay parsePridKalends(String month) {
-    return parse(String.format("PRID. KAL. %s.", month));
+    t = assertThrows(nl.knaw.huygens.lobsang.core.parsers.ParseException.class,
+      () -> parse("A.D. BIS V KAL. Mar."));
+    assertTrue(t.getMessage().contains("only defined on"));
   }
 
   @Test
-  void january_first() {
-    assertEquals(MonthDay.of(1, 1), parse("KAL. IAN."));
+  void inTheWild() throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
+    assertEquals(new YearMonthDay(1645, 7, 11), parse("V. Eid. Quin 1645."));
+    assertEquals(new YearMonthDay(1645, 7, 11), parse("V. Eid. Quin. 1645."));
+    assertEquals(new YearMonthDay(1645, 7, 11), parse("V. Eid. Quintil. 1645."));
+    assertEquals(new YearMonthDay(1645, 7, 11), parse("V. Eid. Qvinctil. 1645."));
+
+    assertEquals(new YearMonthDay(1646, 5, 21), parse("XXI Maj 1646"));
+
+    // Hagae Comitis meaning "sent from The Hague"
+    assertEquals(new YearMonthDay(1646, 9, 1), parse("Hagae Comitis Kal. Septemb. 1646."));
+    // If scholar omits placename, but leaves 'Comitis'
+    assertEquals(new YearMonthDay(1646, 9, 1), parse("Comitis Kal. Septemb. 1646."));
+
+    assertEquals(new YearMonthDay(1646, 10, 31), parse("pridie Kal. Nouemb. 1646."));
+
+    assertEquals(new YearMonthDay(1647, 3, 4), parse("IV. Nonis Mart. 1647."));
+
+    // this read 'X. Kal. Jan. A.S. MDCLVII.' TODO: deal with 'A.S.' (?= 'A.D.')
+    assertEquals(new YearMonthDay(1657, 12, 23), parse("X. Kal. Jan. MDCLVII."));
+
+    // Originally read "V Non. Feb. 1657.", but this is actually an "illegal date".
+    // Februari 2 would have been "IV Non. Feb."
+    assertEquals(new YearMonthDay(1657, 2, 2), parse("IV Non. Feb. 1657."));
+    Throwable t = assertThrows(nl.knaw.huygens.lobsang.core.parsers.ParseException.class,
+      () -> parse("V Non. Feb. 1657."));
+    assertTrue(t.getMessage().toLowerCase().contains("unrecognised roman date"));
+
+    assertEquals(new YearMonthDay(1658, 8, 1), parse("Kal. Augusti 1658"));
+    assertEquals(new YearMonthDay(1661, 5, 12), parse("XII Maij 1661"));
+    assertEquals(new YearMonthDay(1663, 1, 2), parse("IV Nonas Januarias 1663"));
+    assertEquals(new YearMonthDay(1663, 10, 9), parse("VII Eid. Octobr. MDCLXIII."));
+    assertEquals(new YearMonthDay(1664, 4, 30), parse("prid. Kal. Maias 1664."));
+    assertEquals(new YearMonthDay(1664, 8, 23), parse("X, Kal. Septemb. 1664."));
+    assertEquals(new YearMonthDay(1669, 2, 1), parse("Kalendis februarij 1669."));
   }
 
   @Test
-  void leap_year() {
-    assertAll("Leap Year",
-      () -> assertEquals(MonthDay.of(2, 24), parse("A.D. VI KAL. MART.")),
-      () -> assertEquals(MonthDay.of(2, 25), parse("A.D. BIS VI KAL. M.")),
-      () -> assertEquals(MonthDay.of(2, 25), parse("A.D. V KAL. MART.")),
-      () -> assertEquals(MonthDay.of(2, 26), parse("A.D. IV KAL. MART.")),
-      () -> assertEquals(28, parsePridKalends("MART").getDayOfMonth()));
+  void foundInScaligerSheet() throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
+    assertEquals(new YearMonthDay(1595, 9, 12), parse("prid. Idus Sept. MDXCV."));
+    assertEquals(new YearMonthDay(1595, 11, 7), parse("VII Eid. Novemb. MDXCV."));
+    assertEquals(new YearMonthDay(1593, 4, 28), parse("Iv Kalend. Maias MDXCIII."));
+  }
+
+  @Test
+  void illegalRomanNumeralInYearProducesWarning() throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
+    // "cDDcLXII" is not a roman numeral. Expect complaints and default year
+    final YearMonthDay result = parse("a.d. VI. Kal. April. cDDcLXII");
+    assertTrue(result.getNotes().stream().anyMatch(s -> s.startsWith(ILLEGAL_ROMAN_NUMERAL)));
+    assertEquals(new YearMonthDay(DEFAULT_YEAR_IF_UNPARSABLE, 3, 27), result);
+  }
+
+  @Test
+  void illegalRomanNumeralInCountProducesWarning() throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
+    final YearMonthDay result = parse("a.d. IIX Kal. April. MDCLVII");
+    assertTrue(result.getNotes().stream().anyMatch(s -> s.startsWith(ILLEGAL_ROMAN_NUMERAL)));
+    assertEquals(new YearMonthDay(1657, 3, 30), result); // III Kal. April = 30 March used instead
+  }
+
+  @Test
+  // legal roman numeral used in count, but invalid in the context of "a.d. <count> <event>" notation
+  void invalidRomanNumeralInCountProducesWarning() throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
+    final YearMonthDay result = parse("a.d. MDC Kal. April. MDCLVII");
+    assertTrue(result.getNotes().stream().anyMatch(s -> s.startsWith(INVALID_ROMAN_COUNT)));
+    assertEquals(new YearMonthDay(1657, 3, 30), result); // III Kal. April = 30 March used instead
+  }
+
+  @Test
+  void multipleRomanNumeralIssuesAccumulateAsWarnings() throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
+    final YearMonthDay result = parse("a.d. MDC Kal. April. cDDcLXII");
+    assertTrue(result.getNotes().stream().anyMatch(s -> s.startsWith(INVALID_ROMAN_COUNT) && s.contains("MDC")));
+    assertTrue(result.getNotes().stream().anyMatch(s -> s.startsWith(ILLEGAL_ROMAN_NUMERAL) && s.contains("cDDcLXII")));
+    assertEquals(2, result.getNotes().size()); // no other issues
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"IAN", "FEB", "APR", "IVN", "AVG", "SEPT", "NOV", "DEC"})
-  void ides_on_day_13(String month) {
-    assertEquals(13, parseIdes(month).getDayOfMonth());
+  @ValueSource(strings = {"mdclxii", "MDCLXII", "mDcLxIi", "MdClXiI"})
+  void romanNumeralParsingIgnoresCase(String year) throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
+    // Expect robustness to random uppercase / lowercase changes.
+    assertEquals(new YearMonthDay(1662, 3, 27), parse("a.d. VI. Kal. April. " + year));
   }
 
-  @ParameterizedTest
-  @ValueSource(strings = {"MART", "MAI", "IVL", "OCT"})
-  void ides_on_day_15(String month) {
-    assertEquals(15, parseIdes(month).getDayOfMonth());
-  }
-
-  @ParameterizedTest
-  @ValueSource(strings = {"IAN", "FEB", "MART", "APR", "MAI", "IVN", "IVL", "AVG", "SEPT", "OCT", "NOV", "DEC"})
-  void kalends_on_day_1(String month) {
-    assertEquals(1, parseKalends(month).getDayOfMonth());
-  }
-
-  @ParameterizedTest
-  @ValueSource(strings = {"IAN", "FEB", "MART", "APR", "MAI", "IVN", "IVL", "AVG", "SEPT", "OCT", "NOV", "DEC"})
-  void ides_8_days_after_nones(String month) {
-    final int ides = parseIdes(month).getDayOfMonth();
-    final int nones = parseNones(month).getDayOfMonth();
-    assertEquals(8, ides - nones);
-  }
-
-  @ParameterizedTest
-  @ValueSource(strings = {"IAN", "FEB", "MART", "APR", "MAI", "IVN", "IVL", "AVG", "SEPT", "OCT", "NOV", "DEC"})
-  void prid_1_day_before_actual(String month) {
-    final int ides = parseIdes(month).getDayOfMonth();
-    final int pridIdes = parsePridIdes(month).getDayOfMonth();
-    final int nones = parseNones(month).getDayOfMonth();
-    final int pridNones = parsePridNones(month).getDayOfMonth();
-    assertAll("PRID. {NONES,IDES} before actual {NONES,IDES}",
-      () -> assertEquals(1, ides - pridIdes),
-      () -> assertEquals(1, nones - pridNones)
-    );
-  }
-
-  @ParameterizedTest
-  @ValueSource(strings = {"MAI", "IVL", "OCT", "DEC"})
-  void prid_kal_falls_on_day_30(String month) {
-    // e.g., "PRID. KAL. MAI" = day before 1st of May = 30 April
-    assertEquals(30, parsePridKalends(month).getDayOfMonth(), () -> "PRID. KAL. " + month);
-  }
-
-  @ParameterizedTest
-  @ValueSource(strings = {"IAN", "FEB", "APR", "IVN", "AVG", "SEPT", "NOV"})
-  void prid_kal_falls_on_day_31(String month) {
-    // e.g., "PRID. KAL. NOV" = day before 1st of November = 31 October
-    assertEquals(31, parsePridKalends(month).getDayOfMonth(), () -> "PRID. KAL. " + month);
+  private YearMonthDay parse(final String input) throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
+    return nl.knaw.huygens.lobsang.core.parsers.RomanDateParser.parse(input);
   }
 }
