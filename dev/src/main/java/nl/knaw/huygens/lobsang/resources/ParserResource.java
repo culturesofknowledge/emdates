@@ -1,5 +1,7 @@
 package nl.knaw.huygens.lobsang.resources;
 
+import nl.knaw.huygens.lobsang.api.DateToParse;
+import nl.knaw.huygens.lobsang.api.ParsedDate;
 import nl.knaw.huygens.lobsang.api.YearMonthDay;
 import nl.knaw.huygens.lobsang.core.parsers.ParseException;
 import nl.knaw.huygens.lobsang.core.parsers.RomanDateParser;

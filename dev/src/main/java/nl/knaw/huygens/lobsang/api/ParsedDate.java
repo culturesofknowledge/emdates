@@ -1,7 +1,6 @@
-package nl.knaw.huygens.lobsang.resources;
+package nl.knaw.huygens.lobsang.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import nl.knaw.huygens.lobsang.api.YearMonthDay;
 
 public class ParsedDate {
   @JsonProperty
