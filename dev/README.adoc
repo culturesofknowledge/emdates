@@ -7,7 +7,10 @@ $ docker build --no-cache -t emdates https://raw.githubusercontent.com/cultureso
 $ docker run -p 8080:8080 --name emdates emdates
 ----
 
-== Examples
+You can find test page at: http://localhost:8080/static/index.html
+
+
+== cURL Examples
 
 === Example 1
 Given a date "March 24, 1751" sourced somewhere in England, when was this on the Gregorian calendar we use today?
