@@ -18,6 +18,7 @@ import nl.knaw.huygens.lobsang.core.places.PlaceRegistry;
 import nl.knaw.huygens.lobsang.core.places.SearchTermBuilder;
 import nl.knaw.huygens.lobsang.resources.AboutResource;
 import nl.knaw.huygens.lobsang.resources.ConversionResource;
+import nl.knaw.huygens.lobsang.resources.ParserResource;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,6 +99,7 @@ public class LobsangApplication extends Application<LobsangConfiguration> {
   private void registerResources(JerseyEnvironment jersey) throws IOException {
     jersey.register(new AboutResource(findManifest(getName())));
     jersey.register(new ConversionResource(createConversionService(), createPlaceMatcher(), createSearchTermBuilder()));
+    jersey.register(new ParserResource());
   }
 
   private ConversionService createConversionService() {
