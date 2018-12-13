@@ -22,15 +22,30 @@
 </style>
 
 <body>
+  <h1>Convert date to other calendar</h1>
   <span>Year: </span><input type="number" value="0" name="year" id="year">
   <span>Month: </span><input type="number" value="1" min="1" max="12" name="month" id="month">
   <span>Day: </span><input type="number" value="1" min="1" max="31" name="day" id="day">
   <span>Place: </span><input type="text" value="England" name="place" id="place">
   <span>Target Calendar: </span><input type="text" value="Gregorian" name="targetCalendar" id="targetCalendar">
-  <button id="convertSingle" on>Convert</button>
+  <button id="convertSingle">Convert</button>
+  
+  <div id="convertResult">
+
+  </div>
+  <hr>
+  <h1>Parse Roman date</h1>
+  <input type="text" value="V. Eid. Quin 1645." id="romanDate">
+  <button id="parseRoman">Parse</button>
+  <script type="application/javascript">
+    
+  </script>
+
+  <span id="romanDateParseResult"></span>
+
   <script type="application/javascript">
     document.getElementById("convertSingle").onclick = function(e) {
-      var result = document.getElementById("result");
+      var result = document.getElementById("convertResult");
       // clear result
       while(result.firstChild) {
         result.removeChild(result.firstChild);
@@ -40,7 +55,7 @@
       xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
           var responseData = JSON.parse(xhr.response);
-          processResponse(responseData, result);
+          processConvertResponse(responseData, result);
         }
       }
       xhr.open("POST", "/convert");
@@ -55,7 +70,7 @@
 
     }
 
-    function processResponse(data, elementToAddTo) {
+    function processConvertResponse(data, elementToAddTo) {
       var dates = data["dates"];
       var message = data["message"];
       if(dates) {
@@ -99,10 +114,31 @@
 			element.appendChild(document.createTextNode(value));
 			return element;
 		}
-  </script>
-  <div id="result">
 
-  </div>
+    document.getElementById("parseRoman").onclick = function(e) {
+      var result = document.getElementById("romanDateParseResult");
+      while(result.firstChild) {
+        result.removeChild(result.firstChild);
+      }
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          var responseData = JSON.parse(xhr.response);
+          console.log("data: " + JSON.stringify(responseData));
+          if(responseData.parsedDate) {
+            result.appendChild(document.createTextNode(JSON.stringify(responseData.parsedDate).replace("{", "").replace("}", "").replace(/\"/g, "").replace(/,/g, " ")));
+          } else {
+            result.appendChild(documentCreateTextNode("error: " + responseData.message));
+          }
+        }
+      }
+      xhr.open("POST", "/parse/roman");
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.send(JSON.stringify({
+        "date": document.getElementById("romanDate").value
+      }));
+    }
+  </script>
 </body>
 
 </html>
