@@ -29,11 +29,16 @@
   <span>Place: </span><input type="text" value="England" name="place" id="place">
   <span>Target Calendar: </span><input type="text" value="Gregorian" name="targetCalendar" id="targetCalendar">
   <button id="convertSingle">Convert</button>
-  
-  <div id="convertResult">
-
-  </div>
+  <div id="convertResult"></div>
   <hr>
+
+  <h1>Convert table</h1>
+      <label for="file">File</label>
+      <input type="file" name="file" id="file">
+    
+      <button id="fileConvert">Convert</button>
+  <hr>
+
   <h1>Parse Roman date</h1>
   <input type="text" value="V. Eid. Quin 1645." id="romanDate">
   <button id="parseRoman">Parse</button>
@@ -115,6 +120,37 @@
 			return element;
 		}
 
+    document.getElementById("fileConvert").onclick = function(e) {
+      var file = document.getElementById("file").files[0];
+      var formData = new FormData();
+      formData.append("file", file);
+      
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          if (xhr.status == 200) {
+            download("response.csv", xhr.response);
+          }
+        }
+      }
+
+      function download(filename, text) {
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
+
+        element.style.display = 'none';
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
+      }
+
+      xhr.open("POST", "/convert/table");
+      xhr.send(formData);
+    }
+
     document.getElementById("parseRoman").onclick = function(e) {
       var result = document.getElementById("romanDateParseResult");
       while(result.firstChild) {
@@ -124,7 +160,6 @@
       xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
           var responseData = JSON.parse(xhr.response);
-          console.log("data: " + JSON.stringify(responseData));
           if(responseData.parsedDate) {
             result.appendChild(document.createTextNode(JSON.stringify(responseData.parsedDate).replace("{", "").replace("}", "").replace(/\"/g, "").replace(/,/g, " ")));
           } else {
