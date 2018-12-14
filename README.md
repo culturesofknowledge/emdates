@@ -41,4 +41,4 @@ EM Places, EM People, and EM Dates are [funded by a grant][2] to the University 
 [15]: https://godot.date/home
 [16]: https://www.cambridge.org/core/books/calendrical-calculations/B897CA3260110348F1F7D906B8D9480D#
 [17]: http://openrefine.org
-[18] https://en.wikipedia.org/wiki/Roman_calendar
+[18]: https://en.wikipedia.org/wiki/Roman_calendar
