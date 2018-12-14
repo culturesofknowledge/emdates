@@ -9,7 +9,7 @@ EM Dates is designed to provide a locale aware resource for individual and bulk 
 The tool will offer a web form for converting single dates as well as bulk conversion facility for uploading metadata on a series of dates and locations in a tabular file format (Excel, CSV), and receiving back from the application, also in tabular format, the converted dates alongside the initial inputs. As part of this workflow, EM Dates will provide an online review stage, where a user can examine EM Dates' inferred confidence level for each suggested conversion. The review stage will provide an opportunity for a user to revise and re-process (e.g. incomplete) input data and a means to override the suggested conversion before final export. Access to the tool for individual and bulk conversions will also be provided via an open [Timbuctoo][3] API. The addition of an [OpenRefine][17] endpoint for reconciliation and/or sharing data for this purpose with [GODOT][15] is also under consideration.
 
 ## Status
-**December 2018**: Draft conversion API and Roman parser available for testing via basic webform.
+**December 2018**: Draft conversion API and Roman parser [available for testing][19] via Docker.
 
 **November 2018**: Rewrite of conversion algorithms on the basis of [Rheingold & Derschowitz][16]
 
@@ -42,3 +42,4 @@ EM Places, EM People, and EM Dates are [funded by a grant][2] to the University 
 [16]: https://www.cambridge.org/core/books/calendrical-calculations/B897CA3260110348F1F7D906B8D9480D#
 [17]: http://openrefine.org
 [18]: https://en.wikipedia.org/wiki/Roman_calendar
+[19]: https://github.com/culturesofknowledge/emdates/tree/master/dev
