@@ -11,7 +11,7 @@ You can find test page at: http://localhost:8080/static/index.html
 
 == Roman date parser
 
-An initial implementation of a Roman date parser can be tested at: http://localhost:8080/static/index.html. Currently, the parser supports most canonical representations as well as common Quintilis and Sextilis variant forms such as `V. Eid. Quin.`, dates written in combined Roman and Arabic numerals, such as `XXI Maj 1646`, and a small number of additional edge cases. We are experimenting with expressive error messages when the parser is unable to convert an input. For example, for `Comitis Kal. Septemb. 1646`, the parser responds, "Comitis is not part of a date. It means 'sent from', and is usually preceded by a place. Please remove."
+An initial implementation of a Roman date parser can be tested at: http://localhost:8080/static/index.html. Currently, the parser supports most link:https://github.com/culturesofknowledge/emdates/blob/master/dev/src/main/resources/roman.txt[canonical representations] as well as common Quintilis and Sextilis variant forms such as `V. Eid. Quin.`, dates written in combined Roman and Arabic numerals, such as `XXI Maj 1646`, and a small number of additional edge cases. We are experimenting with expressive error messages when the parser is unable to convert an input. For example, for `Comitis Kal. Septemb. 1646`, the parser responds, "Comitis is not part of a date. It means 'sent from', and is usually preceded by a place. Please remove."
 
 == cURL Examples for Julian/Gregorian conversions
 
