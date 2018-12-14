@@ -151,6 +151,26 @@ and end up with a converted CSV:
 |====
 
 
+== Parsing Roman Dates
+You can use the following cURL command for parsing Roman Dates:
+
+----
+curl 'http://localhost:8080/parse/roman' -H 'Content-Type: application/json' --data '{"date":"V. Eid. Quin 1645."}' | jq -C .
+----
+
+This will yield:
+
+----
+{
+  "parsedDate": {
+    "year": 1645,
+    "month": 7,
+    "day": 11
+  },
+  "errorMessage": null
+}
+----
+
 == Background info
 This Emdates implementation, before being moved over to the Github
 culturesofknowledge account, was named Lobsang (a character from the Discworld series).
