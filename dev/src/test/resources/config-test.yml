@@ -23,9 +23,9 @@ server:
         type: access-json
 
 converterRegistry:
+  default:
+    "@class": nl.knaw.huygens.lobsang.core.converters.JulianConverter
   knownCalendars:
-    default:
-      "@class": nl.knaw.huygens.lobsang.core.converters.JulianConverter
     gregorian:
       "@class": nl.knaw.huygens.lobsang.core.converters.GregorianConverter
     julian:

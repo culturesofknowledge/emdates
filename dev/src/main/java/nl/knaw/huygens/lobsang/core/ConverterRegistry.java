@@ -11,12 +11,14 @@ import java.util.Optional;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ConverterRegistry {
-  private static final String DEFAULT_CALENDAR_CONVERTER_NAME = "default";
   private final Map<String, CalendarConverter> convertersByType;
+  private final CalendarConverter defaultConverter;
 
   @JsonCreator
-  public ConverterRegistry(@JsonProperty("knownCalendars") Map<String, CalendarConverter> convertersByType) {
+  public ConverterRegistry(@JsonProperty("knownCalendars") Map<String, CalendarConverter> convertersByType,
+                           @JsonProperty("default") CalendarConverter defaultConverter) {
     this.convertersByType = convertersByType;
+    this.defaultConverter = defaultConverter;
   }
 
   public Optional<CalendarConverter> get(String type) {
@@ -24,7 +26,6 @@ public class ConverterRegistry {
   }
 
   public CalendarConverter defaultConverter() {
-    return Optional.ofNullable(convertersByType.get(DEFAULT_CALENDAR_CONVERTER_NAME))
-                   .orElseThrow(() -> new NoSuchElementException("No 'default' calendar registered"));
+    return defaultConverter;
   }
 }
