@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
 import nl.knaw.huygens.lobsang.api.KnownCalendar;
 import nl.knaw.huygens.lobsang.api.Place;
+import nl.knaw.huygens.lobsang.core.ConverterRegistry;
+import nl.knaw.huygens.lobsang.core.places.PlaceRegistry;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -20,6 +22,14 @@ class LobsangConfiguration extends Configuration {
   @NotNull
   private List<KnownCalendar> calendars = new ArrayList<>();
 
+  @Valid
+  @NotNull
+  private PlaceRegistry placeRegistry;
+
+  @Valid
+  @NotNull
+  private ConverterRegistry converterRegistry;
+
   @JsonProperty
   List<Place> getPlaces() {
     return places;
@@ -28,5 +38,15 @@ class LobsangConfiguration extends Configuration {
   @JsonProperty
   List<KnownCalendar> getKnownCalendars() {
     return calendars;
+  }
+
+  @JsonProperty
+  PlaceRegistry getPlaceRegistry() {
+    return placeRegistry;
+  }
+
+  @JsonProperty
+  ConverterRegistry getConverterRegistry() {
+    return converterRegistry;
   }
 }

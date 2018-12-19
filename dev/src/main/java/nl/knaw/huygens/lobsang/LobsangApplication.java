@@ -7,7 +7,6 @@ import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import nl.knaw.huygens.lobsang.api.KnownCalendar;
-import nl.knaw.huygens.lobsang.api.Place;
 import nl.knaw.huygens.lobsang.core.ConversionService;
 import nl.knaw.huygens.lobsang.core.ConverterRegistry;
 import nl.knaw.huygens.lobsang.core.converters.CalendarConverter;
@@ -75,35 +74,20 @@ public class LobsangApplication extends Application<LobsangConfiguration> {
 
   public void run(LobsangConfiguration lobsangConfiguration, Environment environment) throws IOException {
     setupLogging(environment);
-    registerKnownCalendars(lobsangConfiguration.getKnownCalendars());
-    registerLocations(lobsangConfiguration.getPlaces());
+    converterRegistry = lobsangConfiguration.getConverterRegistry();
+    placeRegistry = lobsangConfiguration.getPlaceRegistry();
     LOG.warn("registered locations: {}", lobsangConfiguration.getPlaces());
     registerResources(environment.jersey());
   }
 
-  private void registerLocations(List<Place> places) {
-    placeRegistry = new PlaceRegistry(places);
-  }
-
-  private void registerKnownCalendars(List<KnownCalendar> knownCalendars) {
-    converterRegistry = new ConverterRegistry();
-    knownCalendars.forEach(this::registerKnownCalendar);
-    LOG.warn("registered calendars: {}", converterRegistry.list());
-  }
-
-  private void registerKnownCalendar(KnownCalendar knownCalendar) {
-    instantiateCalendarConverter(knownCalendar.getImplementationClass())
-      .ifPresent(converter -> converterRegistry.register(knownCalendar.getName(), converter));
-  }
-
   private void registerResources(JerseyEnvironment jersey) throws IOException {
     jersey.register(new AboutResource(findManifest(getName())));
-    jersey.register(new ConversionResource(createConversionService(), createPlaceMatcher(), createSearchTermBuilder()));
+    jersey.register(new ConversionResource(createConversionService()));
     jersey.register(new ParserResource());
   }
 
   private ConversionService createConversionService() {
-    return new ConversionService(converterRegistry);
+    return new ConversionService(converterRegistry, createPlaceMatcher(), createSearchTermBuilder());
   }
 
   private SearchTermBuilder createSearchTermBuilder() {
@@ -112,15 +96,6 @@ public class LobsangApplication extends Application<LobsangConfiguration> {
 
   private PlaceMatcher createPlaceMatcher() {
     return new ContainsAllTermsMatcher(placeRegistry, false);
-  }
-
-  private Optional<CalendarConverter> instantiateCalendarConverter(String implementationClass) {
-    try {
-      return Optional.of((CalendarConverter) Class.forName(implementationClass).newInstance());
-    } catch (Exception e) {
-      LOG.warn("Failed to instantiate calendar converter: {}", implementationClass, e);
-      return Optional.empty();
-    }
   }
 
   private void setupLogging(Environment environment) {

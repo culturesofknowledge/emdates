@@ -22,16 +22,19 @@ server:
       layout:
         type: access-json
 
-knownCalendars:
-- name: default
-  class: nl.knaw.huygens.lobsang.core.converters.JulianConverter
-- name: gregorian
-  class: nl.knaw.huygens.lobsang.core.converters.GregorianConverter
-- name: julian
-  class: nl.knaw.huygens.lobsang.core.converters.JulianConverter
+converterRegistry:
+  default:
+    "@class": nl.knaw.huygens.lobsang.core.converters.JulianConverter
+  knownCalendars:
+    gregorian:
+      "@class": nl.knaw.huygens.lobsang.core.converters.GregorianConverter
+    julian:
+      "@class": nl.knaw.huygens.lobsang.core.converters.JulianConverter
 
-places:
-- name: somewhere
-  calendarPeriods:
-  - calendar: gregorian
-    start: 1584-01-17
+placeRegistry:
+  "@class": nl.knaw.huygens.lobsang.core.places.LocalPlaceRegistry
+  places:
+  - name: somewhere
+    calendarPeriods:
+    - calendar: gregorian
+      start: 1584-01-17
