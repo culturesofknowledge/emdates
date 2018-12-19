@@ -20,7 +20,7 @@ import static io.dropwizard.testing.FixtureHelpers.fixture;
 class LobsangApplicationIntegrationTest {
 
   private static final DropwizardAppExtension<LobsangConfiguration> DROPWIZARD = new DropwizardAppExtension<>(
-    LobsangApplication.class, ResourceHelpers.resourceFilePath("config-test.yml")
+    LobsangApplication.class, "config-template.yml"
   );
 
   @Test
