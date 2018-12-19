@@ -9,7 +9,7 @@ public class DateAdjusterBuilder {
   private static final MonthDay JANUARY_FIRST = MonthDay.of(1, 1);
 
   private static final String ADJUSTMENT_RATIONALE_MSG =
-    "Date after %s, but before start of (Old Style) new year on %s";
+    "Date after %s, but before start of (Old Style) new year on %s, so one year was added.";
 
   private final MonthDay startOfYear;
   private MonthDay originalDate;
