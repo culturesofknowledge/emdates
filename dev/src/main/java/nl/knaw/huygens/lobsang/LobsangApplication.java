@@ -6,10 +6,8 @@ import io.dropwizard.forms.MultiPartBundle;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import nl.knaw.huygens.lobsang.api.KnownCalendar;
 import nl.knaw.huygens.lobsang.core.ConversionService;
 import nl.knaw.huygens.lobsang.core.ConverterRegistry;
-import nl.knaw.huygens.lobsang.core.converters.CalendarConverter;
 import nl.knaw.huygens.lobsang.core.places.ContainsAllTermsMatcher;
 import nl.knaw.huygens.lobsang.core.places.OnBreakingWhitespaceSplitter;
 import nl.knaw.huygens.lobsang.core.places.PlaceMatcher;
@@ -26,8 +24,6 @@ import org.slf4j.MDC;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.List;
-import java.util.Optional;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
@@ -76,7 +72,6 @@ public class LobsangApplication extends Application<LobsangConfiguration> {
     setupLogging(environment);
     converterRegistry = lobsangConfiguration.getConverterRegistry();
     placeRegistry = lobsangConfiguration.getPlaceRegistry();
-    LOG.warn("registered locations: {}", lobsangConfiguration.getPlaces());
     registerResources(environment.jersey());
   }
 
