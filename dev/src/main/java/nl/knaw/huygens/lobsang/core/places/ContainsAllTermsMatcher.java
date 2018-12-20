@@ -1,7 +1,6 @@
 package nl.knaw.huygens.lobsang.core.places;
 
-import nl.knaw.huygens.lobsang.api.Place;
-
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -9,21 +8,21 @@ import java.util.stream.StreamSupport;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ContainsAllTermsMatcher implements PlaceMatcher {
-  private final PlaceRegistry placeRegistry;
+  private final Set<String> placeNames;
   private final boolean streamTermsInParallel;
 
-  public ContainsAllTermsMatcher(PlaceRegistry placeRegistry) {
-    this(placeRegistry, false);
+  public ContainsAllTermsMatcher(Set<String> placeNames) {
+    this(placeNames, false);
   }
 
-  public ContainsAllTermsMatcher(PlaceRegistry placeRegistry, boolean streamTermsInParallel) {
-    this.placeRegistry = checkNotNull(placeRegistry);
+  public ContainsAllTermsMatcher(Set<String> placeNames, boolean streamTermsInParallel) {
+    this.placeNames = checkNotNull(placeNames);
     this.streamTermsInParallel = streamTermsInParallel;
   }
 
   @Override
-  public Stream<Place> match(Iterable<String> searchTerms) {
-    return placeRegistry.stream().filter(matchesAll(searchTerms)).map(placeRegistry::get);
+  public Stream<String> match(Iterable<String> searchTerms) {
+    return placeNames.stream().filter(matchesAll(searchTerms));
   }
 
   private Predicate<String> matchesAll(Iterable<String> terms) {

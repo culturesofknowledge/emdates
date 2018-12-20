@@ -82,15 +82,7 @@ public class LobsangApplication extends Application<LobsangConfiguration> {
   }
 
   private ConversionService createConversionService() {
-    return new ConversionService(converterRegistry, createPlaceMatcher(), createSearchTermBuilder());
-  }
-
-  private SearchTermBuilder createSearchTermBuilder() {
-    return new OnBreakingWhitespaceSplitter();
-  }
-
-  private PlaceMatcher createPlaceMatcher() {
-    return new ContainsAllTermsMatcher(placeRegistry, false);
+    return new ConversionService(converterRegistry, placeRegistry);
   }
 
   private void setupLogging(Environment environment) {

@@ -7,6 +7,7 @@ import nl.knaw.huygens.lobsang.api.YearMonthDay;
 import nl.knaw.huygens.lobsang.core.adjusters.DateAdjusterBuilder;
 import nl.knaw.huygens.lobsang.core.converters.CalendarConverter;
 import nl.knaw.huygens.lobsang.core.places.PlaceMatcher;
+import nl.knaw.huygens.lobsang.core.places.PlaceRegistry;
 import nl.knaw.huygens.lobsang.core.places.SearchTermBuilder;
 
 import java.time.LocalDate;
@@ -28,15 +29,12 @@ public class ConversionService {
   private static final DateTimeFormatter YYYY_MM_DD = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
   private final ConverterRegistry converters;
-  private final PlaceMatcher places;
-  private final SearchTermBuilder termBuilder;
+  private final PlaceRegistry placeRegistry;
 
   public ConversionService(ConverterRegistry converterRetriever,
-                           PlaceMatcher places,
-                           SearchTermBuilder termBuilder) {
+                           PlaceRegistry placeRegistry) {
     this.converters = converterRetriever;
-    this.places = checkNotNull(places);
-    this.termBuilder = checkNotNull(termBuilder);
+    this.placeRegistry = placeRegistry;
   }
 
   private Optional<YearMonthDay> convert(CalendarPeriod calendarPeriod, YearMonthDay date, String calendar) {
@@ -134,7 +132,7 @@ public class ConversionService {
 
   public Stream<YearMonthDay> convertForMatchingPlaces(String placeTerms, YearMonthDay requestDate,
                                                        String targetCalendar, Consumer<Place> peepingTom) {
-    Stream<Place> matchingPlaces = places.match(termBuilder.build(placeTerms));
+    Stream<Place> matchingPlaces = placeRegistry.searchPlaces(placeTerms);
 
     if (peepingTom != null) {
       matchingPlaces = matchingPlaces.peek(peepingTom);

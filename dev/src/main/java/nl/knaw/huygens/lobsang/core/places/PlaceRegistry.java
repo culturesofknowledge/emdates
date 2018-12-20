@@ -10,4 +10,6 @@ public interface PlaceRegistry {
   Stream<String> stream();
 
   Place get(String name);
+
+  Stream<Place> searchPlaces(String placeTerms);
 }
