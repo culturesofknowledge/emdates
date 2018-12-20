@@ -26,13 +26,7 @@ public class LocalPlaceRegistry implements PlaceRegistry {
     placeMatcher = new ContainsAllTermsMatcher(placesByName.keySet());
   }
 
-  @Override
-  public Stream<String> stream() {
-    return placesByName.keySet().stream();
-  }
-
-  @Override
-  public Place get(String name) {
+  private Place get(String name) {
     return placesByName.get(name);
   }
 
