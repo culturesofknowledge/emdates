@@ -1,5 +1,6 @@
 package nl.knaw.huygens.lobsang.api;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
@@ -12,17 +13,24 @@ public class Place {
   private List<CalendarPeriod> calendarPeriods;
   private List<StartOfYear> startOfYearList = new ArrayList<>();
 
-  @JsonProperty
+  @JsonCreator
+  public Place(@JsonProperty("name") String name,
+               @JsonProperty("calendarPeriods") List<CalendarPeriod> calendarPeriods,
+               @JsonProperty("startOfYear") List<StartOfYear> startOfYearList) {
+
+    this.name = name;
+    this.calendarPeriods = calendarPeriods;
+    this.startOfYearList = startOfYearList;
+  }
+
   public String getName() {
     return name;
   }
 
-  @JsonProperty("calendarPeriods")
   public List<CalendarPeriod> getCalendarPeriods() {
     return calendarPeriods;
   }
 
-  @JsonProperty("startOfYear")
   public List<StartOfYear> getStartOfYearList() {
     return startOfYearList;
   }

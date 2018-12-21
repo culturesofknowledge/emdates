@@ -1,5 +1,6 @@
 package nl.knaw.huygens.lobsang.api;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import static com.google.common.base.MoreObjects.toStringHelper;
@@ -8,14 +9,21 @@ import static com.google.common.base.MoreObjects.toStringHelper;
  * Period during which a given calendar is actively used
  */
 public class CalendarPeriod {
-  @JsonProperty("calendar")
-  private String calendar;
 
-  @JsonProperty("start")
-  private String startDate;
+  private final String calendar;
 
-  @JsonProperty("end")
-  private String endDate;
+  private final String startDate;
+
+  private final String endDate;
+
+  @JsonCreator
+  public CalendarPeriod(@JsonProperty("calendar") String calendar,
+                        @JsonProperty("start") String startDate,
+                        @JsonProperty("end") String endDate) {
+    this.calendar = calendar;
+    this.startDate = startDate;
+    this.endDate = endDate;
+  }
 
   public String getCalendar() {
     return calendar;

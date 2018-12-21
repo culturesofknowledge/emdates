@@ -1,7 +1,5 @@
-package nl.knaw.huygens.lobsang.core.places;
+package nl.knaw.huygens.lobsang.core.places.local;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import nl.knaw.huygens.lobsang.api.Place;
 import nl.knaw.huygens.lobsang.core.places.ContainsAllTermsMatcher;
 import nl.knaw.huygens.lobsang.core.places.OnBreakingWhitespaceSplitter;
@@ -19,8 +17,7 @@ public class LocalPlaceRegistry implements PlaceRegistry {
   private final SearchTermBuilder searchTermBuilder;
   private final PlaceMatcher placeMatcher;
 
-  @JsonCreator
-  public LocalPlaceRegistry(@JsonProperty("places") List<Place> places) {
+  LocalPlaceRegistry(List<Place> places) {
     places.forEach(this::addPlace);
     searchTermBuilder = new OnBreakingWhitespaceSplitter();
     placeMatcher = new ContainsAllTermsMatcher(placesByName.keySet());

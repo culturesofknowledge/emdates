@@ -26,7 +26,7 @@ converterRegistry:
       "@class": nl.knaw.huygens.lobsang.core.converters.JulianConverter
 
 placeRegistry:
-  "@class": nl.knaw.huygens.lobsang.core.places.LocalPlaceRegistry
+  "@class": nl.knaw.huygens.lobsang.core.places.local.LocalPlaceRegistryFactory
   places:
     - name: Austria, Bohemia
       calendarPeriods:
@@ -85,3 +85,11 @@ placeRegistry:
           since: 1155
         - when: --01-01
           since: 1752
+
+httpClient:
+  timeout: 2000ms
+  connectionTimeout: 2000ms
+  timeToLive: 1h
+  cookiesEnabled: false
+  maxConnections: 1024
+  maxConnectionsPerRoute: 1024

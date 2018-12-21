@@ -186,6 +186,25 @@ This will yield:
 }
 ----
 
+== Using Timbuctoo (EMPlaces) as PlaceRegistry
+To use Lobsang with the EMPlaces data set in Timbuctoo change the `placeRegistry` configuration to the next:
+[source,yaml]
+----
+placeRegistry:
+  "@class": nl.knaw.huygens.lobsang.core.places.timbuctoo.TimbuctooPlaceRegristryFactory
+  uri: "https://uri.to.timbuctoo.instance/v5/graphql"
+  dataSetId: "dataSetId"
+----
+
+* `"@class"` is the name of the type of the of `PlaceRegistry` used by the application.
+* `uri` should point to the GraphQL endpoint of your Timbuctoo instance.
+* `dataSetId` is the id of the data set.
+It will look something like this: `u33707283d426f900d4d33707283d426f900d4d0d__emdates_places`
+
+Use `http://id.emplaces.info/place/Opole_P_EMPlaces` as place parameter for the requests.
+
+
+
 == Background info
 This Emdates implementation, before being moved over to the Github
 culturesofknowledge account, was named Lobsang (a character from the Discworld series).
