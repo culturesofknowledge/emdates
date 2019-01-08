@@ -29,12 +29,14 @@ public class TimbuctooPlaceRegistry implements PlaceRegistry {
   private final String uri;
   private final String query;
   private final String dataSetId;
+  private final CalendarRetriever calendarRetriever;
 
   TimbuctooPlaceRegistry(CloseableHttpClient httpClient, String uri, String dataSetId) {
     this.httpClient = httpClient;
     this.uri = uri;
     this.query = createQuery(dataSetId);
     this.dataSetId = dataSetId;
+    this.calendarRetriever = new CalendarRetriever(dataSetId);
   }
 
   @Override // TODO add exception handling
@@ -54,21 +56,7 @@ public class TimbuctooPlaceRegistry implements PlaceRegistry {
                                        .get("dataSets")
                                        .get("" + dataSetId + "")
                                        .get("em_Place");
-        ArrayNode annotations = (ArrayNode) place.get("em_hasAnnotationList").get("items");
-        List<CalendarPeriod> calendars = stream(annotations.spliterator(), false)
-            .filter(node -> node.has("oa_hasBody"))
-            .filter(node -> node.get("oa_hasBody").has("__typename"))
-            .filter(node -> node.get("oa_hasBody").get("__typename").asText().equals(
-                    "" + dataSetId + "_em_Calendar"))
-            .map(cal -> {
-              JsonNode timeSpan = cal.get("em_when").get("em_timespan");
-              JsonNode em_start = timeSpan.get("em_start");
-              String start = em_start.has("value") ? em_start.get("value").asText() : null;
-              JsonNode em_end = timeSpan.get("em_end");
-              String end = em_end.has("value") ? em_end.get("value").asText(): null;
-              String name = cal.get("oa_hasBody").get("rdfs_label").get("value").asText();
-              return new CalendarPeriod(name, start, end);
-            }).collect(Collectors.toList());
+        List<CalendarPeriod> calendars = calendarRetriever.getCalendarPeriods(place);
 
         String placeName = place.get("title").get("value").asText();
         return Stream.of(new Place(placeName, calendars, Lists.newArrayList()));
@@ -84,67 +72,82 @@ public class TimbuctooPlaceRegistry implements PlaceRegistry {
   private String createQuery(String dataSetId) {
     return "query emdates ($uri:String!) {\n" +
         "  dataSets {\n" +
-        "    " + dataSetId + " {\n" +
+        "    ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places {\n" +
         "      em_Place(uri: $uri) {\n" +
         "        ...placeData\n" +
         "        em_hasRelationList {\n" +
         "          items {\n" +
+        "            em_relationType {\n" +
+        "              title {\n" +
+        "                value\n" +
+        "              }\n" +
+        "              \n" +
+        "            }\n" +
         "            em_relationTo {\n" +
-        "              ... on " + dataSetId + "_em_Place {\n" +
+        "              ... on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place {\n" +
         "                ...placeData\n" +
         "                em_hasRelationList {\n" +
         "                  items {\n" +
         "                    em_relationTo {\n" +
-        "                      ... on " + dataSetId + "_em_Place {\n" +
+        "                      ... on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place {\n" +
         "                        ...placeData\n" +
         "                        em_hasRelationList {\n" +
         "                          items {\n" +
         "                            em_relationTo {\n" +
-        "                              ... on " + dataSetId + "_em_Place {\n" +
+        "                              ... on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place {\n" +
         "                                ...placeData\n" +
         "                                em_hasRelationList {\n" +
         "                                  items {\n" +
         "                                    em_relationTo {\n" +
-        "                                      ... on " + dataSetId + "_em_Place {\n" +
+        "                                      ... on " +
+        "ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place {\n" +
         "                                        ...placeData\n" +
         "                                        em_hasRelationList {\n" +
         "                                          items {\n" +
+        "                                            \n" +
         "                                            em_relationTo {\n" +
-        "                                              ... on " + dataSetId + "_em_Place {\n" +
+        "                                              ... on " +
+        "ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place {\n" +
         "                                                ...placeData\n" +
         "                                                em_hasRelationList {\n" +
         "                                                  items {\n" +
         "                                                    em_relationTo {\n" +
-        "                                                      ... on " + dataSetId + "_em_Place {\n" +
+        "                                                      ... on " +
+        "ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place {\n" +
         "                                                        ...placeData\n" +
         "                                                        em_hasRelationList {\n" +
         "                                                          items {\n" +
         "                                                            em_relationTo {\n" +
-        "                                                              ... on "+ dataSetId + "_em_Place {\n" +
+        "                                                              ... on " +
+        "ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place {\n" +
         "                                                                ...placeData\n" +
         "                                                                em_hasRelationList {\n" +
         "                                                                  items {\n" +
         "                                                                    em_relationTo {\n" +
-        "                                                                      ... on " + dataSetId + "_em_Place {\n" +
+        "                                                                      ... on " +
+        "ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place {\n" +
         "                                                                        ...placeData\n" +
         "                                                                        em_hasRelationList {\n" +
         "                                                                          items {\n" +
         "                                                                            em_relationTo {\n" +
         "                                                                              ... on " +
-        dataSetId + "_em_Place {\n" +
+        "ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place {\n" +
         "                                                                                ...placeData\n" +
         "                                                                                em_hasRelationList {\n" +
         "                                                                                  items {\n" +
         "                                                                                    em_relationTo {\n" +
         "                                                                                      ... on " +
-        dataSetId + "_em_Place {\n" +
+        "ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place {\n" +
         "                                                                                        ...placeData\n" +
-        "                                                                                        em_hasRelationList {\n" +
+        "                                                                                        em_hasRelationList " +
+        "{\n" +
         "                                                                                          items {\n" +
-        "                                                                                            em_relationTo {\n" +
+        "                                                                                            em_relationTo " +
+        "{\n" +
         "                                                                                              ... on " +
-        dataSetId + "_em_Place {\n" +
-        "                                                                                                ...placeData\n" +
+        "ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place {\n" +
+        "                                                                                                .." +
+        ".placeData\n" +
         "                                                                                              }\n" +
         "                                                                                            }\n" +
         "                                                                                          }\n" +
@@ -194,10 +197,11 @@ public class TimbuctooPlaceRegistry implements PlaceRegistry {
         "  }\n" +
         "}\n" +
         "\n" +
-        "fragment placeData on " + dataSetId + "_em_Place {\n" +
+        "fragment placeData on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place {\n" +
         "  title {\n" +
         "    value\n" +
         "  }\n" +
+        "  __typename\n" +
         "  em_hasAnnotationList {\n" +
         "    items {\n" +
         "      uri\n" +
@@ -206,16 +210,16 @@ public class TimbuctooPlaceRegistry implements PlaceRegistry {
         "          value\n" +
         "        }\n" +
         "        em_timespan {\n" +
-        "          ... on " + dataSetId + "_tim_unknown {\n" +
+        "          ... on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_tim_unknown {\n" +
         "            ...unknownTimespan\n" +
         "          }\n" +
-        "          ... on " + dataSetId + "_em_Time_span {\n" +
+        "          ... on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Time_span {\n" +
         "            ...timespanTimespan\n" +
         "          }\n" +
         "        }\n" +
         "      }\n" +
         "      oa_hasBody {\n" +
-        "        ... on " + dataSetId + "_em_Calendar {\n" +
+        "        ... on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Calendar {\n" +
         "          __typename\n" +
         "          rdfs_label {\n" +
         "            value\n" +
@@ -226,7 +230,7 @@ public class TimbuctooPlaceRegistry implements PlaceRegistry {
         "  }\n" +
         "}\n" +
         "\n" +
-        "fragment unknownTimespan on " + dataSetId + "_tim_unknown {\n" +
+        "fragment unknownTimespan on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_tim_unknown {\n" +
         "  em_start {\n" +
         "    value\n" +
         "  }\n" +
@@ -235,7 +239,7 @@ public class TimbuctooPlaceRegistry implements PlaceRegistry {
         "  }\n" +
         "}\n" +
         "\n" +
-        "fragment timespanTimespan on " + dataSetId + "_em_Time_span {\n" +
+        "fragment timespanTimespan on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Time_span {\n" +
         "  em_latestStart_ {\n" +
         "    value\n" +
         "  }\n" +

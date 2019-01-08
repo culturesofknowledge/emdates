@@ -2,6 +2,8 @@ package nl.knaw.huygens.lobsang.api;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import static com.google.common.base.MoreObjects.toStringHelper;
 
@@ -44,5 +46,33 @@ public class CalendarPeriod {
       .add("startDate", startDate)
       .add("endDate", endDate)
       .toString();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    CalendarPeriod that = (CalendarPeriod) o;
+
+    return new EqualsBuilder()
+        .append(calendar, that.calendar)
+        .append(startDate, that.startDate)
+        .append(endDate, that.endDate)
+        .isEquals();
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder(17, 37)
+        .append(calendar)
+        .append(startDate)
+        .append(endDate)
+        .toHashCode();
   }
 }
