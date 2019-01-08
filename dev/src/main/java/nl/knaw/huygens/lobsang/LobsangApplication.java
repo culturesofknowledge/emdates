@@ -2,32 +2,28 @@ package nl.knaw.huygens.lobsang;
 
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
+import io.dropwizard.client.HttpClientBuilder;
 import io.dropwizard.forms.MultiPartBundle;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import nl.knaw.huygens.lobsang.api.KnownCalendar;
 import nl.knaw.huygens.lobsang.core.ConversionService;
 import nl.knaw.huygens.lobsang.core.ConverterRegistry;
-import nl.knaw.huygens.lobsang.core.converters.CalendarConverter;
-import nl.knaw.huygens.lobsang.core.places.ContainsAllTermsMatcher;
-import nl.knaw.huygens.lobsang.core.places.OnBreakingWhitespaceSplitter;
-import nl.knaw.huygens.lobsang.core.places.PlaceMatcher;
 import nl.knaw.huygens.lobsang.core.places.PlaceRegistry;
-import nl.knaw.huygens.lobsang.core.places.SearchTermBuilder;
 import nl.knaw.huygens.lobsang.resources.AboutResource;
 import nl.knaw.huygens.lobsang.resources.ConversionResource;
 import nl.knaw.huygens.lobsang.resources.ParserResource;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.List;
-import java.util.Optional;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
@@ -75,8 +71,9 @@ public class LobsangApplication extends Application<LobsangConfiguration> {
   public void run(LobsangConfiguration lobsangConfiguration, Environment environment) throws IOException {
     setupLogging(environment);
     converterRegistry = lobsangConfiguration.getConverterRegistry();
-    placeRegistry = lobsangConfiguration.getPlaceRegistry();
-    LOG.warn("registered locations: {}", lobsangConfiguration.getPlaces());
+    CloseableHttpClient httpClient = new HttpClientBuilder(environment).using(lobsangConfiguration.getHttpClient())
+                                                                       .build(getName());
+    placeRegistry = lobsangConfiguration.getPlaceRegistry(httpClient);
     registerResources(environment.jersey());
   }
 
@@ -87,15 +84,7 @@ public class LobsangApplication extends Application<LobsangConfiguration> {
   }
 
   private ConversionService createConversionService() {
-    return new ConversionService(converterRegistry, createPlaceMatcher(), createSearchTermBuilder());
-  }
-
-  private SearchTermBuilder createSearchTermBuilder() {
-    return new OnBreakingWhitespaceSplitter();
-  }
-
-  private PlaceMatcher createPlaceMatcher() {
-    return new ContainsAllTermsMatcher(placeRegistry, false);
+    return new ConversionService(converterRegistry, placeRegistry);
   }
 
   private void setupLogging(Environment environment) {

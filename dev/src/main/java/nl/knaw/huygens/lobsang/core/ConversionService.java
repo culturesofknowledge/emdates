@@ -6,51 +6,52 @@ import nl.knaw.huygens.lobsang.api.StartOfYear;
 import nl.knaw.huygens.lobsang.api.YearMonthDay;
 import nl.knaw.huygens.lobsang.core.adjusters.DateAdjusterBuilder;
 import nl.knaw.huygens.lobsang.core.converters.CalendarConverter;
-import nl.knaw.huygens.lobsang.core.places.PlaceMatcher;
-import nl.knaw.huygens.lobsang.core.places.SearchTermBuilder;
+import nl.knaw.huygens.lobsang.core.places.PlaceRegistry;
+import org.apache.commons.lang3.time.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.MonthDay;
 import java.time.Year;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
 import static java.util.Comparator.comparing;
 import static nl.knaw.huygens.lobsang.helpers.StreamHelpers.defaultIfEmpty;
 
 public class ConversionService {
-  private static final DateTimeFormatter YYYY_MM_DD = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
+  public static final Logger LOG = LoggerFactory.getLogger(ConversionService.class);
+  private static final String[] DATE_FORMATS = {"yyyy-MM-dd", "yyyy"};
   private final ConverterRegistry converters;
-  private final PlaceMatcher places;
-  private final SearchTermBuilder termBuilder;
+  private final PlaceRegistry placeRegistry;
 
   public ConversionService(ConverterRegistry converterRetriever,
-                           PlaceMatcher places,
-                           SearchTermBuilder termBuilder) {
+                           PlaceRegistry placeRegistry) {
     this.converters = converterRetriever;
-    this.places = checkNotNull(places);
-    this.termBuilder = checkNotNull(termBuilder);
+    this.placeRegistry = placeRegistry;
   }
 
   private Optional<YearMonthDay> convert(CalendarPeriod calendarPeriod, YearMonthDay date, String calendar) {
     final Optional<CalendarConverter> reqConverter = converters.get(calendarPeriod.getCalendar());
-    if (!reqConverter.isPresent()) {
-      throw new RuntimeException("Converter for '" + calendarPeriod.getCalendar() + "' is not available!");
+    if (handleNonPresentConverter(reqConverter, calendarPeriod.getCalendar())) {
+      return Optional.empty();
     }
     CalendarConverter requestConverter = reqConverter.get();
     final int requestDate = requestConverter.toRataDie(date);
 
     // Assuming this calendar is applicable, 'result' is the requestDate converted to the desired calendar
     final Optional<CalendarConverter> resultConverter = converters.get(calendar);
-    if (!resultConverter.isPresent()) {
-      throw new RuntimeException("Converter for '" + calendarPeriod.getCalendar() + "' is not available!");
+    if (handleNonPresentConverter(resultConverter, calendar)) {
+      return Optional.empty();
     }
     final YearMonthDay result = resultConverter.get().fromRataDie(requestDate);
 
@@ -82,16 +83,33 @@ public class ConversionService {
     return Optional.empty();
   }
 
+  private boolean handleNonPresentConverter(Optional<CalendarConverter> reqConverter, String calendar) {
+    if (!reqConverter.isPresent()) {
+      LOG.error("Converter for calendar '{}' is not available!", calendar);
+      return true;
+    }
+    return false;
+  }
+
   private YearMonthDay asYearMonthDay(String dateAsString) {
-    final LocalDate date = LocalDate.parse(dateAsString, YYYY_MM_DD);
-    return new YearMonthDay(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
+    try {
+      LocalDate date = DateUtils.parseDate(dateAsString, DATE_FORMATS)
+                                .toInstant()
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate();
+      return new YearMonthDay(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
+    } catch (ParseException e) {
+      throw new RuntimeException("Could not parse date");
+    }
+    // final LocalDate date = LocalDate.parse(dateAsString, YYYY_MM_DD);
   }
 
   public YearMonthDay defaultConversion(YearMonthDay date, String targetCalendar) {
     final int defaultDate = converters.defaultConverter().toRataDie(date);
     Optional<CalendarConverter> target = converters.get(targetCalendar);
-    if (!target.isPresent()) {
-      throw new RuntimeException("Converter for '" + targetCalendar + "' is not available!");
+    if (handleNonPresentConverter(target, targetCalendar)) {
+      throw new RuntimeException("Converter for calendar '" + targetCalendar + "' is not available!");
+
     }
     final YearMonthDay result = target.get().fromRataDie(defaultDate);
     result.addNote("Based on default calendar");
@@ -114,11 +132,11 @@ public class ConversionService {
 
   private YearMonthDay adjustForNewYearsDay(YearMonthDay result, YearMonthDay subject, List<StartOfYear> startOfYears) {
     return findNewYearsDay(startOfYears, Year.of(subject.getYear()))
-                                         .map(startOfYear -> adjust(startOfYear, subject.asMonthDay(), result))
-                                         .orElseGet(() -> {
-        result.addNote("No place-specific data about when the New Year started, assuming 1 January (no adjustments)");
-        return result;
-      });
+        .map(startOfYear -> adjust(startOfYear, subject.asMonthDay(), result))
+        .orElseGet(() -> {
+          result.addNote("No place-specific data about when the New Year started, assuming 1 January (no adjustments)");
+          return result;
+        });
   }
 
   private Optional<StartOfYear> findNewYearsDay(List<StartOfYear> startOfYears, Year subjectYear) {
@@ -134,7 +152,7 @@ public class ConversionService {
 
   public Stream<YearMonthDay> convertForMatchingPlaces(String placeTerms, YearMonthDay requestDate,
                                                        String targetCalendar, Consumer<Place> peepingTom) {
-    Stream<Place> matchingPlaces = places.match(termBuilder.build(placeTerms));
+    Stream<Place> matchingPlaces = placeRegistry.searchPlaces(placeTerms);
 
     if (peepingTom != null) {
       matchingPlaces = matchingPlaces.peek(peepingTom);
@@ -142,7 +160,7 @@ public class ConversionService {
 
     return defaultIfEmpty(matchingPlaces.map(convertForPlace(requestDate,
         targetCalendar)).flatMap(Function.identity()),
-      () -> defaultConversion(requestDate, targetCalendar));
+        () -> defaultConversion(requestDate, targetCalendar));
   }
 
   public Stream<YearMonthDay> convertForMatchingPlaces(String placeTerms, YearMonthDay requestDate,

@@ -5,10 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import nl.knaw.huygens.lobsang.core.converters.CalendarConverter;
 
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Optional;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ConverterRegistry {
   private final Map<String, CalendarConverter> convertersByType;
@@ -22,7 +19,21 @@ public class ConverterRegistry {
   }
 
   public Optional<CalendarConverter> get(String type) {
-    return Optional.ofNullable(convertersByType.get(type.toLowerCase()));
+    CalendarConverter exactMatch = convertersByType.get(type.toLowerCase());
+    if (exactMatch != null) {
+      return Optional.of(exactMatch);
+    }
+
+    // see if we can find a calendar that has a similar name
+    return convertersByType.entrySet().stream()
+                           .filter((entry) -> isCloseEnough(entry.getKey(), type.toLowerCase()))
+                           .map(Map.Entry::getValue)
+                           .findFirst();
+
+  }
+
+  private boolean isCloseEnough(String calendar, String requestedCalendar) {
+    return calendar.contains(requestedCalendar) || requestedCalendar.contains(calendar);
   }
 
   public CalendarConverter defaultConverter() {
