@@ -8,7 +8,7 @@ EM Dates is designed to provide a locale and period aware resource for individua
 
 The resource will offer a web form for converting single dates as well as bulk conversion facility for uploading metadata on a series of dates and locations in a tabular file format (Excel, CSV), and receiving back from the application, also in tabular format, the converted dates alongside the initial inputs. As part of this workflow, EM Dates will provide an online review stage, where a user can examine EM Dates' inferred confidence level for each suggested conversion. The review stage will provide an opportunity for a user to revise and re-process (e.g. incomplete) input data and a means to override the suggested conversion before final export. 
 
-Access to the tool for individual and bulk conversions will also be provided via an open [Timbuctoo][3] [GraphQL][21] API. Because EM Dates maintains a list of known-correct Romdan date variants to normalised ISO 8601 transformations, adding an [OpenRefine][17] endpoint for the reconciliation and/or sharing this data with the [GODOT][15] calendar gazetteer is also under active consideration.
+Access to the tool for individual and bulk conversions will also be provided via an open [Timbuctoo][3] [GraphQL][21] API. Because EM Dates maintains a list of known-correct Romdan date variants to normalised ISO 8601 transformations, adding an [OpenRefine][17] endpoint for reconciliation and/or sharing this data with the [GODOT][15] calendar gazetteer is also under active consideration.
 
 ## Status
 **December 2018**: Draft conversion API and Roman parser [available for testing][19] via Docker.
