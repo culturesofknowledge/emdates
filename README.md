@@ -1,6 +1,6 @@
 ## EM Dates
 
-EM Dates is an early modern calendar conversion service for the sixteenth- to eighteenth-century under development by the [Cultures of Knowledge][1] project at Oxford University. It is the second of what will eventually become [three Linked Open Data resources][2] also comprising [EM Places][1] and EM People built on a [shared humanities infrastructure platform][3] in collaboration with the [Huygens Institute][4] (KNAW) in Amsterdam.
+EM Dates is an early modern calendar conversion service for the sixteenth- to eighteenth-century under development by the [Cultures of Knowledge][1] project at Oxford University. It is the second of what will eventually become [three Linked Open Data resources][2] also comprising [EM Places][1] and EM People built on a [shared humanities infrastructure platform][3] in collaboration with the [Humanities Cluster][20] of the Royal Dutch Academy of Arts and Sciences (KNAW) in Amsterdam.
 
 ## Goals
 
@@ -45,3 +45,4 @@ EM Places, EM People, and EM Dates are [funded by a grant][2] to the University 
 [17]: http://openrefine.org
 [18]: https://en.wikipedia.org/wiki/Roman_calendar
 [19]: https://github.com/culturesofknowledge/emdates/tree/master/dev
+[20]: https://huc.knaw.nl
