@@ -6,7 +6,7 @@
 grammar Iso8601Format;
 
 /** Parser rule wrapper **/
-iso8601: level0;
+iso8601: level0 | level1;
 
 /** Level 0: Tokens **/
 Dash : '-';
@@ -61,4 +61,31 @@ year : Year;
 yearMonth : YearMonth;
 yearMonthDay : YearMonthDay;
 yearMonthDayCompact : YearMonthDayCompact;
+
+/** Level 1: Tokens **/
+Questionmark : '?';
+Tilde : '~';
+PercentSign : '%';
+
+/** Level 1 ParserRules **/
+level1
+    : yearUncertain
+    | yearApproximate
+    | yearUncertainApproximate
+    | yearMonthUncertain
+    | yearMonthApproximate
+    | yearMonthUncertainApproximate
+    | yearMonthDayUncertain
+    | yearMonthDayApproximate
+    | yearMonthDayUncertainApproximate
+    ;
+yearUncertain: Year Questionmark;
+yearApproximate: Year Tilde;
+yearUncertainApproximate: Year PercentSign;
+yearMonthUncertain : YearMonth Questionmark;
+yearMonthApproximate : YearMonth Tilde;
+yearMonthUncertainApproximate : YearMonth PercentSign;
+yearMonthDayUncertain : YearMonthDay Questionmark;
+yearMonthDayApproximate : YearMonthDay Tilde;
+yearMonthDayUncertainApproximate : YearMonthDay PercentSign;
 

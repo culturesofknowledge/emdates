@@ -5,10 +5,12 @@ import java.time.LocalDate;
 public class Iso8601Date {
   private final LocalDate start;
   private final LocalDate end;
+  private Uncertainty uncertainty;
 
-  private Iso8601Date(LocalDate start, LocalDate end) {
+  private Iso8601Date(LocalDate start, LocalDate end, Uncertainty uncertainty) {
     this.start = start;
     this.end = end;
+    this.uncertainty = uncertainty;
   }
 
   public static Iso8601DateBuilder builder() {
@@ -23,16 +25,21 @@ public class Iso8601Date {
     return end;
   }
 
+  public Uncertainty getUncertainty() {
+    return uncertainty;
+  }
+
   static class Iso8601DateBuilder {
+    private Uncertainty uncertainty;
     private LocalDate start;
     private LocalDate end;
 
     Iso8601DateBuilder() {
-
+      uncertainty = Uncertainty.NONE;
     }
 
     public Iso8601Date build() {
-      return new Iso8601Date(start, end);
+      return new Iso8601Date(start, end, uncertainty);
     }
 
     void start(LocalDate start) {
@@ -41,6 +48,10 @@ public class Iso8601Date {
 
     void end(LocalDate end) {
       this.end = end;
+    }
+
+    void uncertainty(Uncertainty uncertainty) {
+      this.uncertainty = uncertainty;
     }
   }
 }
