@@ -66,6 +66,39 @@ yearMonthDayCompact : YearMonthDayCompact;
 Questionmark : '?';
 Tilde : '~';
 PercentSign : '%';
+X : 'X';
+YearUnspecifiedMonth: Year Dash X X;
+UnspecifiedYearAndMonth: X X X X Dash X X;
+YearMonthUnspecifiedDay : YearMonth Dash X X;
+YearUnspecifiedMonthAndDay : Year Dash X X Dash X X;
+UnspecifiedYearAndMonthAndDay : X X X X Dash X X Dash X X;
+UnspecifiedSingleYear : PositiveUnspecifiedSingleYear | NegativeUnspecifiedSingleYear;
+NegativeUnspecifiedSingleYear : Dash PositiveUnspecifiedSingleYear;
+PositiveUnspecifiedSingleYear
+    : PositiveDigit Digit Digit X
+    | Digit PositiveDigit Digit X
+    | Digit Digit PositiveDigit X
+    | Digit Digit Digit X
+    ;
+UnspecifiedDecadeAndSingleYear : PositiveUnspecifiedDecadeAndSingleYear | NegativeUnspecifiedDecadeAndSingleYear;
+NegativeUnspecifiedDecadeAndSingleYear : Dash PositiveUnspecifiedDecadeAndSingleYear;
+PositiveUnspecifiedDecadeAndSingleYear
+    : PositiveDigit Digit X X
+    | Digit PositiveDigit X X
+    | Digit Digit X X
+    ;
+UnspecifiedCenturyAndDecadeAndSingleYear
+    : PositiveUnspecifiedCenturyAndDecadeAndSingleYear
+    | NegativeUnspecifiedCenturyAndDecadeAndSingleYear
+    ;
+PositiveUnspecifiedCenturyAndDecadeAndSingleYear
+    : PositiveDigit X X X
+    | Digit X X X
+    ;
+NegativeUnspecifiedCenturyAndDecadeAndSingleYear : Dash PositiveUnspecifiedCenturyAndDecadeAndSingleYear;
+UnspecifiedPositiveYear : X X X X;
+UnspecifiedNegativeYear : Dash X X X X;
+
 
 /** Level 1 ParserRules **/
 level1
@@ -78,6 +111,16 @@ level1
     | yearMonthDayUncertain
     | yearMonthDayApproximate
     | yearMonthDayUncertainApproximate
+    | yearMonthUnspecifiedDay
+    | yearUnspecifiedMonthAndDay
+    | unspecifiedYearAndMonthAndDay
+    | yearUnspecifiedMonth
+    | unspecifiedYearAndMonth
+    | unspecifiedSingleYear
+    | unspecifiedDecadeAndSingleYear
+    | unspecifiedCenturyAndDecadeAndSingleYear
+    | unspecifiedPositiveYear
+    | unspecifiedNegativeYear
     ;
 yearUncertain: Year Questionmark;
 yearApproximate: Year Tilde;
@@ -88,4 +131,17 @@ yearMonthUncertainApproximate : YearMonth PercentSign;
 yearMonthDayUncertain : YearMonthDay Questionmark;
 yearMonthDayApproximate : YearMonthDay Tilde;
 yearMonthDayUncertainApproximate : YearMonthDay PercentSign;
+yearMonthUnspecifiedDay : YearMonthUnspecifiedDay;
+yearUnspecifiedMonthAndDay : YearUnspecifiedMonthAndDay;
+unspecifiedYearAndMonthAndDay : UnspecifiedYearAndMonthAndDay;
+yearUnspecifiedMonth : YearUnspecifiedMonth;
+unspecifiedYearAndMonth : UnspecifiedYearAndMonth;
+unspecifiedSingleYear : UnspecifiedSingleYear;
+unspecifiedDecadeAndSingleYear : UnspecifiedDecadeAndSingleYear;
+unspecifiedCenturyAndDecadeAndSingleYear : UnspecifiedCenturyAndDecadeAndSingleYear;
+unspecifiedPositiveYear: UnspecifiedPositiveYear;
+unspecifiedNegativeYear: UnspecifiedNegativeYear;
+
+
+
 

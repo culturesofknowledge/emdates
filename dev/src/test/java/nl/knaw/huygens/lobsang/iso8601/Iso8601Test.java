@@ -176,7 +176,6 @@ class Iso8601Test {
 
     final Iso8601Date.Iso8601DateBuilder builder = parse(dateString);
 
-
     Iso8601Date date = builder.build();
     assertThat(date.getStart(), is(expectedDate));
     assertThat(date.getEnd(), is(expectedDate));
@@ -189,7 +188,6 @@ class Iso8601Test {
     final LocalDate expectedDate = LocalDate.parse("2019-04-19");
 
     final Iso8601Date.Iso8601DateBuilder builder = parse(dateString);
-
 
     Iso8601Date date = builder.build();
     assertThat(date.getStart(), is(expectedDate));
@@ -204,11 +202,234 @@ class Iso8601Test {
 
     final Iso8601Date.Iso8601DateBuilder builder = parse(dateString);
 
-
     Iso8601Date date = builder.build();
     assertThat(date.getStart(), is(expectedDate));
     assertThat(date.getEnd(), is(expectedDate));
     assertThat(date.getUncertainty(), is(Uncertainty.UNCERTAIN_APPROXIMATE));
+  }
+
+  @Test
+  void yearMonthUnspecifiedDay() {
+    final String dateString = "2019-04-XX";
+    final LocalDate startDate = LocalDate.parse("2019-04-01");
+    final LocalDate endDate = LocalDate.parse("2019-04-30");
+
+    final Iso8601Date.Iso8601DateBuilder builder = parse(dateString);
+
+    Iso8601Date date = builder.build();
+    assertThat(date.getStart(), is(startDate));
+    assertThat(date.getEnd(), is(endDate));
+    assertThat(date.getUncertainty(), is(Uncertainty.NONE));
+  }
+
+  @Test
+  void negativeYearMonthUnspecifiedDay() {
+    final String dateString = "-2019-04-XX";
+    final LocalDate startDate = LocalDate.parse("-2019-04-01");
+    final LocalDate endDate = LocalDate.parse("-2019-04-30");
+
+    final Iso8601Date.Iso8601DateBuilder builder = parse(dateString);
+
+    Iso8601Date date = builder.build();
+    assertThat(date.getStart(), is(startDate));
+    assertThat(date.getEnd(), is(endDate));
+    assertThat(date.getUncertainty(), is(Uncertainty.NONE));
+  }
+
+  @Test
+  void yearUnspecifiedMonthAndDay() {
+    final String dateString = "2019-XX-XX";
+    final LocalDate startDate = LocalDate.parse("2019-01-01");
+    final LocalDate endDate = LocalDate.parse("2019-12-31");
+
+    final Iso8601Date.Iso8601DateBuilder builder = parse(dateString);
+
+    Iso8601Date date = builder.build();
+    assertThat(date.getStart(), is(startDate));
+    assertThat(date.getEnd(), is(endDate));
+    assertThat(date.getUncertainty(), is(Uncertainty.NONE));
+  }
+
+  @Test
+  void negativeYearUnspecifiedMonthAndDay() {
+    final String dateString = "-2019-XX-XX";
+    final LocalDate startDate = LocalDate.parse("-2019-01-01");
+    final LocalDate endDate = LocalDate.parse("-2019-12-31");
+
+    final Iso8601Date.Iso8601DateBuilder builder = parse(dateString);
+
+    Iso8601Date date = builder.build();
+    assertThat(date.getStart(), is(startDate));
+    assertThat(date.getEnd(), is(endDate));
+    assertThat(date.getUncertainty(), is(Uncertainty.NONE));
+  }
+
+  @Test
+  void unspecifiedYearAndMonthAndDay() {
+    final String dateString = "XXXX-XX-XX";
+    final LocalDate startDate = LocalDate.parse("-9999-01-01");
+    final LocalDate endDate = LocalDate.parse("9999-12-31");
+
+    final Iso8601Date.Iso8601DateBuilder builder = parse(dateString);
+
+    Iso8601Date date = builder.build();
+    assertThat(date.getStart(), is(startDate));
+    assertThat(date.getEnd(), is(endDate));
+    assertThat(date.getUncertainty(), is(Uncertainty.NONE));
+  }
+
+  @Test
+  void yearUnspecifiedMonth() {
+    final String dateString = "2019-XX";
+    final LocalDate startDate = LocalDate.parse("2019-01-01");
+    final LocalDate endDate = LocalDate.parse("2019-12-31");
+
+    final Iso8601Date.Iso8601DateBuilder builder = parse(dateString);
+
+    Iso8601Date date = builder.build();
+    assertThat(date.getStart(), is(startDate));
+    assertThat(date.getEnd(), is(endDate));
+    assertThat(date.getUncertainty(), is(Uncertainty.NONE));
+  }
+
+  @Test
+  void negativeYearUnspecifiedMonth() {
+    final String dateString = "-2019-XX";
+    final LocalDate startDate = LocalDate.parse("-2019-01-01");
+    final LocalDate endDate = LocalDate.parse("-2019-12-31");
+
+    final Iso8601Date.Iso8601DateBuilder builder = parse(dateString);
+
+    Iso8601Date date = builder.build();
+    assertThat(date.getStart(), is(startDate));
+    assertThat(date.getEnd(), is(endDate));
+    assertThat(date.getUncertainty(), is(Uncertainty.NONE));
+  }
+
+  @Test
+  void unspecifiedYearAndMonth() {
+    final String dateString = "XXXX-XX";
+    final LocalDate startDate = LocalDate.parse("-9999-01-01");
+    final LocalDate endDate = LocalDate.parse("9999-12-31");
+
+    final Iso8601Date.Iso8601DateBuilder builder = parse(dateString);
+
+    Iso8601Date date = builder.build();
+    assertThat(date.getStart(), is(startDate));
+    assertThat(date.getEnd(), is(endDate));
+    assertThat(date.getUncertainty(), is(Uncertainty.NONE));
+  }
+
+  @Test
+  void unspecifiedSingleYear() {
+    final String dateString = "201X";
+    final LocalDate startDate = LocalDate.parse("2010-01-01");
+    final LocalDate endDate = LocalDate.parse("2019-12-31");
+
+    final Iso8601Date.Iso8601DateBuilder builder = parse(dateString);
+
+    Iso8601Date date = builder.build();
+    assertThat(date.getStart(), is(startDate));
+    assertThat(date.getEnd(), is(endDate));
+    assertThat(date.getUncertainty(), is(Uncertainty.NONE));
+  }
+
+  @Test
+  void negativeUnspecifiedSingleYear() {
+    final String dateString = "-201X";
+    final LocalDate startDate = LocalDate.parse("-2019-01-01");
+    final LocalDate endDate = LocalDate.parse("-2010-12-31");
+
+    final Iso8601Date.Iso8601DateBuilder builder = parse(dateString);
+
+    Iso8601Date date = builder.build();
+    assertThat(date.getStart(), is(startDate));
+    assertThat(date.getEnd(), is(endDate));
+    assertThat(date.getUncertainty(), is(Uncertainty.NONE));
+  }
+
+  @Test
+  void unspecifiedDecadeAndSingleYear() {
+    final String dateString = "20XX";
+    final LocalDate startDate = LocalDate.parse("2000-01-01");
+    final LocalDate endDate = LocalDate.parse("2099-12-31");
+
+    final Iso8601Date.Iso8601DateBuilder builder = parse(dateString);
+
+    Iso8601Date date = builder.build();
+    assertThat(date.getStart(), is(startDate));
+    assertThat(date.getEnd(), is(endDate));
+    assertThat(date.getUncertainty(), is(Uncertainty.NONE));
+  }
+
+  @Test
+  void negativeDecadeAndSingleYear() {
+    final String dateString = "-20XX";
+    final LocalDate startDate = LocalDate.parse("-2099-01-01");
+    final LocalDate endDate = LocalDate.parse("-2000-12-31");
+
+    final Iso8601Date.Iso8601DateBuilder builder = parse(dateString);
+
+    Iso8601Date date = builder.build();
+    assertThat(date.getStart(), is(startDate));
+    assertThat(date.getEnd(), is(endDate));
+    assertThat(date.getUncertainty(), is(Uncertainty.NONE));
+  }
+
+  @Test
+  void unspecifiedCenturyAndDecadeAndSingleYear() {
+    final String dateString = "2XXX";
+    final LocalDate startDate = LocalDate.parse("2000-01-01");
+    final LocalDate endDate = LocalDate.parse("2999-12-31");
+
+    final Iso8601Date.Iso8601DateBuilder builder = parse(dateString);
+
+    Iso8601Date date = builder.build();
+    assertThat(date.getStart(), is(startDate));
+    assertThat(date.getEnd(), is(endDate));
+    assertThat(date.getUncertainty(), is(Uncertainty.NONE));
+  }
+
+  @Test
+  void negativeCenturyAndDecadeAndSingleYear() {
+    final String dateString = "-2XXX";
+    final LocalDate startDate = LocalDate.parse("-2999-01-01");
+    final LocalDate endDate = LocalDate.parse("-2000-12-31");
+
+    final Iso8601Date.Iso8601DateBuilder builder = parse(dateString);
+
+    Iso8601Date date = builder.build();
+    assertThat(date.getStart(), is(startDate));
+    assertThat(date.getEnd(), is(endDate));
+    assertThat(date.getUncertainty(), is(Uncertainty.NONE));
+  }
+
+  @Test
+  void unspecifiedYear() {
+    final String dateString = "XXXX";
+    final LocalDate startDate = LocalDate.parse("0000-01-01");
+    final LocalDate endDate = LocalDate.parse("9999-12-31");
+
+    final Iso8601Date.Iso8601DateBuilder builder = parse(dateString);
+
+    Iso8601Date date = builder.build();
+    assertThat(date.getStart(), is(startDate));
+    assertThat(date.getEnd(), is(endDate));
+    assertThat(date.getUncertainty(), is(Uncertainty.NONE));
+  }
+
+  @Test
+  void negativeYear() {
+    final String dateString = "-XXXX";
+    final LocalDate startDate = LocalDate.parse("-9999-01-01");
+    final LocalDate endDate = LocalDate.parse("-0001-12-31");
+
+    final Iso8601Date.Iso8601DateBuilder builder = parse(dateString);
+
+    Iso8601Date date = builder.build();
+    assertThat(date.getStart(), is(startDate));
+    assertThat(date.getEnd(), is(endDate));
+    assertThat(date.getUncertainty(), is(Uncertainty.NONE));
   }
 
   private Iso8601Date.Iso8601DateBuilder parse(String dateString) {

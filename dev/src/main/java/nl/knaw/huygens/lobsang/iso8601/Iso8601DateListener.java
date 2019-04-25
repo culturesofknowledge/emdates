@@ -1,10 +1,34 @@
 package nl.knaw.huygens.lobsang.iso8601;
 
-import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
+
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.UnspecifiedCenturyAndDecadeAndSingleYearContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.UnspecifiedDecadeAndSingleYearContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.UnspecifiedNegativeYearContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.UnspecifiedPositiveYearContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.UnspecifiedSingleYearContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.UnspecifiedYearAndMonthAndDayContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.UnspecifiedYearAndMonthContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.YearApproximateContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.YearContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.YearMonthApproximateContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.YearMonthContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.YearMonthDayApproximateContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.YearMonthDayCompactContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.YearMonthDayContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.YearMonthDayUncertainApproximateContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.YearMonthDayUncertainContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.YearMonthUncertainApproximateContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.YearMonthUncertainContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.YearMonthUnspecifiedDayContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.YearUncertainApproximateContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.YearUncertainContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.YearUnspecifiedMonthAndDayContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.YearUnspecifiedMonthContext;
 
 public class Iso8601DateListener extends Iso8601FormatBaseListener {
   private final Iso8601Date.Iso8601DateBuilder dateBuilder;
@@ -16,8 +40,8 @@ public class Iso8601DateListener extends Iso8601FormatBaseListener {
 
   // Level 0
   @Override
-  public void enterYear(Iso8601FormatParser.YearContext ctx) {
-    createYear(ctx.Year(), Uncertainty.NONE);
+  public void enterYear(YearContext ctx) {
+    createYear(ctx.Year().getText(), Uncertainty.NONE);
   }
 
   private String isoDateString(String year, String month, String day) {
@@ -25,17 +49,17 @@ public class Iso8601DateListener extends Iso8601FormatBaseListener {
   }
 
   @Override
-  public void enterYearMonth(Iso8601FormatParser.YearMonthContext ctx) {
-    createYearMonth(ctx.YearMonth(), Uncertainty.NONE);
+  public void enterYearMonth(YearMonthContext ctx) {
+    createYearMonth(ctx.YearMonth().getText(), Uncertainty.NONE);
   }
 
   @Override
-  public void enterYearMonthDay(Iso8601FormatParser.YearMonthDayContext ctx) {
-    createYearMonthDay(ctx.YearMonthDay(), Uncertainty.NONE);
+  public void enterYearMonthDay(YearMonthDayContext ctx) {
+    createYearMonthDay(ctx.YearMonthDay().getText(), Uncertainty.NONE);
   }
 
   @Override
-  public void enterYearMonthDayCompact(Iso8601FormatParser.YearMonthDayCompactContext ctx) {
+  public void enterYearMonthDayCompact(YearMonthDayCompactContext ctx) {
     final String text = ctx.YearMonthDayCompact().getText();
 
     final LocalDate date = LocalDate.parse(text, DateTimeFormatter.ofPattern("yyyyMMdd"));
@@ -46,60 +70,119 @@ public class Iso8601DateListener extends Iso8601FormatBaseListener {
 
   // Level 1
   @Override
-  public void enterYearUncertain(Iso8601FormatParser.YearUncertainContext ctx) {
-    createYear(ctx.Year(), Uncertainty.UNCERTAIN);
+  public void enterYearUncertain(YearUncertainContext ctx) {
+    createYear(ctx.Year().getText(), Uncertainty.UNCERTAIN);
   }
 
   @Override
-  public void enterYearApproximate(Iso8601FormatParser.YearApproximateContext ctx) {
-    createYear(ctx.Year(), Uncertainty.APPROXIMATE);
+  public void enterYearApproximate(YearApproximateContext ctx) {
+    createYear(ctx.Year().getText(), Uncertainty.APPROXIMATE);
   }
 
   @Override
-  public void enterYearUncertainApproximate(Iso8601FormatParser.YearUncertainApproximateContext ctx) {
-    createYear(ctx.Year(), Uncertainty.UNCERTAIN_APPROXIMATE);
+  public void enterYearUncertainApproximate(YearUncertainApproximateContext ctx) {
+    createYear(ctx.Year().getText(), Uncertainty.UNCERTAIN_APPROXIMATE);
   }
 
   @Override
-  public void enterYearMonthUncertain(Iso8601FormatParser.YearMonthUncertainContext ctx) {
-    createYearMonth(ctx.YearMonth(), Uncertainty.UNCERTAIN);
+  public void enterYearMonthUncertain(YearMonthUncertainContext ctx) {
+    createYearMonth(ctx.YearMonth().getText(), Uncertainty.UNCERTAIN);
   }
 
   @Override
-  public void enterYearMonthApproximate(Iso8601FormatParser.YearMonthApproximateContext ctx) {
-    createYearMonth(ctx.YearMonth(), Uncertainty.APPROXIMATE);
+  public void enterYearMonthApproximate(YearMonthApproximateContext ctx) {
+    createYearMonth(ctx.YearMonth().getText(), Uncertainty.APPROXIMATE);
   }
 
   @Override
-  public void enterYearMonthUncertainApproximate(Iso8601FormatParser.YearMonthUncertainApproximateContext ctx) {
-    createYearMonth(ctx.YearMonth(), Uncertainty.UNCERTAIN_APPROXIMATE);
+  public void enterYearMonthUncertainApproximate(YearMonthUncertainApproximateContext ctx) {
+    createYearMonth(ctx.YearMonth().getText(), Uncertainty.UNCERTAIN_APPROXIMATE);
   }
 
   @Override
-  public void enterYearMonthDayUncertain(Iso8601FormatParser.YearMonthDayUncertainContext ctx) {
-    createYearMonthDay(ctx.YearMonthDay(), Uncertainty.UNCERTAIN);
+  public void enterYearMonthDayUncertain(YearMonthDayUncertainContext ctx) {
+    createYearMonthDay(ctx.YearMonthDay().getText(), Uncertainty.UNCERTAIN);
   }
 
   @Override
-  public void enterYearMonthDayApproximate(Iso8601FormatParser.YearMonthDayApproximateContext ctx) {
-    createYearMonthDay(ctx.YearMonthDay(), Uncertainty.APPROXIMATE);
+  public void enterYearMonthDayApproximate(YearMonthDayApproximateContext ctx) {
+    createYearMonthDay(ctx.YearMonthDay().getText(), Uncertainty.APPROXIMATE);
   }
 
   @Override
-  public void enterYearMonthDayUncertainApproximate(Iso8601FormatParser.YearMonthDayUncertainApproximateContext ctx) {
-    createYearMonthDay(ctx.YearMonthDay(), Uncertainty.UNCERTAIN_APPROXIMATE);
+  public void enterYearMonthDayUncertainApproximate(YearMonthDayUncertainApproximateContext ctx) {
+    createYearMonthDay(ctx.YearMonthDay().getText(), Uncertainty.UNCERTAIN_APPROXIMATE);
   }
 
-  private void createYear(TerminalNode year, Uncertainty uncertainty) {
-    final String text = year.getText();
-    dateBuilder.start(LocalDate.parse(isoDateString(text, "01", "01")));
-    dateBuilder.end(LocalDate.parse(isoDateString(text, "12", "31")));
+  @Override
+  public void enterYearMonthUnspecifiedDay(YearMonthUnspecifiedDayContext ctx) {
+    createYearMonth(stripUnspecifiedPartOfDateString(ctx.YearMonthUnspecifiedDay().getText()), Uncertainty.NONE);
+  }
+
+  @Override
+  public void enterYearUnspecifiedMonthAndDay(YearUnspecifiedMonthAndDayContext ctx) {
+    createYear(stripUnspecifiedPartOfDateString(ctx.YearUnspecifiedMonthAndDay().getText()), Uncertainty.NONE);
+  }
+
+  @Override
+  public void enterUnspecifiedYearAndMonthAndDay(UnspecifiedYearAndMonthAndDayContext ctx) {
+    dateBuilder.start(LocalDate.of(-9999, 1, 1));
+    dateBuilder.end(LocalDate.of(9999, 12, 31));
+  }
+
+  @Override
+  public void enterYearUnspecifiedMonth(YearUnspecifiedMonthContext ctx) {
+    createYear(stripUnspecifiedPartOfDateString(ctx.YearUnspecifiedMonth().getText()), Uncertainty.NONE);
+  }
+
+
+  @Override
+  public void enterUnspecifiedYearAndMonth(UnspecifiedYearAndMonthContext ctx) {
+    dateBuilder.start(LocalDate.of(-9999, 1, 1));
+    dateBuilder.end(LocalDate.of(9999, 12, 31));
+  }
+
+  @Override
+  public void enterUnspecifiedSingleYear(UnspecifiedSingleYearContext ctx) {
+    final String year = stripUnspecifiedPartOfDateString(ctx.UnspecifiedSingleYear().getText());
+    dateBuilder.start(LocalDate.of(Integer.parseInt(makeFullYearString(year, true)), 1, 1));
+    dateBuilder.end(LocalDate.of(Integer.parseInt(makeFullYearString(year, false)), 12, 31));
+  }
+
+  @Override
+  public void enterUnspecifiedDecadeAndSingleYear(UnspecifiedDecadeAndSingleYearContext ctx) {
+    final String year = stripUnspecifiedPartOfDateString(ctx.UnspecifiedDecadeAndSingleYear().getText());
+    dateBuilder.start(LocalDate.of(Integer.parseInt(makeFullYearString(year, true)), 1, 1));
+    dateBuilder.end(LocalDate.of(Integer.parseInt(makeFullYearString(year, false)), 12, 31));
+  }
+
+  @Override
+  public void enterUnspecifiedCenturyAndDecadeAndSingleYear(UnspecifiedCenturyAndDecadeAndSingleYearContext ctx) {
+    final String year = stripUnspecifiedPartOfDateString(ctx.UnspecifiedCenturyAndDecadeAndSingleYear().getText());
+    dateBuilder.start(LocalDate.of(Integer.parseInt(makeFullYearString(year, true)), 1, 1));
+    dateBuilder.end(LocalDate.of(Integer.parseInt(makeFullYearString(year, false)), 12, 31));
+  }
+
+  @Override
+  public void enterUnspecifiedPositiveYear(UnspecifiedPositiveYearContext ctx) {
+    dateBuilder.start(LocalDate.of(0, 1, 1));
+    dateBuilder.end(LocalDate.of(9999, 12, 31));
+  }
+
+  @Override
+  public void enterUnspecifiedNegativeYear(UnspecifiedNegativeYearContext ctx) {
+    dateBuilder.start(LocalDate.of(-9999, 1, 1));
+    dateBuilder.end(LocalDate.of(-1, 12, 31));
+  }
+
+  private void createYear(String dateString, Uncertainty uncertainty) {
+    dateBuilder.start(LocalDate.parse(isoDateString(dateString, "01", "01")));
+    dateBuilder.end(LocalDate.parse(isoDateString(dateString, "12", "31")));
     dateBuilder.uncertainty(uncertainty);
   }
 
-  private void createYearMonth(TerminalNode terminalNode, Uncertainty uncertainty) {
-    String text = terminalNode.getText();
-    final LocalDate startDate = LocalDate.parse(text + "-01");
+  private void createYearMonth(String dateString, Uncertainty uncertainty) {
+    final LocalDate startDate = LocalDate.parse(dateString + "-01");
     final LocalDate endDate = LocalDate.of(startDate.getYear(), startDate.getMonth(),
         (int) startDate.range(ChronoField.DAY_OF_MONTH).getMaximum());
 
@@ -108,11 +191,27 @@ public class Iso8601DateListener extends Iso8601FormatBaseListener {
     dateBuilder.uncertainty(uncertainty);
   }
 
-  private void createYearMonthDay(TerminalNode terminalNode, Uncertainty uncertainty) {
-    final String text = terminalNode.getText();
-    final LocalDate date = LocalDate.parse(text);
+  private void createYearMonthDay(String dateString, Uncertainty uncertainty) {
+    final LocalDate date = LocalDate.parse(dateString);
     dateBuilder.start(date);
     dateBuilder.end(date);
     dateBuilder.uncertainty(uncertainty);
+  }
+
+  private String stripUnspecifiedPartOfDateString(String text) {
+    final String removeUnspecified = text.substring(0, text.indexOf('X'));
+    // remove the trailing dash that exists when days or months are unspecified
+    return StringUtils.removeEnd(removeUnspecified, "-");
+  }
+
+  private String makeFullYearString(String year, boolean isStart) {
+    int yearLength = year.startsWith("-") ? 5 : 4;
+    String padding;
+    if ((isStart && !year.startsWith("-")) || (!isStart && year.startsWith("-"))) {
+      padding = "0";
+    } else {
+      padding = "9";
+    }
+    return StringUtils.rightPad(year, yearLength, padding);
   }
 }
