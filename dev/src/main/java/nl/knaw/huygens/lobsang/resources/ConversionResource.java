@@ -260,9 +260,12 @@ public class ConversionResource {
     DateRequest build(CSVRecord record) {
       LOG.debug("record: {}, fieldNames: {}", record, fieldNames);
       return new DateRequest(
-        Integer.valueOf(record.get(fieldNames.getYearFieldName())),
-        Integer.valueOf(record.get(fieldNames.getMonthFieldName())),
-        Integer.valueOf(record.get(fieldNames.getDayFieldName())),
+        String.format(
+            "%s-%s-%s",
+            record.get(fieldNames.getYearFieldName()),
+            record.get(fieldNames.getMonthFieldName()),
+            record.get(fieldNames.getDayFieldName())
+        ),
         record.get(fieldNames.getPlaceFieldName()),
         targetCalendar);
     }
