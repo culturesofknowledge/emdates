@@ -130,9 +130,7 @@ public class ConversionResource {
                        printer.print(column);
                      }
                      for (int i = 0; i < maxConversions; i++) {
-                       printer.print(format("%s_%d", fieldNames.getYearFieldName(), i));
-                       printer.print(format("%s_%d", fieldNames.getMonthFieldName(), i));
-                       printer.print(format("%s_%d", fieldNames.getDayFieldName(), i));
+                       printer.print(format("%s_%d", fieldNames.getDateFieldName(), i));
                      }
                      printer.println();
                      reader.read(record -> {
@@ -199,17 +197,12 @@ public class ConversionResource {
 
     // avoid conversions.foreach() lest we end up with IOExceptions inside lambda
     for (YearMonthDay ymd : (Iterable<YearMonthDay>) todo::iterator) {
-      printer.print(ymd.getYear());
-      printer.print(ymd.getMonth());
-      printer.print(ymd.getDay());
+      printer.print(String.format("%s-%s-%s", ymd.getYear(), ymd.getMonth(), ymd.getDay()));
       shortBy--;
     }
 
     for (int i = 0; i < shortBy; i++) {
-      // print empty fields for Y,M,D
-      for (int j = 0; j < 3; j++) {
-        printer.print("");
-      }
+      printer.print("");
     }
 
     // end record
@@ -260,12 +253,7 @@ public class ConversionResource {
     DateRequest build(CSVRecord record) {
       LOG.debug("record: {}, fieldNames: {}", record, fieldNames);
       return new DateRequest(
-        String.format(
-            "%s-%s-%s",
-            record.get(fieldNames.getYearFieldName()),
-            record.get(fieldNames.getMonthFieldName()),
-            record.get(fieldNames.getDayFieldName())
-        ),
+        record.get(fieldNames.getDateFieldName()),
         record.get(fieldNames.getPlaceFieldName()),
         targetCalendar);
     }
