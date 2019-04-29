@@ -2,6 +2,7 @@ package nl.knaw.huygens.lobsang.api;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.assertj.core.util.Lists;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +12,7 @@ import static com.google.common.base.MoreObjects.toStringHelper;
 public class Place {
   private String name;
   private List<CalendarPeriod> calendarPeriods;
-  private List<StartOfYear> startOfYearList = new ArrayList<>();
+  private List<StartOfYear> startOfYearList;
 
   @JsonCreator
   public Place(@JsonProperty("name") String name,
@@ -20,7 +21,7 @@ public class Place {
 
     this.name = name;
     this.calendarPeriods = calendarPeriods;
-    this.startOfYearList = startOfYearList;
+    this.startOfYearList = startOfYearList == null ? Lists.newArrayList() : startOfYearList;
   }
 
   public String getName() {
