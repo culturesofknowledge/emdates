@@ -2,12 +2,12 @@ package nl.knaw.huygens.lobsang.core.places.timbuctoo;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.google.common.collect.Lists;
 import nl.knaw.huygens.lobsang.api.CalendarPeriod;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.util.Collections.EMPTY_LIST;
 import static java.util.stream.StreamSupport.stream;
 
 public class CalendarRetriever {
@@ -33,7 +33,7 @@ public class CalendarRetriever {
           .flatMap(node -> getCalendarPeriods(node).stream()).collect(Collectors.toList());
     }
 
-    return EMPTY_LIST;
+    return Lists.newArrayList();
   }
 
   private boolean isPlaceRelation(JsonNode relation) {
