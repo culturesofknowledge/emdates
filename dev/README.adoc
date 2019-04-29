@@ -20,7 +20,7 @@ Given a date "March 24, 1751" sourced somewhere in England, when was this on the
 
 ----
 $ curl -s localhost:8080/convert -H 'Content-type: application/json' \
-       -d '{"targetCalendar": "gregorian", "year": "1751", "month": "3", "day": "24", "place": "england"}' \
+       -d '{"targetCalendar": "gregorian", "date": "1751-03-24", "place": "england"}' \
        | jq -C .
 ----
 
@@ -30,9 +30,7 @@ Yields:
 {
   "dates": [
     {
-      "year": 1752,
-      "month": 4,
-      "day": 4,
+      "date": "1752-04-04",
       "notes": [
         "Based on data for place: 'England and Wales'",
         "Date after 1 January, but in this period, new year started on 03-25, so one year was added.",
@@ -59,7 +57,7 @@ of continental Europe have recorded his execution by?
 
 ----
 curl -s localhost:8080/convert -H 'Content-type: application/json' \
-     -d '{"targetCalendar": "gregorian", "year": "1648", "month": "1", "day": "30", "place": "england"}' \
+     -d '{"targetCalendar": "gregorian", "date": "1648-01-30", "place": "england"}' \
      | jq -C .
 ----
 
@@ -69,9 +67,7 @@ Yields:
 {
   "dates": [
     {
-      "year": 1649,
-      "month": 2,
-      "day": 9,
+      "year": "1649-02-09",
       "notes": [
         "Based on data for place: 'England and Wales'",
         "Date after 1 January, but in this period, new year started on 03-25, so one year was added.",
@@ -91,7 +87,7 @@ the following result:
 
 ----
 $ curl -s localhost:8080/convert -H 'Content-type: application/json' \
-       -d '{"targetCalendar": "julian", "year": "1648", "month": "1", "day": "30", "place": "england"}' \
+       -d '{"targetCalendar": "julian", "date": "1648-01-30", "place": "england"}' \
        | jq -C .
 ----
 
@@ -101,9 +97,7 @@ Yields:
 {
   "dates": [
     {
-      "year": 1649,
-      "month": 1,
-      "day": 30,
+      "date": "1649-01-30",
       "notes": [
         "Based on data for place: 'England and Wales'",
         "Date after 1 January, but in this period, new year started on 03-25, so one year was added.",
@@ -128,11 +122,7 @@ curl 'http://localhost:8080/parse/roman' -H 'Content-Type: application/json' --d
 This will yield:
 ----
 {
-  "parsedDate": {
-    "year": 1645,
-    "month": 7,
-    "day": 11
-  },
+  "parsedDate": "1645-07-11"
   "errorMessage": null
 }
 ----
@@ -141,11 +131,11 @@ This will yield:
 
 Suppose we have a CSV file `example.csv`:
 |===
-|Place |Year |Month |Day
+|Place |Date
 
-|Austria |1584  |1     |5
+|Austria |1584-01-05
 
-|England |1648  |1     |30
+|England |1648-01-30
 
 |===
 
@@ -158,11 +148,11 @@ $ curl -s localhost:8080/convert/table -F file=@example.csv \
 and end up with a converted CSV:
 
 |====
-|Place   |Year |Month |Day |Year_0 |Month_0 |Day_0 |Year_1 |Month_1 |Day_1 |Year_2 |Month_2 |Day_2
+|Place   |Date |Date_0 |Date_1 |Date_2
 
-|Austria |1584 |1     |5   |1584   |1       |5     |1584   |1       |5     |1584   |1       |5
+|Austria |1584-01-05 |1584-01-05 |1584-01-05 |1584-01-05
 
-|England |1648 |1     |30  |1649   |2       |9     |       |        |      |       |        |
+|England |1648-01-30 |1649-02-09 | |
 |====
 
 
