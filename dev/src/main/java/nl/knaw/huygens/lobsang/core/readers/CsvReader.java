@@ -68,9 +68,7 @@ public class CsvReader {
   }
 
   public static class Builder {
-    static final String DEFAULT_YEAR_FIELD = "Y";
-    static final String DEFAULT_MONTH_FIELD = "M";
-    static final String DEFAULT_DAY_FIELD = "D";
+    static final String DEFAULT_DATE_NAME = "Date";
     static final String DEFAULT_PLACE_NAME = "Place";
 
     private final Map<String, String> config;
@@ -94,9 +92,7 @@ public class CsvReader {
       applyFormatOption("trailingDelimiter", Boolean::valueOf, format::withTrailingDelimiter);
 
       final FieldNames fieldNames = new FieldNames(
-        config.getOrDefault("yearField", DEFAULT_YEAR_FIELD),
-        config.getOrDefault("monthField", DEFAULT_MONTH_FIELD),
-        config.getOrDefault("dayField", DEFAULT_DAY_FIELD),
+        config.getOrDefault("dateField", DEFAULT_DATE_NAME),
         config.getOrDefault("placeField", DEFAULT_PLACE_NAME));
 
       return new CsvReader(format.withAllowMissingColumnNames().withHeader(), fieldNames);
@@ -134,28 +130,17 @@ public class CsvReader {
   }
 
   public static class FieldNames {
-    private final String yearFieldName;
-    private final String monthFieldName;
-    private final String dayFieldName;
     private final String placeFieldName;
+    private final String dateField;
 
-    FieldNames(String yearFieldName, String monthFieldName, String dayFieldName, String placeFieldName) {
-      this.yearFieldName = yearFieldName;
-      this.monthFieldName = monthFieldName;
-      this.dayFieldName = dayFieldName;
+    FieldNames(String dateField, String placeFieldName) {
+      this.dateField = dateField;
       this.placeFieldName = placeFieldName;
     }
 
-    public String getYearFieldName() {
-      return yearFieldName;
-    }
 
-    public String getMonthFieldName() {
-      return monthFieldName;
-    }
-
-    public String getDayFieldName() {
-      return dayFieldName;
+    public String getDateFieldName() {
+      return dateField;
     }
 
     public String getPlaceFieldName() {
@@ -163,17 +148,16 @@ public class CsvReader {
     }
 
     public Stream<String> stream() {
-      return Stream.of(yearFieldName, monthFieldName, dayFieldName, placeFieldName);
+      return Stream.of(dateField, placeFieldName);
     }
 
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
-                        .add("yearFieldName", yearFieldName)
-                        .add("monthFieldName", monthFieldName)
-                        .add("dayFieldName", dayFieldName)
+                        .add("dateFieldName", dateField)
                         .add("placeFieldName", placeFieldName)
                         .toString();
     }
+
   }
 }

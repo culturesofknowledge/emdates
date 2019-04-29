@@ -23,9 +23,7 @@
 
 <body>
   <h1>Convert date to other calendar</h1>
-  <span>Year: </span><input type="number" value="0" name="year" id="year">
-  <span>Month: </span><input type="number" value="1" min="1" max="12" name="month" id="month">
-  <span>Day: </span><input type="number" value="1" min="1" max="31" name="day" id="day">
+  <span>Date: </span><input type="text" value="0000-01-01" name="year" id="date">
   <span>Place: </span><input type="text" value="England" name="place" id="place">
   <span>Target Calendar: </span><input type="text" value="Gregorian" name="targetCalendar" id="targetCalendar">
   <button id="convertSingle">Convert</button>
@@ -67,9 +65,7 @@
       xhr.setRequestHeader("Content-Type", "application/json");
       xhr.send(JSON.stringify({
         "targetCalendar": document.getElementById("targetCalendar").value,
-        "year": document.getElementById("year").value,
-        "month": document.getElementById("month").value,
-        "day": document.getElementById("day").value,
+        "date": document.getElementById("date").value,
         "place": document.getElementById("place").value
       }));
 
@@ -87,30 +83,23 @@
       
     }
 
-    function createTable(items) {
-  		var headers = Object.keys(items[0]);
+    function createTable(dates) {
+  		var headers = ["Date", "Notes"];
 			var table = document.createElement("table");
 			var headerRow = document.createElement("tr");
 			table.appendChild(headerRow);
 			headers.forEach(header => headerRow.appendChild(createTextElement("th", header)));
-			items.forEach(item => {
+			Object.keys(dates).forEach((date) => {
         var row = document.createElement("tr");
         table.appendChild(row);
-        headers.forEach(header => {
-          var field = item[header];
-          if(field instanceof Array) {
-            var td = document.createElement("td");
-            row.appendChild(td);
-            field.forEach(value => {
-              td.appendChild(document.createTextNode(value));
-              td.appendChild(document.createElement("br"));
-            });
-          }
-          else {
-            row.appendChild(createTextElement("td", field));
-          }
+        row.appendChild(createTextElement("td", date));
+          var notesField = document.createElement("td");
+          row.appendChild(notesField);
+          dates[date].forEach(value => {
+            notesField.appendChild(document.createTextNode(value));
+            notesField.appendChild(document.createElement("br"));
+          });
         });
-			});
 			return table;
     }
 

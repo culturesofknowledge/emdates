@@ -71,7 +71,7 @@ public class ConversionResource {
     final List<Place> consideredPlaces = new ArrayList<>();
 
     final Map<YearMonthDay, Set<String>> results = conversions
-        .convertForMatchingPlaces(dateRequest.getPlaceTerms(), dateRequest.asYearMonthDay(),
+        .convertForMatchingPlaces(dateRequest.getPlaceTerms(), dateRequest.asIso8601Date(),
             dateRequest.getTargetCalendar(), consideredPlaces::add
         )
         .collect(Collectors.toMap(ymd -> ymd, YearMonthDay::getNotes, Sets::union));
@@ -83,8 +83,10 @@ public class ConversionResource {
 
     final DateResult result;
     if (results.isEmpty()) {
-      result = new DateResult(conversions.defaultConversion(dateRequest.asYearMonthDay(), dateRequest.getTargetCalendar()
-      ));
+      result = new DateResult(conversions.defaultConversion(
+          dateRequest.asIso8601Date(),
+          dateRequest.getTargetCalendar()
+      ).collect(Collectors.toList()));
       result.addHint("Requested date lies outside all defined calendar periods.");
     } else {
       LOG.debug("results (size {}): {}", results.size(), results);
@@ -130,9 +132,7 @@ public class ConversionResource {
                        printer.print(column);
                      }
                      for (int i = 0; i < maxConversions; i++) {
-                       printer.print(format("%s_%d", fieldNames.getYearFieldName(), i));
-                       printer.print(format("%s_%d", fieldNames.getMonthFieldName(), i));
-                       printer.print(format("%s_%d", fieldNames.getDayFieldName(), i));
+                       printer.print(format("%s_%d", fieldNames.getDateFieldName(), i));
                      }
                      printer.println();
                      reader.read(record -> {
@@ -140,7 +140,7 @@ public class ConversionResource {
                        convertToColumns(conversions
                                .convertForMatchingPlaces(
                                    dateRequestBuilder.build(record).getPlaceTerms(),
-                                   dateRequestBuilder.build(record).asYearMonthDay(),
+                                   dateRequestBuilder.build(record).asIso8601Date(),
                                    dateRequestBuilder.build(record).getTargetCalendar()),
                          maxConversions, printer);
                      });
@@ -199,17 +199,12 @@ public class ConversionResource {
 
     // avoid conversions.foreach() lest we end up with IOExceptions inside lambda
     for (YearMonthDay ymd : (Iterable<YearMonthDay>) todo::iterator) {
-      printer.print(ymd.getYear());
-      printer.print(ymd.getMonth());
-      printer.print(ymd.getDay());
+      printer.print(ymd.asIso8601String());
       shortBy--;
     }
 
     for (int i = 0; i < shortBy; i++) {
-      // print empty fields for Y,M,D
-      for (int j = 0; j < 3; j++) {
-        printer.print("");
-      }
+      printer.print("");
     }
 
     // end record
@@ -260,9 +255,7 @@ public class ConversionResource {
     DateRequest build(CSVRecord record) {
       LOG.debug("record: {}, fieldNames: {}", record, fieldNames);
       return new DateRequest(
-        Integer.valueOf(record.get(fieldNames.getYearFieldName())),
-        Integer.valueOf(record.get(fieldNames.getMonthFieldName())),
-        Integer.valueOf(record.get(fieldNames.getDayFieldName())),
+        record.get(fieldNames.getDateFieldName()),
         record.get(fieldNames.getPlaceFieldName()),
         targetCalendar);
     }
