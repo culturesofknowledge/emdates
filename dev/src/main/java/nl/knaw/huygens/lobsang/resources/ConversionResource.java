@@ -71,7 +71,7 @@ public class ConversionResource {
     final List<Place> consideredPlaces = new ArrayList<>();
 
     final Map<YearMonthDay, Set<String>> results = conversions
-        .convertForMatchingPlaces(dateRequest.getPlaceTerms(), dateRequest.asYearMonthDay(),
+        .convertForMatchingPlaces(dateRequest.getPlaceTerms(), dateRequest.asIso8601Date(),
             dateRequest.getTargetCalendar(), consideredPlaces::add
         )
         .collect(Collectors.toMap(ymd -> ymd, YearMonthDay::getNotes, Sets::union));
@@ -83,8 +83,10 @@ public class ConversionResource {
 
     final DateResult result;
     if (results.isEmpty()) {
-      result = new DateResult(conversions.defaultConversion(dateRequest.asYearMonthDay(), dateRequest.getTargetCalendar()
-      ));
+      result = new DateResult(conversions.defaultConversion(
+          dateRequest.asIso8601Date(),
+          dateRequest.getTargetCalendar()
+      ).collect(Collectors.toList()));
       result.addHint("Requested date lies outside all defined calendar periods.");
     } else {
       LOG.debug("results (size {}): {}", results.size(), results);
@@ -138,7 +140,7 @@ public class ConversionResource {
                        convertToColumns(conversions
                                .convertForMatchingPlaces(
                                    dateRequestBuilder.build(record).getPlaceTerms(),
-                                   dateRequestBuilder.build(record).asYearMonthDay(),
+                                   dateRequestBuilder.build(record).asIso8601Date(),
                                    dateRequestBuilder.build(record).getTargetCalendar()),
                          maxConversions, printer);
                      });

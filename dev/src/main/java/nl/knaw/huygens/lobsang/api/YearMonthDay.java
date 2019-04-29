@@ -29,6 +29,10 @@ public class YearMonthDay {
     this.day = day;
   }
 
+  public static YearMonthDay fromLocalDate(LocalDate date) {
+    return new YearMonthDay(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
+  }
+
   @JsonProperty
   public int getYear() {
     return year;

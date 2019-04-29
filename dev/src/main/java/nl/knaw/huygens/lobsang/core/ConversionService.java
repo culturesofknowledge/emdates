@@ -1,5 +1,6 @@
 package nl.knaw.huygens.lobsang.core;
 
+import com.google.common.collect.Streams;
 import nl.knaw.huygens.lobsang.api.CalendarPeriod;
 import nl.knaw.huygens.lobsang.api.Place;
 import nl.knaw.huygens.lobsang.api.StartOfYear;
@@ -7,6 +8,8 @@ import nl.knaw.huygens.lobsang.api.YearMonthDay;
 import nl.knaw.huygens.lobsang.core.adjusters.DateAdjusterBuilder;
 import nl.knaw.huygens.lobsang.core.converters.CalendarConverter;
 import nl.knaw.huygens.lobsang.core.places.PlaceRegistry;
+import nl.knaw.huygens.lobsang.iso8601.Iso8601Date;
+import org.assertj.core.util.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,25 +116,44 @@ public class ConversionService {
     throw new ParseException("Unable to parse the date: " + dateAsString, -1);
   }
 
-  public YearMonthDay defaultConversion(YearMonthDay date, String targetCalendar) {
-    final int defaultDate = converters.defaultConverter().toRataDie(date);
-    Optional<CalendarConverter> target = converters.get(targetCalendar);
-    if (handleNonPresentConverter(target, targetCalendar)) {
-      throw new RuntimeException("Converter for calendar '" + targetCalendar + "' is not available!");
+  public Stream<YearMonthDay> defaultConversion(Iso8601Date date, String targetCalendar) {
+    return Lists.newArrayList(date.getStartAsYearMonthDay(), date.getEndAsYearMonthDay()).stream().map(ymd -> {
+      final int defaultDate = converters.defaultConverter().toRataDie(date.getStartAsYearMonthDay());
+      Optional<CalendarConverter> target = converters.get(targetCalendar);
+      if (handleNonPresentConverter(target, targetCalendar)) {
+        throw new RuntimeException("Converter for calendar '" + targetCalendar + "' is not available!");
 
-    }
-    final YearMonthDay result = target.get().fromRataDie(defaultDate);
-    result.addNote("Based on default calendar");
-    return result;
+      }
+      final YearMonthDay result = target.get().fromRataDie(defaultDate);
+      result.addNote("Based on default calendar");
+      return result;
+    });
   }
 
-  private Function<Place, Stream<YearMonthDay>> convertForPlace(YearMonthDay requestDate, String targetCalendar) {
-    return place -> place.getCalendarPeriods().stream()
-                         .map(calendarPeriod -> convert(calendarPeriod, requestDate, targetCalendar))
-                         .filter(Optional::isPresent)
-                         .map(Optional::get)
-                         .map(resultDate -> addPlaceNameNote(resultDate, place))
-                         .map(resultDate -> adjustForNewYearsDay(resultDate, requestDate, place.getStartOfYearList()));
+  private Function<Place, Stream<YearMonthDay>> convertForPlace(Iso8601Date requestDate, String targetCalendar) {
+    return place -> {
+      final Stream<YearMonthDay> start = place.getCalendarPeriods().stream()
+           .map(calendarPeriod -> convert(calendarPeriod, requestDate.getStartAsYearMonthDay(), targetCalendar))
+           .filter(Optional::isPresent)
+           .map(Optional::get)
+           .map(resultDate -> addPlaceNameNote(resultDate, place))
+           .map(resultDate -> adjustForNewYearsDay(
+               resultDate,
+               requestDate.getStartAsYearMonthDay(),
+               place.getStartOfYearList()
+           ));
+      Stream<YearMonthDay> end =place.getCalendarPeriods().stream()
+         .map(calendarPeriod -> convert(calendarPeriod, requestDate.getEndAsYearMonthDay(), targetCalendar))
+         .filter(Optional::isPresent)
+         .map(Optional::get)
+         .map(resultDate -> addPlaceNameNote(resultDate, place))
+         .map(resultDate -> adjustForNewYearsDay(
+             resultDate,
+             requestDate.getEndAsYearMonthDay(),
+             place.getStartOfYearList()
+         ));
+      return Streams.concat(start, end);
+    };
   }
 
   private YearMonthDay addPlaceNameNote(YearMonthDay result, Place place) {
@@ -159,7 +181,7 @@ public class ConversionService {
                               .apply(result);
   }
 
-  public Stream<YearMonthDay> convertForMatchingPlaces(String placeTerms, YearMonthDay requestDate,
+  public Stream<YearMonthDay> convertForMatchingPlaces(String placeTerms, Iso8601Date requestDate,
                                                        String targetCalendar, Consumer<Place> peepingTom) {
     Stream<Place> matchingPlaces = placeRegistry.searchPlaces(placeTerms);
 
@@ -172,7 +194,7 @@ public class ConversionService {
         () -> defaultConversion(requestDate, targetCalendar));
   }
 
-  public Stream<YearMonthDay> convertForMatchingPlaces(String placeTerms, YearMonthDay requestDate,
+  public Stream<YearMonthDay> convertForMatchingPlaces(String placeTerms, Iso8601Date requestDate,
                                                        String targetCalendar) {
     return convertForMatchingPlaces(placeTerms, requestDate, targetCalendar, null);
   }

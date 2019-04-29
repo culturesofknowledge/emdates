@@ -51,10 +51,7 @@ public class DateRequest {
       .toString();
   }
 
-  public YearMonthDay asYearMonthDay() {
-    final Iso8601Date iso8601Date = Iso8601ParserHelper.parse(getDate());
-    final LocalDate start = iso8601Date.getStart();
-
-    return new YearMonthDay(start.getYear(), start.getMonthValue(), start.getDayOfMonth());
+  public Iso8601Date asIso8601Date() {
+    return Iso8601ParserHelper.parse(getDate());
   }
 }

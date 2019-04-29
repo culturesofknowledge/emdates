@@ -1,5 +1,7 @@
 package nl.knaw.huygens.lobsang.iso8601;
 
+import nl.knaw.huygens.lobsang.api.YearMonthDay;
+
 import java.time.LocalDate;
 
 public class Iso8601Date {
@@ -21,8 +23,16 @@ public class Iso8601Date {
     return start;
   }
 
+  public YearMonthDay getStartAsYearMonthDay() {
+    return YearMonthDay.fromLocalDate(start);
+  }
+
   public LocalDate getEnd() {
     return end;
+  }
+
+  public YearMonthDay getEndAsYearMonthDay() {
+    return YearMonthDay.fromLocalDate(end);
   }
 
   public Uncertainty getUncertainty() {
