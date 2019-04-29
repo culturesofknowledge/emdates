@@ -197,7 +197,7 @@ public class ConversionResource {
 
     // avoid conversions.foreach() lest we end up with IOExceptions inside lambda
     for (YearMonthDay ymd : (Iterable<YearMonthDay>) todo::iterator) {
-      printer.print(String.format("%s-%s-%s", ymd.getYear(), ymd.getMonth(), ymd.getDay()));
+      printer.print(ymd.asIso8601String());
       shortBy--;
     }
 

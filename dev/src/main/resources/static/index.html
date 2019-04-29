@@ -83,30 +83,23 @@
       
     }
 
-    function createTable(items) {
-  		var headers = Object.keys(items[0]);
+    function createTable(dates) {
+  		var headers = ["Date", "Notes"];
 			var table = document.createElement("table");
 			var headerRow = document.createElement("tr");
 			table.appendChild(headerRow);
 			headers.forEach(header => headerRow.appendChild(createTextElement("th", header)));
-			items.forEach(item => {
+			Object.keys(dates).forEach((date) => {
         var row = document.createElement("tr");
         table.appendChild(row);
-        headers.forEach(header => {
-          var field = item[header];
-          if(field instanceof Array) {
-            var td = document.createElement("td");
-            row.appendChild(td);
-            field.forEach(value => {
-              td.appendChild(document.createTextNode(value));
-              td.appendChild(document.createElement("br"));
-            });
-          }
-          else {
-            row.appendChild(createTextElement("td", field));
-          }
+        row.appendChild(createTextElement("td", date));
+          var notesField = document.createElement("td");
+          row.appendChild(notesField);
+          dates[date].forEach(value => {
+            notesField.appendChild(document.createTextNode(value));
+            notesField.appendChild(document.createElement("br"));
+          });
         });
-			});
 			return table;
     }
 

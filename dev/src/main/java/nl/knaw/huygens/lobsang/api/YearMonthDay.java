@@ -6,7 +6,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.google.common.base.MoreObjects;
 
+import java.time.LocalDate;
 import java.time.MonthDay;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -100,5 +102,9 @@ public class YearMonthDay {
 
   public MonthDay asMonthDay() {
     return MonthDay.of(getMonth(), getDay());
+  }
+
+  public String asIso8601String() {
+    return LocalDate.of(year, month, day).format(DateTimeFormatter.ISO_DATE);
   }
 }

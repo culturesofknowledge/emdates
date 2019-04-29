@@ -7,6 +7,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.assertj.core.util.Lists;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @JsonInclude(Include.NON_EMPTY)
 @JsonPropertyOrder({"dates", "hints"})
@@ -24,8 +27,8 @@ public class DateResult {
   }
 
   @JsonProperty
-  public List<YearMonthDay> getDates() {
-    return dates;
+  public Map<String, Set<String>> getDates() {
+    return dates.stream().collect(Collectors.toMap(YearMonthDay::asIso8601String, YearMonthDay::getNotes));
   }
 
   @JsonProperty
