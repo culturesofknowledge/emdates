@@ -9,10 +9,12 @@ import nl.knaw.huygens.lobsang.core.adjusters.DateAdjusterBuilder;
 import nl.knaw.huygens.lobsang.core.converters.CalendarConverter;
 import nl.knaw.huygens.lobsang.core.places.PlaceRegistry;
 import nl.knaw.huygens.lobsang.iso8601.Iso8601Date;
+import nl.knaw.huygens.lobsang.iso8601.Uncertainty;
 import org.assertj.core.util.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.ResultSet;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.MonthDay;
@@ -136,6 +138,7 @@ public class ConversionService {
            .map(calendarPeriod -> convert(calendarPeriod, requestDate.getStartAsYearMonthDay(), targetCalendar))
            .filter(Optional::isPresent)
            .map(Optional::get)
+           .map(resultDate -> addUncertaintyNote(resultDate, requestDate))
            .map(resultDate -> addPlaceNameNote(resultDate, place))
            .map(resultDate -> adjustForNewYearsDay(
                resultDate,
@@ -154,6 +157,14 @@ public class ConversionService {
          ));
       return Streams.concat(start, end);
     };
+  }
+
+  private YearMonthDay addUncertaintyNote(YearMonthDay resultDate, Iso8601Date requestDate) {
+    if(requestDate.getUncertainty() != Uncertainty.NONE) {
+      resultDate.addNote(format("Date is '%s'.", requestDate.getUncertainty().name().toLowerCase().replace('_', ' ')));
+    }
+
+    return resultDate;
   }
 
   private YearMonthDay addPlaceNameNote(YearMonthDay result, Place place) {
