@@ -14,8 +14,9 @@ class HierarchyBuilderTest {
   void createsAnHierarchy() {
     final ArrayList<String> hierarchyProperties = Lists.newArrayList("em_hasRelationList", "items", "em_relationTo");
     final String collectionName = "ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place";
-    final String datePropertiesFragmentName = "...placeData";
+    final String datePropertiesFragmentName = "placeData";
     final int depth = 3;
+
     final String hierarchy = buildHierarchy(hierarchyProperties, collectionName, datePropertiesFragmentName, depth);
 
     assertThat(hierarchy, equalToCompressingWhiteSpace(

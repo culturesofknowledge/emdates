@@ -19,7 +19,7 @@ class HierarchyBuilder {
       query.append(hierarchyProperty).append(" {\n");
     }
     query.append("... on ").append(collectionName).append(" {\n");
-    query.append(datePropertiesFragmentName).append("\n");
+    query.append("...").append(datePropertiesFragmentName).append("\n");
 
     if (depth > 0) {
       buildHierarchy(hierarchyProperties, collectionName, datePropertiesFragmentName, depth - 1, query);
