@@ -11,6 +11,7 @@ import nl.knaw.huygens.lobsang.core.converters.CalendarConverter;
 import nl.knaw.huygens.lobsang.core.places.PlaceRegistry;
 import nl.knaw.huygens.lobsang.iso8601.Iso8601Date;
 import nl.knaw.huygens.lobsang.iso8601.Uncertainty;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,8 +19,7 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.MonthDay;
 import java.time.Year;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -32,10 +32,8 @@ import static nl.knaw.huygens.lobsang.helpers.StreamHelpers.defaultIfEmpty;
 
 public class ConversionService {
   public static final Logger LOG = LoggerFactory.getLogger(ConversionService.class);
-  private static final DateTimeFormatter[] DATE_FORMATS = {
-      DateTimeFormatter.ofPattern("yyyy-MM-dd"),
-      DateTimeFormatter.ofPattern("yyyy")
-  };
+  private static final String[] DATE_FORMATS = {"yyyy-MM-dd", "yyyy"};
+
   private final ConverterRegistry converters;
   private final PlaceRegistry placeRegistry;
 
@@ -98,23 +96,14 @@ public class ConversionService {
 
   private YearMonthDay asYearMonthDay(String dateAsString) {
     try {
-      LocalDate date = toLocalDate(dateAsString);
+      LocalDate date = DateUtils.parseDate(dateAsString, DATE_FORMATS)
+                                .toInstant()
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate();
       return new YearMonthDay(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
     } catch (ParseException e) {
       throw new RuntimeException("Could not parse date");
     }
-  }
-
-  private LocalDate toLocalDate(String dateAsString) throws ParseException {
-    for (DateTimeFormatter dateFormat : DATE_FORMATS) {
-      try {
-        final LocalDate date = LocalDate.parse(dateAsString, dateFormat);
-        return date;
-      } catch (DateTimeParseException e) {
-        LOG.debug("'{}' not parsable with format '{}'", dateAsString, dateFormat);
-      }
-    }
-    throw new ParseException("Unable to parse the date: " + dateAsString, -1);
   }
 
   public Stream<YearMonthDay> defaultConversion(Iso8601Date date, String targetCalendar) {
