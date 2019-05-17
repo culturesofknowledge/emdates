@@ -1,6 +1,6 @@
 package nl.knaw.huygens.lobsang.core.parsers;
 
-import org.assertj.core.util.Strings;
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

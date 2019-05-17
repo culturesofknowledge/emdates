@@ -1,5 +1,6 @@
 package nl.knaw.huygens.lobsang.core;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
 import nl.knaw.huygens.lobsang.api.CalendarPeriod;
 import nl.knaw.huygens.lobsang.api.Place;
@@ -10,7 +11,6 @@ import nl.knaw.huygens.lobsang.core.converters.CalendarConverter;
 import nl.knaw.huygens.lobsang.core.places.PlaceRegistry;
 import nl.knaw.huygens.lobsang.iso8601.Iso8601Date;
 import nl.knaw.huygens.lobsang.iso8601.Uncertainty;
-import org.assertj.core.util.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -2,7 +2,6 @@ package nl.knaw.huygens.lobsang.core.places.timbuctoo;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import nl.knaw.huygens.lobsang.api.CalendarPeriod;
 import nl.knaw.huygens.lobsang.api.Place;
 import nl.knaw.huygens.lobsang.core.places.PlaceRegistry;
@@ -18,10 +17,7 @@ import org.slf4j.LoggerFactory;
 import javax.json.Json;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.util.stream.StreamSupport.stream;
 
 public class TimbuctooPlaceRegistry implements PlaceRegistry {
   private static final Logger LOG = LoggerFactory.getLogger(TimbuctooPlaceRegistry.class);
