@@ -2,7 +2,6 @@ package nl.knaw.huygens.lobsang.core.places.timbuctoo;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import nl.knaw.huygens.lobsang.api.CalendarPeriod;
 import nl.knaw.huygens.lobsang.api.Place;
 import nl.knaw.huygens.lobsang.core.places.PlaceRegistry;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -16,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.json.Json;
 import java.io.IOException;
-import java.util.List;
 import java.util.stream.Stream;
 
 public class TimbuctooPlaceRegistry implements PlaceRegistry {
@@ -48,14 +46,8 @@ public class TimbuctooPlaceRegistry implements PlaceRegistry {
       try (CloseableHttpResponse response = httpClient.execute(request)) {
         JsonNode responseEntity = new ObjectMapper().readTree(response.getEntity().getContent());
 
-        JsonNode place = responseEntity.get("data")
-                                       .get("dataSets")
-                                       .get("" + dataSetId + "")
-                                       .get("em_Place");
-        List<CalendarPeriod> calendars = calendarRetriever.getCalendarPeriods(place);
-
-        String placeName = place.get("title").get("value").asText();
-        return Stream.of(new Place(placeName, calendars, Lists.newArrayList()));
+        return calendarRetriever.getCalendarPeriods(responseEntity).entrySet().stream()
+                                .map(entry -> new Place(entry.getKey(), entry.getValue(), Lists.newArrayList()));
 
       }
     } catch (IOException e) {

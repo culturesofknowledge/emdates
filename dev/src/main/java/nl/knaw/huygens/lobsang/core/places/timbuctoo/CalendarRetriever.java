@@ -3,9 +3,11 @@ package nl.knaw.huygens.lobsang.core.places.timbuctoo;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import nl.knaw.huygens.lobsang.api.CalendarPeriod;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.stream.StreamSupport.stream;
@@ -18,7 +20,19 @@ public class CalendarRetriever {
     this.dataSetId = dataSetId;
   }
 
-  public List<CalendarPeriod> getCalendarPeriods(JsonNode place) {
+  public Map<String, List<CalendarPeriod>> getCalendarPeriods(JsonNode timbuctooResponse) {
+    final JsonNode place = getRootPlace(timbuctooResponse);
+    Map<String, List<CalendarPeriod>> placeCalendars = Maps.newHashMap();
+    placeCalendars.put(getPlaceName(place), getCalendarPeriodsOfPlaceHierarchy(place));
+    return placeCalendars;
+  }
+
+  private String getPlaceName(JsonNode place) {
+    return place.get("title").get("value").asText();
+  }
+
+
+  private List<CalendarPeriod> getCalendarPeriodsOfPlaceHierarchy(JsonNode place) {
     ArrayNode annotations = (ArrayNode) place.get("em_hasAnnotationList").get("items");
     ArrayNode relations = (ArrayNode) place.get("em_hasRelationList").get("items");
 
@@ -30,10 +44,17 @@ public class CalendarRetriever {
       return stream(relations.spliterator(), false)
           .filter(this::isPlaceRelation)
           .map(relation -> relation.get("em_relationTo"))
-          .flatMap(node -> getCalendarPeriods(node).stream()).collect(Collectors.toList());
+          .flatMap(node -> getCalendarPeriodsOfPlaceHierarchy(node).stream()).collect(Collectors.toList());
     }
 
     return Lists.newArrayList();
+  }
+
+  private JsonNode getRootPlace(JsonNode timbuctooResponse) {
+    return timbuctooResponse.get("data")
+                            .get("dataSets")
+                            .get("" + dataSetId + "")
+                            .get("em_Place");
   }
 
   private boolean isPlaceRelation(JsonNode relation) {
