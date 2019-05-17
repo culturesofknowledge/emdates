@@ -6,12 +6,15 @@ import nl.knaw.huygens.lobsang.core.places.PlaceRegistry;
 import nl.knaw.huygens.lobsang.core.places.PlaceRegistryFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 
+import javax.json.Json;
 import java.util.List;
+import java.util.function.Function;
 
 import static nl.knaw.huygens.lobsang.core.places.timbuctoo.QueryBuilder.buildQuery;
 
 public class TimbuctooPlaceRegristryFactory implements PlaceRegistryFactory {
 
+  private static final String QUERY_NAME = "emdates";
   private final String dataSetId;
   private final String datePropertiesFragment;
   private String uri;
@@ -39,20 +42,25 @@ public class TimbuctooPlaceRegristryFactory implements PlaceRegistryFactory {
         httpClient,
         uri,
         dataSetId,
-        createQuery(dataSetId, collectionName, hierarchyStructure, datePropertiesFragment)
+        requestEntityBuilder()
     );
   }
 
-  private String createQuery(String dataSetId,
-                             String collectionName,
-                             List<String> hierarchyStructure,
-                             String datePropertiesFragment) {
+  private Function<String, String> requestEntityBuilder() {
+    return (placeTerms) -> Json.createObjectBuilder()
+                               .add("query", createQuery())
+                               .add("operationName", "emdates")
+                               .add("variables", Json.createObjectBuilder().add("uri", placeTerms)).build().toString();
+  }
+
+  private String createQuery() {
     return buildQuery(
         dataSetId,
         collectionName,
         hierarchyStructure,
         datePropertiesFragment,
-        10
+        10,
+        QUERY_NAME
     );
   }
 }

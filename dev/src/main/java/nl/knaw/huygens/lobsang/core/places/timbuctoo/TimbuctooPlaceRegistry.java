@@ -15,29 +15,27 @@ import org.slf4j.LoggerFactory;
 
 import javax.json.Json;
 import java.io.IOException;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class TimbuctooPlaceRegistry implements PlaceRegistry {
   private static final Logger LOG = LoggerFactory.getLogger(TimbuctooPlaceRegistry.class);
   private final CloseableHttpClient httpClient;
   private final String uri;
-  private final String query;
-  private final String dataSetId;
   private final CalendarRetriever calendarRetriever;
+  private final Function<String, String> requestEntityBuilder;
 
-  TimbuctooPlaceRegistry(CloseableHttpClient httpClient, String uri, String dataSetId, String query) {
+  TimbuctooPlaceRegistry(CloseableHttpClient httpClient, String uri, String dataSetId,
+                         Function<String, String> requestEntityBuilder) {
     this.httpClient = httpClient;
     this.uri = uri;
-    this.query = query;
-    this.dataSetId = dataSetId;
     this.calendarRetriever = new CalendarRetriever(dataSetId);
+    this.requestEntityBuilder = requestEntityBuilder;
   }
 
   @Override // TODO add exception handling / Provenance
   public Stream<Place> searchPlaces(String placeTerms) {
-    String requestEntity = Json.createObjectBuilder().add("query", query)
-                               .add("operationName", "emdates")
-                               .add("variables", Json.createObjectBuilder().add("uri", placeTerms)).build().toString();
+    String requestEntity = requestEntityBuilder.apply(placeTerms);
 
     HttpPost request = new HttpPost(uri);
     request.setEntity(new StringEntity(requestEntity, ContentType.APPLICATION_JSON));

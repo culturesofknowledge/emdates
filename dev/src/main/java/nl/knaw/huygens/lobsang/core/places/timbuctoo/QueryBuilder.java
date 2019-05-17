@@ -10,9 +10,9 @@ public class QueryBuilder {
       String collectionName,
       List<String> hierarchyStructure,
       String dateProperties,
-      int depth
-      ) {
-        return "query emdates ($uri:String!) {\n" +
+      int depth,
+      String queryName) {
+        return "query " + queryName + " ($uri:String!) {\n" +
         "  dataSets {\n" +
         "    ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places {\n" +
         "      em_Place(uri: $uri) {\n" +
