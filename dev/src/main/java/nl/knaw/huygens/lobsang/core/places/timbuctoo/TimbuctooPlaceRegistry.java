@@ -19,9 +19,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static nl.knaw.huygens.lobsang.core.places.timbuctoo.QueryBuilder.buildQuery;
-
 public class TimbuctooPlaceRegistry implements PlaceRegistry {
   private static final Logger LOG = LoggerFactory.getLogger(TimbuctooPlaceRegistry.class);
   private final CloseableHttpClient httpClient;
@@ -30,17 +27,16 @@ public class TimbuctooPlaceRegistry implements PlaceRegistry {
   private final String dataSetId;
   private final CalendarRetriever calendarRetriever;
 
-  TimbuctooPlaceRegistry(CloseableHttpClient httpClient, String uri, String dataSetId) {
+  TimbuctooPlaceRegistry(CloseableHttpClient httpClient, String uri, String dataSetId, String query) {
     this.httpClient = httpClient;
     this.uri = uri;
-    this.query = createQuery(dataSetId);
+    this.query = query;
     this.dataSetId = dataSetId;
     this.calendarRetriever = new CalendarRetriever(dataSetId);
   }
 
-  @Override // TODO add exception handling
+  @Override // TODO add exception handling / Provenance
   public Stream<Place> searchPlaces(String placeTerms) {
-    final String query = createQuery(dataSetId);
     String requestEntity = Json.createObjectBuilder().add("query", query)
                                .add("operationName", "emdates")
                                .add("variables", Json.createObjectBuilder().add("uri", placeTerms)).build().toString();
@@ -67,60 +63,5 @@ public class TimbuctooPlaceRegistry implements PlaceRegistry {
     }
 
     return Stream.empty();
-  }
-
-    private String createQuery(String dataSetId) {
-    return buildQuery(
-        dataSetId,
-        "em_Place",
-        newArrayList("em_hasRelationList", "items", "em_relationTo"),
-        getDatePropertiesFragment(),
-        10
-    );
-  }
-
-  private String getDatePropertiesFragment() {
-    return "fragment placeData on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place {\n" +
-        "  title {\n" +
-        "    value\n" +
-        "  }\n" +
-        "  __typename\n" +
-        "  em_hasAnnotationList {\n" +
-        "    items {\n" +
-        "      uri\n" +
-        "      em_when {\n" +
-        "        rdfs_label {\n" +
-        "          value\n" +
-        "        }\n" +
-        "        em_timespan {\n" +
-        "          ... on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_tim_unknown {\n" +
-        "            em_start {\n" +
-        "              value\n" +
-        "            }\n" +
-        "            em_end {\n" +
-        "              value\n" +
-        "            }\n" +
-        "          }\n" +
-        "          ... on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Time_span {\n" +
-        "            em_latestStart_ {\n" +
-        "              value\n" +
-        "            }\n" +
-        "            em_earliestEnd_ {\n" +
-        "              value\n" +
-        "            }\n" +
-        "          }\n" +
-        "        }\n" +
-        "      }\n" +
-        "      oa_hasBody {\n" +
-        "        ... on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Calendar {\n" +
-        "          __typename\n" +
-        "          rdfs_label {\n" +
-        "            value\n" +
-        "          }\n" +
-        "        }\n" +
-        "      }\n" +
-        "    }\n" +
-        "  }\n" +
-        "}";
   }
 }
