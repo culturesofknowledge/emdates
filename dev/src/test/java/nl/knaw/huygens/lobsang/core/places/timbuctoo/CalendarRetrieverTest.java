@@ -2,11 +2,13 @@ package nl.knaw.huygens.lobsang.core.places.timbuctoo;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import nl.knaw.huygens.lobsang.api.CalendarPeriod;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
@@ -306,11 +308,13 @@ class CalendarRetrieverTest {
       "\t}\n" +
       "}";
   private static final String DATA_SET_ID = "ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places";
+  private static final String COLLECTION_NAME = "em_Place";
+  private static final List<String> HIERARCHY_STRUCTURE = newArrayList("em_hasRelationList", "items", "em_relationTo");
 
   @Test
   void retrievesTheCalendarPeriodsFromThePlace() throws Exception {
     JsonNode place = OBJECT_MAPPER.readTree(CALS_IN_PLACE);
-    CalendarRetriever instance = new CalendarRetriever(DATA_SET_ID);
+    CalendarRetriever instance = new CalendarRetriever(DATA_SET_ID, COLLECTION_NAME, HIERARCHY_STRUCTURE);
 
     List<CalendarPeriod> calendarPeriods = instance.getCalendarPeriods(place).get("City of Opole");
 
@@ -323,7 +327,7 @@ class CalendarRetrieverTest {
   @Test
   void retrievesTheCalendarsFromTheRelatedPlace() throws Exception {
     JsonNode place = OBJECT_MAPPER.readTree(CALS_IN_HIERARCHY);
-    CalendarRetriever instance = new CalendarRetriever(DATA_SET_ID);
+    CalendarRetriever instance = new CalendarRetriever(DATA_SET_ID, COLLECTION_NAME, HIERARCHY_STRUCTURE);
 
     List<CalendarPeriod> calendarPeriods = instance.getCalendarPeriods(place).get("City of Opole");
 
@@ -336,7 +340,7 @@ class CalendarRetrieverTest {
   @Test
   void returnsAnEmptyListWhenCalendarsAreFound() throws Exception {
     JsonNode place = OBJECT_MAPPER.readTree(NO_CALENDARS);
-    CalendarRetriever instance = new CalendarRetriever(DATA_SET_ID);
+    CalendarRetriever instance = new CalendarRetriever(DATA_SET_ID, COLLECTION_NAME, HIERARCHY_STRUCTURE);
 
     List<CalendarPeriod> calendarPeriods = instance.getCalendarPeriods(place).get("City of Opole");
 

@@ -13,7 +13,6 @@ import org.assertj.core.util.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.json.Json;
 import java.io.IOException;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -25,11 +24,11 @@ public class TimbuctooPlaceRegistry implements PlaceRegistry {
   private final CalendarRetriever calendarRetriever;
   private final Function<String, String> requestEntityBuilder;
 
-  TimbuctooPlaceRegistry(CloseableHttpClient httpClient, String uri, String dataSetId,
-                         Function<String, String> requestEntityBuilder) {
+  TimbuctooPlaceRegistry(CloseableHttpClient httpClient, String uri,
+                         Function<String, String> requestEntityBuilder, CalendarRetriever calendarRetriever) {
     this.httpClient = httpClient;
     this.uri = uri;
-    this.calendarRetriever = new CalendarRetriever(dataSetId);
+    this.calendarRetriever = calendarRetriever;
     this.requestEntityBuilder = requestEntityBuilder;
   }
 
