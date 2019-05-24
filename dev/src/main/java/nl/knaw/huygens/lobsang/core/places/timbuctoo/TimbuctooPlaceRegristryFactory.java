@@ -15,11 +15,12 @@ import static nl.knaw.huygens.lobsang.core.places.timbuctoo.QueryBuilder.buildQu
 public class TimbuctooPlaceRegristryFactory implements PlaceRegistryFactory {
 
   private static final String QUERY_NAME = "emdates";
+  public static final String FRAGMENT_NAME = "placeData";
   private final String dataSetId;
-  private final String datePropertiesFragment;
-  private String uri;
-  private String collectionName;
-  private List<String> hierarchyStructure;
+  private final TimbuctooPlaceData placeData;
+  private final String uri;
+  private final String collectionName;
+  private final List<String> hierarchyStructure;
 
   @JsonCreator
   public TimbuctooPlaceRegristryFactory(
@@ -27,13 +28,13 @@ public class TimbuctooPlaceRegristryFactory implements PlaceRegistryFactory {
       @JsonProperty("dataSetId") String dataSetId,
       @JsonProperty("collectionName") String collectionName,
       @JsonProperty("hierarchyStructure") List<String> hierarchyStructure,
-      @JsonProperty("datePropertiesFragment") String datePropertiesFragment
+      @JsonProperty("placeData") TimbuctooPlaceDataFactory placeDataFactory
   ) {
     this.uri = uri;
     this.dataSetId = dataSetId;
     this.collectionName = collectionName;
     this.hierarchyStructure = hierarchyStructure;
-    this.datePropertiesFragment = datePropertiesFragment;
+    this.placeData = placeDataFactory.newTimbuctooPlaceData(FRAGMENT_NAME, dataSetId + "_" + collectionName);
   }
 
   @Override
@@ -57,7 +58,7 @@ public class TimbuctooPlaceRegristryFactory implements PlaceRegistryFactory {
         dataSetId,
         collectionName,
         hierarchyStructure,
-        datePropertiesFragment,
+        placeData.queryFragment(),
         10,
         QUERY_NAME
     );
