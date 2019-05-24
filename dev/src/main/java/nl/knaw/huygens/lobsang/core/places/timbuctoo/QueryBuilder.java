@@ -11,13 +11,16 @@ public class QueryBuilder {
       List<String> hierarchyStructure,
       String dateProperties,
       int depth,
-      String queryName) {
-        return "query " + queryName + " ($uri:String!) {\n" +
+      String queryName,
+      String fragmentName,
+      String uriProp
+  ) {
+    return "query " + queryName + " ($" + uriProp + ":String!) {\n" +
         "  dataSets {\n" +
-        "    ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places {\n" +
-        "      em_Place(uri: $uri) {\n" +
-        "        ...placeData\n" +
-        buildHierarchy(hierarchyStructure, createCollectionName(dataSetId, collectionName), "placeData", depth) +
+        "    " + dataSetId + " {\n" +
+        "      " + collectionName + "(uri: $uri) {\n" +
+        "        ..." + fragmentName + "\n" +
+        buildHierarchy(hierarchyStructure, createCollectionName(dataSetId, collectionName), fragmentName, depth) +
         "      }\n" +
         "     }\n" +
         "   }\n" +

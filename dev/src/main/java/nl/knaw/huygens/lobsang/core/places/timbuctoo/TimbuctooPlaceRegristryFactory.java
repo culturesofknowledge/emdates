@@ -15,7 +15,8 @@ import static nl.knaw.huygens.lobsang.core.places.timbuctoo.QueryBuilder.buildQu
 public class TimbuctooPlaceRegristryFactory implements PlaceRegistryFactory {
 
   private static final String QUERY_NAME = "emdates";
-  public static final String FRAGMENT_NAME = "placeData";
+  private static final String FRAGMENT_NAME = "placeData";
+  private static final String URI_PROP = "uri";
   private final String dataSetId;
   private final TimbuctooPlaceData placeData;
   private final String uri;
@@ -50,7 +51,9 @@ public class TimbuctooPlaceRegristryFactory implements PlaceRegistryFactory {
     return (placeTerms) -> Json.createObjectBuilder()
                                .add("query", createQuery())
                                .add("operationName", "emdates")
-                               .add("variables", Json.createObjectBuilder().add("uri", placeTerms)).build().toString();
+                               .add("variables", Json.createObjectBuilder().add(URI_PROP, placeTerms))
+                               .build()
+                               .toString();
   }
 
   private String createQuery() {
@@ -60,7 +63,9 @@ public class TimbuctooPlaceRegristryFactory implements PlaceRegistryFactory {
         hierarchyStructure,
         placeData.queryFragment(),
         10,
-        QUERY_NAME
+        QUERY_NAME,
+        FRAGMENT_NAME,
+        URI_PROP
     );
   }
 }
