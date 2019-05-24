@@ -1,0 +1,210 @@
+= Configuration of TimbuctooPlaceRegistry
+
+----
+...
+placeRegistry:
+  "@class": nl.knaw.huygens.lobsang.core.places.timbuctoo.TimbuctooPlaceRegristryFactory
+  uri: "https://repository.huygens.knaw.nl/v5/graphql"
+  dataSetId: "ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places"
+  collectionName: "em_Place"
+  hierarchyStructure:
+    - em_hasRelationList
+    - items
+    - em_relationTo
+  placeData:
+    titlePath:
+      - title
+      - value
+    annotationPath:
+      - em_hasAnnotationList
+      - items
+    timeSpan:
+      - type: ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Time_span
+        pathToTimeSpan:
+          - em_when
+          - em_timespan
+        pathToCalendarStart:
+          - em_latestStart_
+          - value
+        pathToCalendarEnd:
+          - em_earliestEnd_
+          - value
+      - type: ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_tim_unknown
+        pathToTimeSpan:
+          - em_when
+          - em_timespan
+        pathToCalendarStart:
+          - em_start
+          - value
+        pathToCalendarEnd:
+          - em_end
+          - value
+    calendar:
+      - type: ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Calendar
+        pathToCalendar:
+          - oa_hasBody
+        pathToCalendarName:
+          - title
+          - value
+...
+----
+
+Will send the query below to Timbuctoo
+
+----
+query emdates($uri: String!) {
+  dataSets {
+    ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places {
+      em_Place(uri: $uri) {
+        ...placeData
+        em_hasRelationList {
+          items {
+            __typename
+            em_relationType {
+              title {
+                value
+              }
+            }
+            em_relationTo {
+              ... on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place {
+                ...placeData
+                em_hasRelationList {
+                  items {
+                    em_relationTo {
+                      ... on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place {
+                        ...placeData
+                        em_hasRelationList {
+                          items {
+                            em_relationTo {
+                              ... on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place {
+                                ...placeData
+                                em_hasRelationList {
+                                  items {
+                                    em_relationTo {
+                                      ... on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place {
+                                        ...placeData
+                                        em_hasRelationList {
+                                          items {
+                                            em_relationTo {
+                                              ... on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place {
+                                                ...placeData
+                                                em_hasRelationList {
+                                                  items {
+                                                    em_relationTo {
+                                                      ... on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place {
+                                                        ...placeData
+                                                        em_hasRelationList {
+                                                          items {
+                                                            em_relationTo {
+                                                              ... on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place {
+                                                                ...placeData
+                                                                em_hasRelationList {
+                                                                  items {
+                                                                    em_relationTo {
+                                                                      ... on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place {
+                                                                        ...placeData
+                                                                        em_hasRelationList {
+                                                                          items {
+                                                                            em_relationTo {
+                                                                              ... on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place {
+                                                                                ...placeData
+                                                                                em_hasRelationList {
+                                                                                  items {
+                                                                                    em_relationTo {
+                                                                                      ... on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place {
+                                                                                        ...placeData
+                                                                                        em_hasRelationList {
+                                                                                          items {
+                                                                                            em_relationTo {
+                                                                                              ... on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place {
+                                                                                                ...placeData
+                                                                                              }
+                                                                                            }
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+fragment placeData on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Place {
+  title {
+    value
+  }
+  em_hasAnnotationList {
+    items {
+      em_when {
+        em_timespan {
+          ... on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_tim_unknown {
+            em_start {
+              value
+            }
+            em_end {
+              value
+            }
+          }
+        }
+      }
+      em_when {
+        em_timespan {
+          ... on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Time_span {
+            em_latestStart_ {
+              value
+            }
+            em_earliestEnd_ {
+              value
+            }
+          }
+        }
+      }
+      oa_hasBody {
+        ... on ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Calendar {
+          title {
+            value
+          }
+        }
+      }
+    }
+  }
+}
+----
