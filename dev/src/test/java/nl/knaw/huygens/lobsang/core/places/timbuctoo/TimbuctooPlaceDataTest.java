@@ -63,6 +63,7 @@ class TimbuctooPlaceDataTest {
         "                                          em_timespan {\n" +
         "                                            ... on " +
         "ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_tim_unknown {\n" +
+        "                                              __typename\n" +
         "                                              em_start {\n" +
         "                                                value\n" +
         "                                              }\n" +
@@ -76,6 +77,7 @@ class TimbuctooPlaceDataTest {
         "                                          em_timespan {\n" +
         "                                            ... on " +
         "ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Time_span {\n" +
+        "                                              __typename\n" +
         "                                              em_latestStart_ {\n" +
         "                                                value\n" +
         "                                              }\n" +
@@ -88,7 +90,7 @@ class TimbuctooPlaceDataTest {
         "                                        oa_hasBody {\n" +
         "                                          ... on " +
         "ue85b462c027ef2b282bf87b44e9670ebb085715d__emdates_places_em_Calendar {\n" +
-        "                                            __typename" +
+        "                                            __typename\n" +
         "                                            title {\n" +
         "                                              value\n" +
         "                                            }\n" +

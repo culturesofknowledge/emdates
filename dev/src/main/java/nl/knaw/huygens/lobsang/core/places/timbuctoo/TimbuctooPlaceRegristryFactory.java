@@ -42,7 +42,7 @@ public class TimbuctooPlaceRegristryFactory implements PlaceRegistryFactory {
     return new TimbuctooPlaceRegistry(
         httpClient,
         uri,
-        requestEntityBuilder(), new CalendarRetriever(dataSetId, collectionName, hierarchyStructure)
+        requestEntityBuilder(), new CalendarRetriever(dataSetId, collectionName, hierarchyStructure, placeData)
     );
   }
 

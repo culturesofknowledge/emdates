@@ -2,8 +2,13 @@ package nl.knaw.huygens.lobsang.core.places.timbuctoo;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.collect.Lists;
+import nl.knaw.huygens.lobsang.api.CalendarPeriod;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class TimbuctooPlaceData {
   private final List<String> titlePath;
@@ -40,6 +45,7 @@ public class TimbuctooPlaceData {
     for (TimeSpan timeSpan : timeSpans) {
       beginPath(stringBuilder, timeSpan.pathToTimeSpan);
       stringBuilder.append("... on ").append(timeSpan.type).append(" {\n");
+      stringBuilder.append("__typename\n");
       beginPath(stringBuilder, timeSpan.pathToStartCalendar);
       endPath(stringBuilder, timeSpan.pathToStartCalendar);
 
@@ -69,7 +75,7 @@ public class TimbuctooPlaceData {
   }
 
   private void endPath(StringBuilder stringBuilder, List<String> path) {
-    int pathSize = path.contains("value") ? path.size() -1: path.size();
+    int pathSize = path.contains("value") ? path.size() - 1 : path.size();
     for (int i = 0; i < pathSize; i++) {
       stringBuilder.append("\n}\n");
     }
@@ -85,6 +91,68 @@ public class TimbuctooPlaceData {
 
   }
 
+  public boolean isCalendarAnnotation(JsonNode annotation) {
+    return calendars.stream().anyMatch(calendar -> {
+      final List<String> path = calendar.pathToCalendar;
+      JsonNode annotationStep = walkPath(annotation, path);
+      return annotationStep.has("__typename") && annotationStep.get("__typename").asText().equals(calendar.type);
+    });
+  }
+
+  public String getPlaceName(JsonNode place) {
+    JsonNode pathStep = walkPath(place, titlePath);
+
+    return pathStep.asText();
+  }
+
+  private JsonNode walkPath(JsonNode place, List<String> titlePath) {
+    JsonNode pathStep = place;
+    for (String step : titlePath) {
+      if (pathStep.has(step)) {
+        pathStep = pathStep.get(step);
+      }
+    }
+    return pathStep;
+  }
+
+  public JsonNode getAnnotations(JsonNode place) {
+    return walkPath(place, annotationPath);
+  }
+
+  public CalendarPeriod createCalendar(JsonNode calendarAnnotation) {
+    final Optional<String> calendarName = calendars.stream()
+                                                   .filter(cal -> {
+                                                     final JsonNode calendarNode =
+                                                         walkPath(calendarAnnotation, cal.pathToCalendar);
+                                                     return calendarNode.has("__typename") &&
+                                                         calendarNode.get("__typename").asText().equals(cal.type);
+                                                   })
+                                                   .map(cal -> {
+                                                     final JsonNode calendarNode =
+                                                         walkPath(calendarAnnotation, cal.pathToCalendar);
+                                                     final JsonNode calName =
+                                                         walkPath(calendarNode, cal.pathToCalendarName);
+                                                     return calName.asText();
+                                                   }).findFirst();
+    final List<String> timeSpan = timeSpans
+        .stream()
+        .filter(span -> {
+          final JsonNode timeSpanNode1 =
+              walkPath(calendarAnnotation, span.pathToTimeSpan);
+          return timeSpanNode1.has("__typename") &&
+              timeSpanNode1.get("__typename").asText().equals(span.type);
+        }).map(span -> {
+          final JsonNode timeSpanNode = walkPath(calendarAnnotation, span.pathToTimeSpan);
+          final JsonNode startNode = walkPath(timeSpanNode, span.pathToStartCalendar);
+          final String start = startNode.isNull() ? null : startNode.asText();
+          final JsonNode endNode = walkPath(timeSpanNode, span.pathToEndCalendar);
+          final String end = endNode.isNull() ? null : endNode.asText();
+
+          return Lists.newArrayList(start, end).stream();
+        }).flatMap(val -> val).collect(Collectors.toList());
+
+    return new CalendarPeriod(calendarName.get(), timeSpan.get(0), timeSpan.get(1));
+  }
 
   static class TimeSpan {
     private final String type;
