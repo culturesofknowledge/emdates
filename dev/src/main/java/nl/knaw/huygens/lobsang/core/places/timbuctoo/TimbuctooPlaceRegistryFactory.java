@@ -12,7 +12,7 @@ import java.util.function.Function;
 
 import static nl.knaw.huygens.lobsang.core.places.timbuctoo.QueryBuilder.buildQuery;
 
-public class TimbuctooPlaceRegristryFactory implements PlaceRegistryFactory {
+public class TimbuctooPlaceRegistryFactory implements PlaceRegistryFactory {
 
   private static final String QUERY_NAME = "emdates";
   private static final String FRAGMENT_NAME = "placeData";
@@ -24,7 +24,7 @@ public class TimbuctooPlaceRegristryFactory implements PlaceRegistryFactory {
   private final List<String> hierarchyStructure;
 
   @JsonCreator
-  public TimbuctooPlaceRegristryFactory(
+  public TimbuctooPlaceRegistryFactory(
       @JsonProperty("uri") String uri,
       @JsonProperty("dataSetId") String dataSetId,
       @JsonProperty("collectionName") String collectionName,
