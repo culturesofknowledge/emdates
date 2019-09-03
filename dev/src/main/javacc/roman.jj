@@ -66,6 +66,7 @@ public class RomanDateParser {
     final YearMonthDay result = new YearMonthDay(year.orElse(0), md.getMonthValue(), md.getDayOfMonth());
 
     if (!year.isPresent()) {
+      result.setYearSpecified(false);
       result.addNote("Missing year indication. Please specify.");
     }
 
@@ -143,8 +144,8 @@ TOKEN :
 | < Mar: ("mar" (["i","s","t","u"])* <OptPeriod>) | "m." >
 | < Apr: "apr" (["i","l"])* <OptPeriod> >
 | < May: "ma" (["a","i","j","s"])* <OptPeriod> >
-| < Jun: ("iun"|"ivn") (["i","u","s"])* <OptPeriod> >
-| < Jul: ("iul"|"ivl") (["i","u","s"])* <OptPeriod> >
+| < Jun: ("iun"|"ivn") (["a","i","u","s"])* <OptPeriod> >
+| < Jul: ("iul"|"ivl") (["a","i","u","s"])* <OptPeriod> >
 | < Aug: ("aug"|"avg") (["i","s","t","u"])* <OptPeriod> >
 | < Sep: "sep" (["b","e","m","i","r","s","t"])* <OptPeriod> >
 | < Oct: ("oct"|"okt") (["o","b","e","i","r", "s"])* <OptPeriod> >
