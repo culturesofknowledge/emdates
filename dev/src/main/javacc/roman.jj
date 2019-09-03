@@ -94,18 +94,20 @@ TOKEN :
 }
 
 // Gleaned from https://github.com/antlr/grammars-v4/blob/master/romannumerals/romannumerals.g4
+// Optional spaces allowed in #THOUSANDS and #HUNS to account for dates written in "M D LXVV" form
 TOKEN :
 {
   <#ONES_REP  : "i" | "ii" | "iii" >
-| <#ONES      : <ONES_REP> | "iv" | "v" (<ONES_REP>)? | "ix" >
+| <#FOUR      : "iv" | "iiii" > // allow common variant of 'iiii' for 'iv'
+| <#ONES      : <ONES_REP> | <FOUR> | "v" (<ONES_REP>)? | "ix" >
 | <#TENS_REP  : "x" | "xx" | "xxx" >
 | <#TENS_PART : <TENS_REP> | "xl" | "l" (<TENS_REP>)? | "xc" >
 | <#TENS      : <TENS_PART> <ONES> | <TENS_PART> | <ONES> >
 | <#HUNS_REP  : "c" | "cc" | "ccc" >
 | <#HUNS_PART : <HUNS_REP> | "cd" | "d" (<HUNS_REP>)? | "cm" >
-| <#HUNS      : <HUNS_PART> <TENS> | <HUNS_PART> | <TENS> >
+| <#HUNS      : <HUNS_PART> ([" "])? <TENS> | <HUNS_PART> | <TENS> >
 | <#THOUS_PART: ("m")+ >
-| <#THOUSANDS : <THOUS_PART> <HUNS> | <THOUS_PART> | <HUNS> >
+| <#THOUSANDS : <THOUS_PART> ([" "])? <HUNS> | <THOUS_PART> | <HUNS> >
 | <Roman      : <THOUSANDS> >
 }
 
@@ -144,8 +146,8 @@ TOKEN :
 | < Jun: ("iun"|"ivn") (["i","u","s"])* <OptPeriod> >
 | < Jul: ("iul"|"ivl") (["i","u","s"])* <OptPeriod> >
 | < Aug: ("aug"|"avg") (["i","s","t","u"])* <OptPeriod> >
-| < Sep: "sep" (["b","e","m","r","t"])* <OptPeriod> >
-| < Oct: ("oct"|"okt") (["o","b","e","r"])* <OptPeriod> >
+| < Sep: "sep" (["b","e","m","i","r","s","t"])* <OptPeriod> >
+| < Oct: ("oct"|"okt") (["o","b","e","i","r", "s"])* <OptPeriod> >
 | < Nov: ("nov"|"nou") (["b","e","m","r"])* <OptPeriod> >
 | < Dec: "dec" (["b","e","m","r"])* <OptPeriod> >
 }
@@ -156,7 +158,7 @@ TOKEN :
 | < Bis:  "bis" <OptPeriod> >
 | < Diem: ("diem" | ("d" ".")) >
 | < Ides   : ("e")? "id" ("es"|"us")? <OptPeriod> >
-| < Kalends: (["c", "k"]) "al" (["e","i","n","d","s"])* <OptPeriod> >
+| < Kalends: (["c", "k"]) "al" (["e","i","n","d","s"])* ("arum")? <OptPeriod> >
 | < Nones  : "non" (["a","e","i"] "s")? <OptPeriod> >
 | < Pridie: ("pr") (["d","e","i"])* <OptPeriod> >
 }
@@ -190,23 +192,22 @@ YearMonthDay parseDate() :
   }
   (
     // e.g., "<Month>" as "Kal. <Month>" (which in turn means "1st of <Month>").
-    month=month() [year=number()]
+    month=month() [year=number(notes)]
     {
       result = inYear(year, lookup("KAL. " + month));
       notes.add("Missing day of month indication, assuming Kalends (first day of the month).");
     }
   |
     // e.g., "Kal. Mart.", "Id. Feb".
-    event = event() month=month() [year=number()]
+    event = event() month=month() [year=number(notes)]
     {
       final MonthDay md = lookup(event + " " + month);
       result = inYear(year, md);
     }
   |
     // e.g., "A.D. VII Ides Mart."
-    [<Ante> <Diem>] [bis=<Bis>] (count=roman() | t1=<PseudoRoman>) [event=event()] month=month() [year=number() | t2=<PseudoRoman>]
+    [<Ante> <Diem>] [bis=<Bis>] (count=roman(notes) | t1=<PseudoRoman>) [event=event()] month=month() [year=number(notes) | t2=<PseudoRoman>]
     {
-
       if (t1 != null) {
         notes.add(ILLEGAL_ROMAN_NUMERAL + t1.image + ", winging it using count=" + DEFAULT_COUNT);
         count = DEFAULT_COUNT;
@@ -242,7 +243,7 @@ YearMonthDay parseDate() :
     }
   |
     // e.g., "Prid. Kal. Mart.", "Prid. Non. Apr."
-    <Pridie> event=event() month=month() [year=number()]
+    <Pridie> event=event() month=month() [year=number(notes)]
     {
       final MonthDay md = table.lookup("PRID. " + event + " " + month);
       result = inYear(year, md);
@@ -281,12 +282,22 @@ String month() :
 | <Dec> { return "DEC."; }
 }
 
-String roman() :
+String roman(Set<String> notes) :
 {
   Token token;
 }
 {
-  token=<Roman> ["."] { return token.image; }
+  token=<Roman> ["."] {
+    String count = token.image.toUpperCase();
+    if (count.contains(" ")) {
+      notes.add("Detected whitespace in roman numeral: '" + count + "'");
+    }
+    if (count.contains("IIII")) {
+      notes.add("Parsing 'IIII' as variant of 'IV' in: '" + count + "'");
+      return count = count.replaceAll("IIII", "IV");
+    }
+    return count;
+  }
 }
 
 String arabic() :
@@ -297,13 +308,13 @@ String arabic() :
   token=<Arabic> ["."] { return token.image; }
 }
 
-int number() :
+int number(Set<String> notes) :
 {
   String str;
 }
 {
   str=arabic() { return Integer.valueOf(str); }
-| str=roman()  { return evaluateRomanNumerals(str); }
+| str=roman(notes)  { return evaluateRomanNumerals(str); }
 }
 
 String superfluous() :

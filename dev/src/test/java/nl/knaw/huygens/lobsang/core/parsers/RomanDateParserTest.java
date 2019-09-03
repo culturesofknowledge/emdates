@@ -34,15 +34,15 @@ class RomanDateParserTest {
     assertEquals(new YearMonthDay(0, 2, 25), parse("A.D. BIS VI KAL. M."));
 
     Throwable t = assertThrows(nl.knaw.huygens.lobsang.core.parsers.ParseException.class,
-      () -> parse("A.D. BIS VI KAL. DEC."));
+        () -> parse("A.D. BIS VI KAL. DEC."));
     assertTrue(t.getMessage().contains("only defined on"));
 
     t = assertThrows(nl.knaw.huygens.lobsang.core.parsers.ParseException.class,
-      () -> parse("A.D. BIS VI ID. Mar."));
+        () -> parse("A.D. BIS VI ID. Mar."));
     assertTrue(t.getMessage().contains("only defined on"));
 
     t = assertThrows(nl.knaw.huygens.lobsang.core.parsers.ParseException.class,
-      () -> parse("A.D. BIS V KAL. Mar."));
+        () -> parse("A.D. BIS V KAL. Mar."));
     assertTrue(t.getMessage().contains("only defined on"));
   }
 
@@ -71,7 +71,7 @@ class RomanDateParserTest {
     // Februari 2 would have been "IV Non. Feb."
     assertEquals(new YearMonthDay(1657, 2, 2), parse("IV Non. Feb. 1657."));
     Throwable t = assertThrows(nl.knaw.huygens.lobsang.core.parsers.ParseException.class,
-      () -> parse("V Non. Feb. 1657."));
+        () -> parse("V Non. Feb. 1657."));
     assertTrue(t.getMessage().toLowerCase().contains("unrecognised roman date"));
 
     assertEquals(new YearMonthDay(1658, 8, 1), parse("Kal. Augusti 1658"));
@@ -106,7 +106,7 @@ class RomanDateParserTest {
   }
 
   @Test
-  // legal roman numeral used in count, but invalid in the context of "a.d. <count> <event>" notation
+    // legal roman numeral used in count, but invalid in the context of "a.d. <count> <event>" notation
   void invalidRomanNumeralInCountProducesWarning() throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
     final YearMonthDay result = parse("a.d. MDC Kal. April. MDCLVII");
     assertTrue(result.getNotes().stream().anyMatch(s -> s.startsWith(INVALID_ROMAN_COUNT)));
@@ -126,6 +126,31 @@ class RomanDateParserTest {
   void romanNumeralParsingIgnoresCase(String year) throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
     // Expect robustness to random uppercase / lowercase changes.
     assertEquals(new YearMonthDay(1662, 3, 27), parse("a.d. VI. Kal. April. " + year));
+  }
+
+  @Test
+  void testThatIIIIparsesAsIV() throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
+    YearMonthDay result = parse("IIII Idus Decemb. M D LXIIII.");
+    assertEquals(new YearMonthDay(1564, 12, 10), result);
+    assertEquals(2, result.getNotes().stream().filter(s -> s.contains("Parsing 'IIII' as variant of 'IV'")).count());
+  }
+
+  @Test
+  void testThatSpacesInYearAreRemovedAndNoted() throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
+    YearMonthDay result = parse("Decemb. M D LXI");
+    assertEquals(new YearMonthDay(1561, 12, 1), result);
+    assertTrue(result.getNotes().stream().anyMatch(s -> s.contains("Detected whitespace") && s.contains("M D LXI")));
+  }
+
+  @Test
+  void testKalendVariantSpelling() throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
+    assertEquals(new YearMonthDay(1575, 12, 25), parse("VIII Kalendarum Ianuarii MDLXXV."));
+  }
+
+  @Test
+  void testXXXBrisVariantSpelling() throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
+    assertEquals(new YearMonthDay(0, 8, 22), parse("XI Kal. Septembris"));
+    assertEquals(new YearMonthDay(0, 9, 21), parse("XI Kal. Octobris"));
   }
 
   private YearMonthDay parse(final String input) throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
