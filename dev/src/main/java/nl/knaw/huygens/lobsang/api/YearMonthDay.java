@@ -17,16 +17,24 @@ import java.util.Set;
 @JsonInclude(Include.NON_EMPTY)
 @JsonPropertyOrder({"year", "month", "day", "notes"})
 public class YearMonthDay {
+  public static final DateTimeFormatter MONTH_DAY = DateTimeFormatter.ofPattern("MM-dd");
   private final int day;
   private final int month;
   private final int year;
 
   private Set<String> notes;
 
+  private boolean yearSpecified;
+
   public YearMonthDay(int year, int month, int day) {
     this.year = year;
     this.month = month;
     this.day = day;
+    this.yearSpecified = true;
+  }
+
+  public void setYearSpecified(boolean yearSpecified) {
+    this.yearSpecified = yearSpecified;
   }
 
   public static YearMonthDay fromLocalDate(LocalDate date) {
@@ -75,6 +83,17 @@ public class YearMonthDay {
     return nextYear;
   }
 
+  public MonthDay asMonthDay() {
+    return MonthDay.of(getMonth(), getDay());
+  }
+
+  public String asIso8601String() {
+    if (yearSpecified) {
+      return LocalDate.of(year, month, day).format(DateTimeFormatter.ISO_DATE);
+    }
+    return "XXXX-" + asMonthDay().format(MONTH_DAY);
+  }
+
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
@@ -102,13 +121,5 @@ public class YearMonthDay {
   @Override
   public int hashCode() {
     return Objects.hash(day, month, year);
-  }
-
-  public MonthDay asMonthDay() {
-    return MonthDay.of(getMonth(), getDay());
-  }
-
-  public String asIso8601String() {
-    return LocalDate.of(year, month, day).format(DateTimeFormatter.ISO_DATE);
   }
 }
