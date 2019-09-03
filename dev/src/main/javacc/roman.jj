@@ -149,7 +149,7 @@ TOKEN :
 | < Aug: ("aug"|"avg") (["i","s","t","u"])* <OptPeriod> >
 | < Sep: "sep" (["b","e","m","i","r","s","t"])* <OptPeriod> >
 | < Oct: ("oct"|"okt") (["o","b","e","i","r", "s"])* <OptPeriod> >
-| < Nov: ("nov"|"nou") (["b","e","m","r"])* <OptPeriod> >
+| < Nov: ("nov"|"nou") (["b","e","i","m","r", "s"])* <OptPeriod> >
 | < Dec: "dec" (["b","e","m","r"])* <OptPeriod> >
 }
 
