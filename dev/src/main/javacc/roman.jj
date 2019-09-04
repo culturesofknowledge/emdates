@@ -105,7 +105,7 @@ TOKEN :
 | <#TENS_PART : <TENS_REP> | "xl" | "l" (<TENS_REP>)? | "xc" >
 | <#TENS      : <TENS_PART> <ONES> | <TENS_PART> | <ONES> >
 | <#HUNS_REP  : "c" | "cc" | "ccc" >
-| <#HUNS_PART : <HUNS_REP> | "cd" | "d" (<HUNS_REP>)? | "cm" >
+| <#HUNS_PART : <HUNS_REP> | "cd" | "d" ([" "])? (<HUNS_REP>)? | "cm" >
 | <#HUNS      : <HUNS_PART> ([" "])? <TENS> | <HUNS_PART> | <TENS> >
 | <#THOUS_PART: ("m")+ >
 | <#THOUSANDS : <THOUS_PART> ([" "])? <HUNS> | <THOUS_PART> | <HUNS> >
