@@ -152,7 +152,9 @@
           if(responseData.parsedDate) {
             result.appendChild(document.createTextNode(JSON.stringify(responseData.parsedDate).replace("{", "").replace("}", "").replace(/\"/g, "").replace(/,/g, " ")));
             if (responseData.notes) {
-              result.appendChild(document.createTextNode(JSON.stringify(responseData.notes)));
+              const list = document.createElement("ul");
+              result.appendChild(list);
+              responseData["notes"].forEach(note => list.appendChild(createTextElement("li", note)));
             }
           } else {
             result.appendChild(document.createTextNode("error: " + responseData.message));
