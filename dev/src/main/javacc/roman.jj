@@ -158,7 +158,7 @@ TOKEN :
   < Ante: ("ante" | ("a" ".")) >
 | < Bis:  "bis" <OptPeriod> >
 | < Diem: ("diem" | ("d" ".")) >
-| < Ides   : ("e")? "id" ("es"|"us")? <OptPeriod> >
+| < Ides   : ("e")? "id" ("ib")? ("es"|"us")? <OptPeriod> >
 | < Kalends: (["c", "k"]) "al" (["e","i","n","d","s"])* ("arum")? <OptPeriod> >
 | < Nones  : "non" (["a","e","i"] "s")? <OptPeriod> >
 | < Pridie: ("pr") (["d","e","i"])* <OptPeriod> >
