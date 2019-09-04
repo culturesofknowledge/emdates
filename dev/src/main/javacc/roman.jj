@@ -133,7 +133,7 @@ TOKEN :
 
 TOKEN :
 {
-  <Quin: "q" ("u"|"v") "i" ("n")? ("c")? (["i","l","s","t","u"])* <OptPeriod> >
+  <Quin: "q" ("u"|"v") "i" ("n")? ("c")? (["b","e","i","l","s","t","u"])* <OptPeriod> >
 | <Sext: "sex" (["i","l","s","t","u"])* <OptPeriod> >
 }
 
