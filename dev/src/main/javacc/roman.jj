@@ -142,7 +142,7 @@ TOKEN :
   < Jan: ("ian" | "jan") (["a","i","r","s","u"])* <OptPeriod> >
 | < Feb: "feb" (["a","i","j","r","s","u"])* <OptPeriod> >
 | < Mar: ("mar" (["i","s","t","u"])* <OptPeriod>) | "m." >
-| < Apr: "apr" (["i","l"])* <OptPeriod> >
+| < Apr: "apr" (["e","i","l","s"])* <OptPeriod> >
 | < May: "ma" (["a","i","j","s"])* <OptPeriod> >
 | < Jun: ("iun"|"ivn") (["a","i","u","s"])* <OptPeriod> >
 | < Jul: ("iul"|"ivl") (["a","i","u","s"])* <OptPeriod> >
