@@ -65,7 +65,7 @@ public class RomanDateParser {
   private static YearMonthDay inYear(Optional<Integer> year, MonthDay md) {
     final YearMonthDay result = new YearMonthDay(year.orElse(0), md.getMonthValue(), md.getDayOfMonth());
 
-    if (!year.isPresent()) {
+    if (year.isEmpty()) {
       result.setYearSpecified(false);
       result.addNote("Missing year indication. Please specify.");
     }
@@ -75,6 +75,29 @@ public class RomanDateParser {
 
   private static YearMonthDay inYear(Integer year, MonthDay md) {
     return inYear(Optional.ofNullable(year), md);
+  }
+
+  private static String asRomanForEvent(int num) {
+    switch(num){
+      case 3: return "III";
+      case 4: return "IV";
+      case 5: return "V";
+      case 6: return "VI";
+      case 7: return "VII";
+      case 8: return "VIII";
+      case 9: return "IX";
+      case 10: return "X";
+      case 11: return "XI";
+      case 12: return "XII";
+      case 13: return "XIII";
+      case 14: return "XIV";
+      case 15: return "XV";
+      case 16: return "XVI";
+      case 17: return "XVII";
+      case 18: return "XVIII";
+      default:
+        return String.valueOf(num);
+    }
   }
 
 }
@@ -134,23 +157,23 @@ TOKEN :
 TOKEN :
 {
   <Quin: "q" ("u"|"v") "i" ("n")? ("c")? (["b","e","i","l","s","t","u"])* <OptPeriod> >
-| <Sext: "sex" (["i","l","s","t","u"])* <OptPeriod> >
+| <Sext: "sex" (["e","i","l","s","t","u"])* <OptPeriod> >
 }
 
 TOKEN :
 {
   < Jan: ("ian" | "jan") (["a","i","r","s","u"])* <OptPeriod> >
 | < Feb: "feb" (["a","i","j","r","s","u"])* <OptPeriod> >
-| < Mar: ("mar" (["i","s","t","u"])* <OptPeriod>) | "m." >
+| < Mar: ("mar" (["a","i","s","t","u"])* <OptPeriod>) | "m." >
 | < Apr: "apr" (["e","i","l","s"])* <OptPeriod> >
 | < May: "ma" (["a","i","j","s"])* <OptPeriod> >
 | < Jun: ("iun"|"ivn") (["a","i","u","s"])* <OptPeriod> >
-| < Jul: ("iul"|"ivl") (["a","i","u","s"])* <OptPeriod> >
+| < Jul: ("iul"|"ivl") (["a","c","i","o","u","s"])* <OptPeriod> >
 | < Aug: ("aug"|"avg") (["i","s","t","u"])* <OptPeriod> >
 | < Sep: "sep" (["b","e","m","i","r","s","t"])* <OptPeriod> >
 | < Oct: ("oct"|"okt") (["o","b","e","i","r", "s"])* <OptPeriod> >
 | < Nov: ("nov"|"nou") (["b","e","i","m","r", "s"])* <OptPeriod> >
-| < Dec: "dec" (["b","e","m","r"])* <OptPeriod> >
+| < Dec: "dec" (["b","e","i","m","r","s"])* <OptPeriod> >
 }
 
 TOKEN :
@@ -160,7 +183,7 @@ TOKEN :
 | < Diem: ("diem" | ("d" ".")) >
 | < Ides   : ("e")? "id" ("ib")? ("es"|"us")? <OptPeriod> >
 | < Kalends: (["c", "k"]) "al" (["e","i","n","d","s"])* ("arum")? <OptPeriod> >
-| < Nones  : "non" (["a","e","i"] "s")? <OptPeriod> >
+| < Nones  : "non" (["a","e","i"] "s" | "arum")? <OptPeriod> >
 | < Pridie: ("pr") (["d","e","i"])* <OptPeriod> >
 }
 
@@ -174,7 +197,8 @@ YearMonthDay parseDate() :
 {
   final Set<String> notes = new HashSet<String>();
   final YearMonthDay result;
-  String count = null;
+  String arabic = null;
+  String roman = null;
   Integer day = null;
   Integer year = null;
   String event = null;
@@ -207,17 +231,17 @@ YearMonthDay parseDate() :
     }
   |
     // e.g., "A.D. VII Ides Mart."
-    [<Ante> <Diem>] [bis=<Bis>] (count=roman(notes) | t1=<PseudoRoman>) [event=event()] month=month() [year=number(notes) | t2=<PseudoRoman>]
+    [<Ante> <Diem>] [bis=<Bis>] (roman=roman(notes) | arabic=arabic() | t1=<PseudoRoman>) [event=event()] month=month() [year=number(notes) | t2=<PseudoRoman>]
     {
       if (t1 != null) {
         notes.add(ILLEGAL_ROMAN_NUMERAL + t1.image + ", winging it using count=" + DEFAULT_COUNT);
-        count = DEFAULT_COUNT;
+        roman = DEFAULT_COUNT;
       }
       else if (event != null) {
-        int num = evaluateRomanNumerals(count);
+        int num = (roman == null ? Integer.parseInt(arabic) : evaluateRomanNumerals(roman));
         if (num < 3 || num > 18) {
-          notes.add(INVALID_ROMAN_COUNT + count + " in 'ante diem <count> <event>' notation, must be between iii and xviii (inclusive)");
-          count = DEFAULT_COUNT;
+          notes.add(INVALID_ROMAN_COUNT + roman + " in 'ante diem <count> <event>' notation, must be between iii and xviii (inclusive)");
+          roman = DEFAULT_COUNT;
         }
       }
 
@@ -228,13 +252,20 @@ YearMonthDay parseDate() :
 
       if (event == null) {
         final MonthDay md = lookup("KAL. " + month);
-        result = inYear(year, md.withDayOfMonth(evaluateRomanNumerals(count)));
+        final int dayOfMonth = (roman == null ? Integer.parseInt(arabic) : evaluateRomanNumerals(roman));
+        result = inYear(year, md.withDayOfMonth(dayOfMonth));
       }
       else if (bis == null) {
-        final MonthDay md = lookup("A.D. " + count.toUpperCase() + " " + event + " " + month);
+        final String daysBeforeEvent;
+        if (roman == null) {
+          daysBeforeEvent = asRomanForEvent(Integer.parseInt(arabic));
+        } else {
+          daysBeforeEvent = roman.toUpperCase();
+        }
+        final MonthDay md = lookup("A.D. " + daysBeforeEvent + " " + event + " " + month);
         result = inYear(year, md);
       }
-      else if (month.equals("MART.") && "VI".equals(count) && "KAL.".equals(event)) {
+      else if (month.equals("MART.") && "VI".equals(roman) && "KAL.".equals(event)) {
         final MonthDay md = lookup("A.D. BIS VI KAL. M.");
         result = inYear(year, md);
       }
