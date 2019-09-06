@@ -27,8 +27,9 @@ public class ParserResource {
       YearMonthDay parsedDate = RomanDateParser.parse(dateToParse.getDate());
       return Response.ok(ParsedDate.forDate(parsedDate)).build();
     } catch (ParseException ex) {
-      LOG.error("Could not parse date: {}", ex);
-      return Response.ok(ParsedDate.forError(ex.getMessage())).build();
+      final var message = ex.getMessage();
+      LOG.error("Could not parse date: {}", message);
+      return Response.ok(ParsedDate.forError(message)).build();
     }
   }
 }
