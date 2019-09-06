@@ -151,7 +151,7 @@ public class TimbuctooPlaceData {
           return Lists.newArrayList(start, end).stream();
         }).flatMap(val -> val).collect(Collectors.toList());
 
-    return new CalendarPeriod(calendarName.get(), timeSpan.get(0), timeSpan.get(1));
+    return new CalendarPeriod(calendarName.get(), timeSpan.get(0), timeSpan.get(1), "");
   }
 
   static class TimeSpan {

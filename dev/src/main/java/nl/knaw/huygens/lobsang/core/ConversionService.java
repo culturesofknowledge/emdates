@@ -10,16 +10,14 @@ import nl.knaw.huygens.lobsang.core.adjusters.DateAdjusterBuilder;
 import nl.knaw.huygens.lobsang.core.converters.CalendarConverter;
 import nl.knaw.huygens.lobsang.core.places.PlaceRegistry;
 import nl.knaw.huygens.lobsang.iso8601.Iso8601Date;
+import nl.knaw.huygens.lobsang.iso8601.Iso8601ParserHelper;
 import nl.knaw.huygens.lobsang.iso8601.Uncertainty;
-import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.MonthDay;
 import java.time.Year;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -32,7 +30,6 @@ import static nl.knaw.huygens.lobsang.helpers.StreamHelpers.defaultIfEmpty;
 
 public class ConversionService {
   public static final Logger LOG = LoggerFactory.getLogger(ConversionService.class);
-  private static final String[] DATE_FORMATS = {"yyyy-MM-dd", "yyyy"};
 
   private final ConverterRegistry converters;
   private final PlaceRegistry placeRegistry;
@@ -62,19 +59,19 @@ public class ConversionService {
     final String startDateAsString = calendarPeriod.getStartDate();
     final String endDateAsString = calendarPeriod.getEndDate();
     if (startDateAsString != null && endDateAsString != null) {
-      final int startDate = requestConverter.toRataDie(asYearMonthDay(startDateAsString));
-      final int endDate = requestConverter.toRataDie(asYearMonthDay(endDateAsString));
+      final int startDate = requestConverter.toRataDie(asYearMonthDayEarliestStart(startDateAsString));
+      final int endDate = requestConverter.toRataDie(asYearMonthDayLatestEnd(endDateAsString));
       if (requestDate >= startDate && requestDate <= endDate) {
         result.addNote(String.format("Date within %s calendar start and end bounds", calendarPeriod.getCalendar()));
         return Optional.of(result);
       }
     } else if (startDateAsString != null) {
-      if (requestDate >= requestConverter.toRataDie(asYearMonthDay(startDateAsString))) {
+      if (requestDate >= requestConverter.toRataDie(asYearMonthDayEarliestStart(startDateAsString))) {
         result.addNote(String.format("Date on or after start of %s calendar", calendarPeriod.getCalendar()));
         return Optional.of(result);
       }
     } else if (endDateAsString != null) {
-      if (requestDate <= requestConverter.toRataDie(asYearMonthDay(endDateAsString))) {
+      if (requestDate <= requestConverter.toRataDie(asYearMonthDayLatestEnd(endDateAsString))) {
         result.addNote(String.format("Date on or before end of %s calendar", calendarPeriod.getCalendar()));
         return Optional.of(result);
       }
@@ -94,16 +91,16 @@ public class ConversionService {
     return false;
   }
 
-  private YearMonthDay asYearMonthDay(String dateAsString) {
-    try {
-      LocalDate date = DateUtils.parseDate(dateAsString, DATE_FORMATS)
-                                .toInstant()
-                                .atZone(ZoneId.systemDefault())
-                                .toLocalDate();
-      return new YearMonthDay(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
-    } catch (ParseException e) {
-      throw new RuntimeException("Could not parse date");
-    }
+  private YearMonthDay asYearMonthDayEarliestStart(String dateAsString) {
+    final LocalDate date = Iso8601ParserHelper.parse(dateAsString).getStart();
+
+    return new YearMonthDay(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
+  }
+
+  private YearMonthDay asYearMonthDayLatestEnd(String dateAsString) {
+    final LocalDate date = Iso8601ParserHelper.parse(dateAsString).getEnd();
+
+    return new YearMonthDay(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
   }
 
   public Stream<YearMonthDay> defaultConversion(Iso8601Date date, String targetCalendar) {

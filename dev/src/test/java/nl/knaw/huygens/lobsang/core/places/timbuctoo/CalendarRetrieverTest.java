@@ -364,8 +364,8 @@ class CalendarRetrieverTest {
     List<CalendarPeriod> calendarPeriods = instance.getCalendarPeriods(place).get("City of Opole");
 
     assertThat(calendarPeriods, containsInAnyOrder(
-        new CalendarPeriod("Julian (OS)", null, "1584"),
-        new CalendarPeriod("Gregorian", "1584-02-23", null)
+        new CalendarPeriod("Julian (OS)", null, "1584", ""),
+        new CalendarPeriod("Gregorian", "1584-02-23", null, "")
     ));
   }
 
@@ -377,8 +377,8 @@ class CalendarRetrieverTest {
     List<CalendarPeriod> calendarPeriods = instance.getCalendarPeriods(place).get("City of Opole");
 
     assertThat(calendarPeriods, containsInAnyOrder(
-        new CalendarPeriod("Julian (OS)", null, "1582"),
-        new CalendarPeriod("Gregorian", "1582-02-23", null)
+        new CalendarPeriod("Julian (OS)", null, "1582", ""),
+        new CalendarPeriod("Gregorian", "1582-02-23", null, "")
     ));
   }
 
