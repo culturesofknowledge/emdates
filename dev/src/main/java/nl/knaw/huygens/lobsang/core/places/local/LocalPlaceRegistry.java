@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 
 public class LocalPlaceRegistry implements PlaceRegistry {
   private final Map<String, Place> placesByName = new HashMap<>();
+  private final Map<String, Place> placesByGeoNamesId = new HashMap<>();
   private final SearchTermBuilder searchTermBuilder;
   private final PlaceMatcher placeMatcher;
 
@@ -29,11 +30,17 @@ public class LocalPlaceRegistry implements PlaceRegistry {
 
   @Override
   public Stream<Place> searchPlaces(String placeTerms) {
+    if (placesByGeoNamesId.containsKey(placeTerms)) {
+      return Stream.of(placesByGeoNamesId.get(placeTerms));
+    }
     Iterable<String> terms = searchTermBuilder.build(placeTerms);
     return placeMatcher.match(terms).map(this::get);
   }
 
   private void addPlace(Place place) {
     placesByName.put(place.getName().toLowerCase(), place);
+    if(place.getGeoNamesId().isPresent()) {
+      placesByGeoNamesId.put(place.getGeoNamesId().get(), place);
+    }
   }
 }

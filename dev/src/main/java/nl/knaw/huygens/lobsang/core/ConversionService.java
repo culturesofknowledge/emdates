@@ -130,7 +130,7 @@ public class ConversionService {
                requestDate.getStartAsYearMonthDay(),
                place.getStartOfYearList()
            ));
-      Stream<YearMonthDay> end =place.getCalendarPeriods().stream()
+      Stream<YearMonthDay> end = place.getCalendarPeriods().stream()
          .map(calendarPeriod -> convert(calendarPeriod, requestDate.getEndAsYearMonthDay(), targetCalendar))
          .filter(Optional::isPresent)
          .map(Optional::get)
