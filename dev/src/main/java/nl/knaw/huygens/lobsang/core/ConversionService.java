@@ -119,29 +119,53 @@ public class ConversionService {
 
   private Function<Place, Stream<YearMonthDay>> convertForPlace(Iso8601Date requestDate, String targetCalendar) {
     return place -> {
-      final Stream<YearMonthDay> start = place.getCalendarPeriods().stream()
+      Place placeToConvert;
+      if (place.getCalendarPeriods().isEmpty()) {
+        Optional<Place> parent = getParentWithCalendarPeriods(place);
+        placeToConvert = parent.orElse(place);
+      } else {
+        placeToConvert = place;
+      }
+
+      final Stream<YearMonthDay> start = placeToConvert.getCalendarPeriods().stream()
            .map(calendarPeriod -> convert(calendarPeriod, requestDate.getStartAsYearMonthDay(), targetCalendar))
            .filter(Optional::isPresent)
            .map(Optional::get)
            .map(resultDate -> addUncertaintyNote(resultDate, requestDate))
-           .map(resultDate -> addPlaceNameNote(resultDate, place))
+           .map(resultDate -> addPlaceNameNote(resultDate, placeToConvert))
            .map(resultDate -> adjustForNewYearsDay(
                resultDate,
                requestDate.getStartAsYearMonthDay(),
-               place.getStartOfYearList()
+               placeToConvert.getStartOfYearList()
            ));
-      Stream<YearMonthDay> end = place.getCalendarPeriods().stream()
+      final Stream<YearMonthDay> end = placeToConvert.getCalendarPeriods().stream()
          .map(calendarPeriod -> convert(calendarPeriod, requestDate.getEndAsYearMonthDay(), targetCalendar))
          .filter(Optional::isPresent)
          .map(Optional::get)
-         .map(resultDate -> addPlaceNameNote(resultDate, place))
+         .map(resultDate -> addPlaceNameNote(resultDate, placeToConvert))
          .map(resultDate -> adjustForNewYearsDay(
              resultDate,
              requestDate.getEndAsYearMonthDay(),
-             place.getStartOfYearList()
+             placeToConvert.getStartOfYearList()
          ));
       return Streams.concat(start, end);
     };
+  }
+
+  private Optional<Place> getParentWithCalendarPeriods(Place place) {
+    final Optional<String> parentName = place.getParent();
+    if(parentName.isPresent()) {
+      final Stream<Place> placeStream = placeRegistry.searchPlaces(parentName.get());
+      final Optional<Place> first = placeStream.findFirst();
+      if(first.isPresent()) {
+        final Place parent = first.get();
+        if(parent.getCalendarPeriods().isEmpty()) {
+          return getParentWithCalendarPeriods(parent);
+        }
+        return Optional.of(parent);
+      }
+    }
+    return Optional.empty();
   }
 
   private YearMonthDay addUncertaintyNote(YearMonthDay resultDate, Iso8601Date requestDate) {
