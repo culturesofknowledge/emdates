@@ -13,18 +13,19 @@ import static com.google.common.base.MoreObjects.toStringHelper;
 public class CalendarPeriod {
 
   private final String calendar;
-
   private final String startDate;
-
   private final String endDate;
+  private final String provenance;
 
   @JsonCreator
   public CalendarPeriod(@JsonProperty("calendar") String calendar,
                         @JsonProperty("start") String startDate,
-                        @JsonProperty("end") String endDate) {
+                        @JsonProperty("end") String endDate,
+                        @JsonProperty("provenance") String provenance) {
     this.calendar = calendar;
     this.startDate = startDate;
     this.endDate = endDate;
+    this.provenance = provenance;
   }
 
   public String getCalendar() {

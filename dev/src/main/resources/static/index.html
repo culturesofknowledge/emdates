@@ -24,7 +24,7 @@
 <body>
   <h1>Convert date to other calendar</h1>
   <span>Date: </span><input type="text" value="0000-01-01" name="year" id="date">
-  <span>Place: </span><input type="text" value="England" name="place" id="place">
+  <span>Place: </span><input type="text" value="default" name="place" id="place">
   <span>Target Calendar: </span><input type="text" value="Gregorian" name="targetCalendar" id="targetCalendar">
   <button id="convertSingle">Convert</button>
   <div id="convertResult"></div>
@@ -80,7 +80,7 @@
       else if(message) {
         result.appendChild(createTextElement("span", "errorMessage: " + message));
       }
-      
+
     }
 
     function createTable(dates) {

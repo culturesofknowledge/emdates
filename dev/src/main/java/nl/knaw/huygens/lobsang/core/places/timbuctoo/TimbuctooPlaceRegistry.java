@@ -44,7 +44,7 @@ public class TimbuctooPlaceRegistry implements PlaceRegistry {
         JsonNode responseEntity = new ObjectMapper().readTree(response.getEntity().getContent());
 
         return calendarRetriever.getCalendarPeriods(responseEntity).entrySet().stream()
-                                .map(entry -> new Place(entry.getKey(), entry.getValue(), Lists.newArrayList()));
+                                .map(entry -> new Place(entry.getKey(), null, null, entry.getValue(), Lists.newArrayList()));
 
       }
     } catch (IOException e) {
