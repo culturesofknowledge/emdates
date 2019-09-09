@@ -1,7 +1,6 @@
 package nl.knaw.huygens.lobsang.core;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Streams;
 import nl.knaw.huygens.lobsang.api.CalendarPeriod;
 import nl.knaw.huygens.lobsang.api.Place;
 import nl.knaw.huygens.lobsang.api.StartOfYear;
@@ -148,7 +147,7 @@ public class ConversionService {
              requestDate.getEndAsYearMonthDay(),
              placeToConvert.getStartOfYearList()
          ));
-      return Streams.concat(start, end);
+      return Stream.concat(start, end);
     };
   }
 
