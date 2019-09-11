@@ -187,6 +187,14 @@ TOKEN :
 | < Pridie: ("pr") (["d","e","i"])* <OptPeriod> >
 }
 
+TOKEN :
+{
+  < Julian: (["i","j"]) (["u","v"]) "lian" (["a","i","s"])* >
+| < Gregorian: "gregorian" (["a","i","s"])* >
+| < Stilo: "stilo" >
+| < Novo: "novo" <OptPeriod> >
+}
+
 // If all of the above fails, it may just be (superfluous) text.
 TOKEN :
 {
@@ -217,21 +225,21 @@ YearMonthDay parseDate() :
   }
   (
     // e.g., "<Month>" as "Kal. <Month>" (which in turn means "1st of <Month>").
-    month=month() [year=number(notes)]
+    month=month() [[calendar(notes)] year=number(notes)]
     {
       result = inYear(year, lookup("KAL. " + month));
       notes.add("Missing day of month indication, assuming Kalends (first day of the month).");
     }
   |
     // e.g., "Kal. Mart.", "Id. Feb".
-    event = event() month=month() [year=number(notes)]
+    event = event() month=month() [[calendar(notes)] year=number(notes)]
     {
       final MonthDay md = lookup(event + " " + month);
       result = inYear(year, md);
     }
   |
     // e.g., "A.D. VII Ides Mart."
-    [<Ante> <Diem>] [bis=<Bis>] (roman=roman(notes) | arabic=arabic() | t1=<PseudoRoman>) [event=event()] month=month() [year=number(notes) | t2=<PseudoRoman>]
+    [<Ante> <Diem>] [bis=<Bis>] (roman=roman(notes) | arabic=arabic() | t1=<PseudoRoman>) [event=event()] month=month() [[calendar(notes)] year=number(notes) | t2=<PseudoRoman>]
     {
       if (t1 != null) {
         notes.add(ILLEGAL_ROMAN_NUMERAL + t1.image + ", winging it using count=" + DEFAULT_COUNT);
@@ -275,7 +283,7 @@ YearMonthDay parseDate() :
     }
   |
     // e.g., "Prid. Kal. Mart.", "Prid. Non. Apr."
-    <Pridie> event=event() month=month() [year=number(notes)]
+    <Pridie> event=event() month=month() [[calendar(notes)] year=number(notes)]
     {
       final MonthDay md = table.lookup("PRID. " + event + " " + month);
       result = inYear(year, md);
@@ -312,6 +320,14 @@ String month() :
 | <Oct> { return "OCT."; }
 | <Nov> { return "NOV."; }
 | <Dec> { return "DEC."; }
+}
+
+void calendar(Set<String> notes) :
+{}
+{
+  <Julian>    { notes.add("In Julian calendar"); }
+| <Gregorian> { notes.add("In Gregorian calendar"); }
+| <Stilo> <Novo>  { notes.add("In New Style calendar"); }
 }
 
 String roman(Set<String> notes) :

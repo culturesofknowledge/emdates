@@ -153,6 +153,18 @@ class RomanDateParserTest {
     assertEquals(new YearMonthDay(0, 9, 21), parse("XI Kal. Octobris"));
   }
 
+  @Test
+  void testGregorianisAcceptableBeforeYear() throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
+    assertEquals(new YearMonthDay(1584, 10, 07), parse("Nonis Octobribus Gregorianis M D LXXXIV."));
+  }
+
+  @Test
+  void testStiloNovoIsAcceptableBeforeYear() throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
+    assertEquals(new YearMonthDay(1595, 03, 31), parse("Prid. Kal. April. stilo novo M D XCV."));
+    assertEquals(new YearMonthDay(1595, 04, 05), parse("Nonis Aprilibus, stilo novo. 1595."));
+
+  }
+
   private YearMonthDay parse(final String input) throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
     return nl.knaw.huygens.lobsang.core.parsers.RomanDateParser.parse(input);
   }

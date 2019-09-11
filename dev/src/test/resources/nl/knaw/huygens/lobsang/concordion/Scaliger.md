@@ -55,25 +55,25 @@
 |III Non. Novemb.|XXXX-11-03|1594-11-03| |
 |VII Kal. Martii.|XXXX-02-23|1595-02-23| |
 |Prid. Kal. April. stilo novo M D XCV.|1595-03-31|1595-03-31| |
-|Nonis Aprilibus, stilo novo. [...] 1595.|1595-04-05|1595-04-05| |
+|Nonis Aprilibus, stilo novo. ... 1595.|1595-04-05|1595-04-05| |
 |pridie Kal. Iunias M D XCV|1595-05-31|1595-05-31| |
 |XVIII Kal. Iulias M D XCV.|1595-06-14|1595-06-14| |
 |VII Eid. Septemb. M D XCV.|1595-09-07|1595-09-07| |
 |VIII Kal. Octobr. M D XCV.|1595-09-24|1595-09-24| |
 |VII Eid. Novembris M D XCV|1595-11-07|1595-11-07| |
 |XIIII Kal. Febr., ... M D XCVI.|1596-01-19|1596-01-19| |
-|XIIII Kalend. Febr.|1596-01-19|1596-01-19| |
+|XIIII Kalend. Febr.|XXXX-01-19|1596-01-19| |
 |prid. Cal. Febr. M D XCVI.|1596-01-31|1596-01-31| |
-|X Kalend. Martii.|XXXX-02-21|1596-02-21| |
+|X Kalend. Martii.|XXXX-02-20|1596-02-21| |
 |XVII Kalend. Iul. M D XCVI.|1596-06-15|1596-06-15| |
 |X Kal. Decembr.|XXXX-11-22|1596-11-22| |
-|VI Kalend. Ianuarias Iulianas M D XCVI.|1597-01-06|1597-01-06| |
-|III Eid. Aprilis Iulianas M D XCVII.|1597-04-21|1597-04-21| |
-|VI Kal.Maias Iulianas, feria III, M D XCVII.|1597-05-06|1597-05-06| |
+|VI Kalend. Ianuarias Iulianas M D XCVI.|1596-12-27|1597-01-06| |
+|III Eid. Aprilis Iulianas M D XCVII.|1597-04-11|1597-04-21| |
+|VI Kal.Maias Iulianas, feria III, M D XCVII.|1597-04-26|1597-05-06| |
 |VI Idus Sextil. M D XCVII.|1597-08-08|1597-08-08| |
 |VII Kal. Novembr. M D XCVII.|1597-10-26|1597-10-26| |
-|pridie Eid. Novemb. Iulianas 1597.|1597-11-22|1597-11-22| |
-|XV Kalend. Ianuarii Iuliani M D XCVIII.|1597-12-28|1597-12-28| |
+|pridie Eid. Novemb. Iulianas 1597.|1597-11-12|1597-11-22| |
+|XV Kalend. Ianuarii Iuliani M D XCVIII.|1598-12-18|1597-12-28| |
 
 [parse]: - "#result = parse(#input)"
 [raw]: - "#input"

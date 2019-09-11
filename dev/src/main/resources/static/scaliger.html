@@ -168,13 +168,15 @@ ins {
   <thead>
     <tr>
       <th concordion:set="#input">Input date </th>
-      <th concordion:assert-equals="#result.date">Parsed Date </th>
+      <th concordion:assert-equals="#result.date">Parsed ISO date </th>
+      <th concordion:assert-equals="#result.date">Inferred Date </th>
       <th concordion:assert-equals="#result.warn">Warning </th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td>VIII Kalendarum Ianuarii M D LXXV.</td>
+      <td class="success">1575-12-25</td>
       <td class="failure"><del class="expected">1574-12-25</del>
 <ins class="actual">1575-12-25</ins></td>
       <td class="success">  </td>
@@ -182,10 +184,12 @@ ins {
     <tr>
       <td>IIII Idus Decemb. M D LXIIII.</td>
       <td class="success">1564-12-10</td>
+      <td class="success">1564-12-10</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>VIII Cal. Iulias.</td>
+      <td class="success">XXXX-06-24</td>
       <td class="failure"><del class="expected">1569-06-24</del>
 <ins class="actual">XXXX-06-24</ins></td>
       <td class="success">  </td>
@@ -193,21 +197,25 @@ ins {
     <tr>
       <td>VI Nonarum Mart. M D LXXV.</td>
       <td class="success">1575-03-02</td>
+      <td class="success">1575-03-02</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>23 Octobris 1571.</td>
       <td class="success">1571-10-23</td>
+      <td class="success">1571-10-23</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>XI Kal. Septembris</td>
+      <td class="success">XXXX-08-22</td>
       <td class="failure"><del class="expected">1572-08-22</del>
 <ins class="actual">XXXX-08-22</ins></td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>XI Kal. Septembris.</td>
+      <td class="success">XXXX-08-22</td>
       <td class="failure"><del class="expected">1572-08-22</del>
 <ins class="actual">XXXX-08-22</ins></td>
       <td class="success">  </td>
@@ -215,10 +223,12 @@ ins {
     <tr>
       <td>IIII Kal. Septemb. 1573.</td>
       <td class="success">1573-08-29</td>
+      <td class="success">1573-08-29</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>7 Id. Febr.</td>
+      <td class="success">XXXX-02-07</td>
       <td class="failure"><del class="expected">1574-02-07</del>
 <ins class="actual">XXXX-02-07</ins></td>
       <td class="success">  </td>
@@ -226,15 +236,18 @@ ins {
     <tr>
       <td>XI Kal. Novembr. M D LXXIV.</td>
       <td class="success">1574-10-22</td>
+      <td class="success">1574-10-22</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>IIII Non. Febr. M D LXXV.</td>
       <td class="success">1575-02-02</td>
+      <td class="success">1575-02-02</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>IIII Non. Feb.</td>
+      <td class="success">XXXX-02-02</td>
       <td class="failure"><del class="expected">1575-02-02</del>
 <ins class="actual">XXXX-02-02</ins></td>
       <td class="success">  </td>
@@ -242,16 +255,20 @@ ins {
     <tr>
       <td>VI Nonarum Mart. M D LXXV.</td>
       <td class="success">1575-03-02</td>
+      <td class="success">1575-03-02</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>X Kal. Apri.</td>
+      <td class="success">XXXX-03-23</td>
       <td class="failure"><del class="expected">1576-03-23</del>
 <ins class="actual">XXXX-03-23</ins></td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>proprid. Kal. Iun.</td>
+      <td class="failure"><del class="expected">XXXX-05-30</del>
+<ins class="actual">????-??-??</ins></td>
       <td class="failure"><del class="expected">1576-05-30</del>
 <ins class="actual">????-??-??</ins></td>
       <td class="failure"><del class="expected">  </del>
@@ -262,6 +279,8 @@ Was expecting:
     </tr>
     <tr>
       <td>III Eid. X.brium 1576.</td>
+      <td class="failure"><del class="expected">1576-12-11</del>
+<ins class="actual">????-??-??</ins></td>
       <td class="failure"><del class="expected">1576-12-11</del>
 <ins class="actual">????-??-??</ins></td>
       <td class="failure"><del class="expected">  </del>
@@ -285,12 +304,14 @@ Was expecting one of:
     </tr>
     <tr>
       <td>XV Kalend. Jun.</td>
+      <td class="success">XXXX-05-18</td>
       <td class="failure"><del class="expected">1580-05-18</del>
 <ins class="actual">XXXX-05-18</ins></td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>VIII Id. Iuliasco.</td>
+      <td class="success">XXXX-07-08</td>
       <td class="failure"><del class="expected">1580-07-08</del>
 <ins class="actual">XXXX-07-08</ins></td>
       <td class="success">  </td>
@@ -298,59 +319,63 @@ Was expecting one of:
     <tr>
       <td>3 Non. Sextiles M D LXXXI.</td>
       <td class="success">1581-08-03</td>
+      <td class="success">1581-08-03</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>Nonis Martiis M D LXXXIV.</td>
       <td class="success">1584-03-07</td>
+      <td class="success">1584-03-07</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>Nonis Octobribus Gregorianis M D LXXXIV.</td>
-      <td class="failure"><del class="expected">1584-10-07</del>
-<ins class="actual">????-??-??</ins></td>
-      <td class="failure"><del class="expected">  </del>
-<ins class="actual">Encountered " &lt;Text&gt; "Gregorianis "" at line 1, column 18.
-Was expecting one of:
-    &lt;EOF&gt; 
-    &lt;Arabic&gt; ...
-    &lt;Roman&gt; ...
-    </ins></td>
+      <td class="success">1584-10-07</td>
+      <td class="success">1584-10-07</td>
+      <td class="success">  </td>
     </tr>
     <tr>
       <td>VI Kal. Ian. M D LXXXIIII.</td>
+      <td class="success">1584-12-27</td>
       <td class="success">1584-12-27</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>Nonis Februarii M D LXXXV.</td>
       <td class="success">1585-02-05</td>
+      <td class="success">1585-02-05</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>nonis Aprilibus 1585.</td>
+      <td class="success">1585-04-05</td>
       <td class="success">1585-04-05</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>12 Aprilis 1585.</td>
       <td class="success">1585-04-12</td>
+      <td class="success">1585-04-12</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>Pridie Eid. April.</td>
+      <td class="success">XXXX-04-12</td>
       <td class="failure"><del class="expected">1586-04-12</del>
 <ins class="actual">XXXX-04-12</ins></td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>20 Junii</td>
+      <td class="success">XXXX-06-20</td>
       <td class="failure"><del class="expected">1587-06-20</del>
 <ins class="actual">XXXX-06-20</ins></td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>XI Kal. Maii M D LXXXIIX.</td>
+      <td class="failure"><del class="expected">1588-04-21</del>
+<ins class="actual">????-??-??</ins></td>
       <td class="failure"><del class="expected">1588-04-21</del>
 <ins class="actual">????-??-??</ins></td>
       <td class="failure"><del class="expected">  </del>
@@ -364,6 +389,8 @@ Was expecting one of:
       <td>anno M D XCI.</td>
       <td class="failure"><del class="expected">1591-10-31</del>
 <ins class="actual">????-??-??</ins></td>
+      <td class="failure"><del class="expected">1591-10-31</del>
+<ins class="actual">????-??-??</ins></td>
       <td class="failure"><del class="expected">  </del>
 <ins class="actual">Encountered " &lt;Roman&gt; "M D XCI "" at line 1, column 6.
 Was expecting:
@@ -373,15 +400,19 @@ Was expecting:
     <tr>
       <td>XII Kal. Febr. M D XCII</td>
       <td class="success">1592-01-21</td>
+      <td class="success">1592-01-21</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>XII Kal. Febr. M D XCII.</td>
       <td class="success">1592-01-21</td>
+      <td class="success">1592-01-21</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>propridie Kal. Maias M D XCII.</td>
+      <td class="failure"><del class="expected">1592-04-29</del>
+<ins class="actual">????-??-??</ins></td>
       <td class="failure"><del class="expected">1592-04-29</del>
 <ins class="actual">????-??-??</ins></td>
       <td class="failure"><del class="expected">  </del>
@@ -392,6 +423,7 @@ Was expecting:
     </tr>
     <tr>
       <td>VI Non. Mai.</td>
+      <td class="success">XXXX-05-02</td>
       <td class="failure"><del class="expected">1592-05-02</del>
 <ins class="actual">XXXX-05-02</ins></td>
       <td class="success">  </td>
@@ -400,20 +432,26 @@ Was expecting:
       <td>II Non. Maias M D XCII.</td>
       <td class="failure"><del class="expected">1592-05-06</del>
 <ins class="actual">1592-05-05</ins></td>
+      <td class="failure"><del class="expected">1592-05-06</del>
+<ins class="actual">1592-05-05</ins></td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>Idib. Maii M D XCII.</td>
+      <td class="success">1592-05-15</td>
       <td class="success">1592-05-15</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>Kal. Nov. M D XCII.</td>
       <td class="success">1592-11-01</td>
+      <td class="success">1592-11-01</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>postridie Eid. Novembr. M D XCII.</td>
+      <td class="failure"><del class="expected">1592-11-14</del>
+<ins class="actual">????-??-??</ins></td>
       <td class="failure"><del class="expected">1592-11-14</del>
 <ins class="actual">????-??-??</ins></td>
       <td class="failure"><del class="expected">  </del>
@@ -425,15 +463,18 @@ Was expecting:
     <tr>
       <td>XIIII Kal. Decemb. M D XCII.</td>
       <td class="success">1592-11-18</td>
+      <td class="success">1592-11-18</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>VI Kal. April. M D XCIII.</td>
       <td class="success">1593-03-27</td>
+      <td class="success">1593-03-27</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>X Kalend. Iunias.</td>
+      <td class="success">XXXX-05-23</td>
       <td class="failure"><del class="expected">1593-05-23</del>
 <ins class="actual">XXXX-05-23</ins></td>
       <td class="success">  </td>
@@ -441,15 +482,18 @@ Was expecting:
     <tr>
       <td>X Kal. Iunias M D XCIII.</td>
       <td class="success">1593-05-23</td>
+      <td class="success">1593-05-23</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>Kalend. Iunii M D XCIIII.</td>
       <td class="success">1594-06-01</td>
+      <td class="success">1594-06-01</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>X Kal. Iulii.</td>
+      <td class="success">XXXX-06-22</td>
       <td class="failure"><del class="expected">1594-06-22</del>
 <ins class="actual">XXXX-06-22</ins></td>
       <td class="success">  </td>
@@ -457,20 +501,24 @@ Was expecting:
     <tr>
       <td>V Kalend. Iulias M D XCIV.</td>
       <td class="success">1594-06-27</td>
+      <td class="success">1594-06-27</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>XIII Kal. Sextil. M D XCIIII.</td>
+      <td class="success">1594-07-20</td>
       <td class="success">1594-07-20</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>Nonis Septembris M D XCIIII.</td>
       <td class="success">1594-09-05</td>
+      <td class="success">1594-09-05</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>Kal. Octobr.</td>
+      <td class="success">XXXX-10-01</td>
       <td class="failure"><del class="expected">1594-10-01</del>
 <ins class="actual">XXXX-10-01</ins></td>
       <td class="success">  </td>
@@ -478,40 +526,38 @@ Was expecting:
     <tr>
       <td>IIII Nonas Octobris M D XCIIII</td>
       <td class="success">1594-10-04</td>
+      <td class="success">1594-10-04</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>III Non. Novemb.</td>
+      <td class="success">XXXX-11-03</td>
       <td class="failure"><del class="expected">1594-11-03</del>
 <ins class="actual">XXXX-11-03</ins></td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>VII Kal. Martii.</td>
+      <td class="success">XXXX-02-23</td>
       <td class="failure"><del class="expected">1595-02-23</del>
 <ins class="actual">XXXX-02-23</ins></td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>Prid. Kal. April. stilo novo M D XCV.</td>
-      <td class="failure"><del class="expected">1595-03-31</del>
-<ins class="actual">????-??-??</ins></td>
-      <td class="failure"><del class="expected">  </del>
-<ins class="actual">Encountered " &lt;Text&gt; "stilo "" at line 1, column 19.
-Was expecting one of:
-    &lt;EOF&gt; 
-    &lt;Arabic&gt; ...
-    &lt;Roman&gt; ...
-    </ins></td>
+      <td class="success">1595-03-31</td>
+      <td class="success">1595-03-31</td>
+      <td class="success">  </td>
     </tr>
     <tr>
-      <td>Nonis Aprilibus, stilo novo. [...] 1595.</td>
+      <td>Nonis Aprilibus, stilo novo. ... 1595.</td>
+      <td class="failure"><del class="expected">1595-04-05</del>
+<ins class="actual">????-??-??</ins></td>
       <td class="failure"><del class="expected">1595-04-05</del>
 <ins class="actual">????-??-??</ins></td>
       <td class="failure"><del class="expected">  </del>
-<ins class="actual">Encountered " &lt;Text&gt; "stilo "" at line 1, column 18.
+<ins class="actual">Encountered " "." ". "" at line 1, column 30.
 Was expecting one of:
-    &lt;EOF&gt; 
     &lt;Arabic&gt; ...
     &lt;Roman&gt; ...
     </ins></td>
@@ -519,30 +565,37 @@ Was expecting one of:
     <tr>
       <td>pridie Kal. Iunias M D XCV</td>
       <td class="success">1595-05-31</td>
+      <td class="success">1595-05-31</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>XVIII Kal. Iulias M D XCV.</td>
+      <td class="success">1595-06-14</td>
       <td class="success">1595-06-14</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>VII Eid. Septemb. M D XCV.</td>
       <td class="success">1595-09-07</td>
+      <td class="success">1595-09-07</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>VIII Kal. Octobr. M D XCV.</td>
+      <td class="success">1595-09-24</td>
       <td class="success">1595-09-24</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>VII Eid. Novembris M D XCV</td>
       <td class="success">1595-11-07</td>
+      <td class="success">1595-11-07</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>XIIII Kal. Febr., ... M D XCVI.</td>
+      <td class="failure"><del class="expected">1596-01-19</del>
+<ins class="actual">????-??-??</ins></td>
       <td class="failure"><del class="expected">1596-01-19</del>
 <ins class="actual">????-??-??</ins></td>
       <td class="failure"><del class="expected">  </del>
@@ -552,10 +605,14 @@ Was expecting one of:
     &lt;Arabic&gt; ...
     &lt;Roman&gt; ...
     &lt;PseudoRoman&gt; ...
+    &lt;Julian&gt; ...
+    &lt;Gregorian&gt; ...
+    "stilo" ...
     </ins></td>
     </tr>
     <tr>
       <td>XIIII Kalend. Febr.</td>
+      <td class="success">XXXX-01-19</td>
       <td class="failure"><del class="expected">1596-01-19</del>
 <ins class="actual">XXXX-01-19</ins></td>
       <td class="success">  </td>
@@ -563,10 +620,12 @@ Was expecting one of:
     <tr>
       <td>prid. Cal. Febr. M D XCVI.</td>
       <td class="success">1596-01-31</td>
+      <td class="success">1596-01-31</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>X Kalend. Martii.</td>
+      <td class="success">XXXX-02-20</td>
       <td class="failure"><del class="expected">1596-02-21</del>
 <ins class="actual">XXXX-02-20</ins></td>
       <td class="success">  </td>
@@ -574,87 +633,68 @@ Was expecting one of:
     <tr>
       <td>XVII Kalend. Iul. M D XCVI.</td>
       <td class="success">1596-06-15</td>
+      <td class="success">1596-06-15</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>X Kal. Decembr.</td>
+      <td class="success">XXXX-11-22</td>
       <td class="failure"><del class="expected">1596-11-22</del>
 <ins class="actual">XXXX-11-22</ins></td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>VI Kalend. Ianuarias Iulianas M D XCVI.</td>
+      <td class="success">1596-12-27</td>
       <td class="failure"><del class="expected">1597-01-06</del>
-<ins class="actual">????-??-??</ins></td>
-      <td class="failure"><del class="expected">  </del>
-<ins class="actual">Encountered " &lt;Text&gt; "Iulianas "" at line 1, column 22.
-Was expecting one of:
-    &lt;EOF&gt; 
-    &lt;Arabic&gt; ...
-    &lt;Roman&gt; ...
-    &lt;PseudoRoman&gt; ...
-    </ins></td>
+<ins class="actual">1596-12-27</ins></td>
+      <td class="success">  </td>
     </tr>
     <tr>
       <td>III Eid. Aprilis Iulianas M D XCVII.</td>
+      <td class="success">1597-04-11</td>
       <td class="failure"><del class="expected">1597-04-21</del>
-<ins class="actual">????-??-??</ins></td>
-      <td class="failure"><del class="expected">  </del>
-<ins class="actual">Encountered " &lt;Text&gt; "Iulianas "" at line 1, column 18.
-Was expecting one of:
-    &lt;EOF&gt; 
-    &lt;Arabic&gt; ...
-    &lt;Roman&gt; ...
-    &lt;PseudoRoman&gt; ...
-    </ins></td>
+<ins class="actual">1597-04-11</ins></td>
+      <td class="success">  </td>
     </tr>
     <tr>
       <td>VI Kal.Maias Iulianas, feria III, M D XCVII.</td>
+      <td class="failure"><del class="expected">1597-04-26</del>
+<ins class="actual">????-??-??</ins></td>
       <td class="failure"><del class="expected">1597-05-06</del>
 <ins class="actual">????-??-??</ins></td>
       <td class="failure"><del class="expected">  </del>
-<ins class="actual">Encountered " &lt;Text&gt; "Iulianas "" at line 1, column 14.
+<ins class="actual">Encountered " &lt;Text&gt; "feria "" at line 1, column 24.
 Was expecting one of:
-    &lt;EOF&gt; 
     &lt;Arabic&gt; ...
     &lt;Roman&gt; ...
-    &lt;PseudoRoman&gt; ...
     </ins></td>
     </tr>
     <tr>
       <td>VI Idus Sextil. M D XCVII.</td>
+      <td class="success">1597-08-08</td>
       <td class="success">1597-08-08</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>VII Kal. Novembr. M D XCVII.</td>
       <td class="success">1597-10-26</td>
+      <td class="success">1597-10-26</td>
       <td class="success">  </td>
     </tr>
     <tr>
       <td>pridie Eid. Novemb. Iulianas 1597.</td>
+      <td class="success">1597-11-12</td>
       <td class="failure"><del class="expected">1597-11-22</del>
-<ins class="actual">????-??-??</ins></td>
-      <td class="failure"><del class="expected">  </del>
-<ins class="actual">Encountered " &lt;Text&gt; "Iulianas "" at line 1, column 21.
-Was expecting one of:
-    &lt;EOF&gt; 
-    &lt;Arabic&gt; ...
-    &lt;Roman&gt; ...
-    </ins></td>
+<ins class="actual">1597-11-12</ins></td>
+      <td class="success">  </td>
     </tr>
     <tr>
       <td>XV Kalend. Ianuarii Iuliani M D XCVIII.</td>
+      <td class="success">1598-12-18</td>
       <td class="failure"><del class="expected">1597-12-28</del>
-<ins class="actual">????-??-??</ins></td>
-      <td class="failure"><del class="expected">  </del>
-<ins class="actual">Encountered " &lt;Text&gt; "Iuliani "" at line 1, column 21.
-Was expecting one of:
-    &lt;EOF&gt; 
-    &lt;Arabic&gt; ...
-    &lt;Roman&gt; ...
-    &lt;PseudoRoman&gt; ...
-    </ins></td>
+<ins class="actual">1598-12-18</ins></td>
+      <td class="success">  </td>
     </tr>
   </tbody>
-</table></div><div class="footer">Results generated by <a href="http://www.concordion.org" style="font-weight: bold; text-decoration: none; color: #89C;">Concordion</a><div class="testTime">in 479 ms on 11-Sep-2019 at 12:16:10 CEST</div></div></body></html>
+</table></div><div class="footer">Results generated by <a href="http://www.concordion.org" style="font-weight: bold; text-decoration: none; color: #89C;">Concordion</a><div class="testTime">in 260 ms on 11-Sep-2019 at 13:33:12 CEST</div></div></body></html>
