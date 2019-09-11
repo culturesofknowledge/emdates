@@ -165,14 +165,14 @@ TOKEN :
   < Jan: ("ian" | "jan") (["a","i","r","s","u"])* <OptPeriod> >
 | < Feb: "feb" (["a","i","j","r","s","u"])* <OptPeriod> >
 | < Mar: ("mar" (["a","i","s","t","u"])* <OptPeriod>) | "m." >
-| < Apr: "apr" (["e","i","l","s"])* <OptPeriod> >
+| < Apr: "apr" (["b","e","i","l","s","u"])* <OptPeriod> >
 | < May: "ma" (["a","i","j","s"])* <OptPeriod> >
-| < Jun: ("iun"|"ivn") (["a","i","u","s"])* <OptPeriod> >
+| < Jun: (["i","j"]) (["u","v"]) "n" (["a","i","u","s"])* <OptPeriod> >
 | < Jul: ("iul"|"ivl") (["a","c","i","o","u","s"])* <OptPeriod> >
 | < Aug: ("aug"|"avg") (["i","s","t","u"])* <OptPeriod> >
 | < Sep: "sep" (["b","e","m","i","r","s","t"])* <OptPeriod> >
-| < Oct: ("oct"|"okt") (["o","b","e","i","r", "s"])* <OptPeriod> >
-| < Nov: ("nov"|"nou") (["b","e","i","m","r", "s"])* <OptPeriod> >
+| < Oct: ("oct"|"okt") (["o","b","e","i","r","s","u"])* <OptPeriod> >
+| < Nov: ("nov"|"nou") (["b","e","i","m","r","s"])* <OptPeriod> >
 | < Dec: "dec" (["b","e","i","m","r","s"])* <OptPeriod> >
 }
 
