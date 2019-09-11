@@ -32,7 +32,7 @@
 |Pridie Eid. April.|XXXX-04-12|1586-04-12| |
 |20 Junii|XXXX-06-20|1587-06-20| |
 |XI Kal. Maii M D LXXXIIX.|1588-04-21|1588-04-21| |
-|anno M D XCI.|1591-10-31|1591-10-31| |
+|anno M D XCI.|1591-XX-XX|1591-10-31| |
 |XII Kal. Febr. M D XCII|1592-01-21|1592-01-21| |
 |XII Kal. Febr. M D XCII.|1592-01-21|1592-01-21| |
 |propridie Kal. Maias M D XCII.|1592-04-29|1592-04-29| |

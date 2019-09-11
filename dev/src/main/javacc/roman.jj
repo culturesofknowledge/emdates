@@ -179,6 +179,7 @@ TOKEN :
 TOKEN :
 {
   < Ante: ("ante" | ("a" ".")) >
+| < Anno: "anno" <OptPeriod> >
 | < Bis:  "bis" <OptPeriod> >
 | < Diem: ("diem" | ("d" ".")) >
 | < Ides   : ("e")? "id" ("ib")? ("es"|"us")? <OptPeriod> >
@@ -224,6 +225,13 @@ YearMonthDay parseDate() :
       }
   }
   (
+    // e.g., "anno MDXCI" just a year with no further specification
+    <Anno> year=number(notes)
+    {
+      result = inYear(year, lookup("KAL. IAN.")); // hack to use 1st of Jan to create valid YMD
+      notes.add("Missing day and month details, assuming 1 Jan.");
+    }
+  |
     // e.g., "<Month>" as "Kal. <Month>" (which in turn means "1st of <Month>").
     month=month() [[calendar(notes)] year=number(notes)]
     {
