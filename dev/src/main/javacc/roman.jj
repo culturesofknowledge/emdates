@@ -179,11 +179,12 @@ TOKEN :
 TOKEN :
 {
   < Ante: ("ante" | ("a" ".")) >
-| < Anno: "anno" <OptPeriod> >
+| < Anno: "ann" ["i","o"] <OptPeriod> >
 | < Bis:  "bis" <OptPeriod> >
+| < Die: "die" >
 | < Diem: ("diem" | ("d" ".")) >
 | < Ides   : ("e")? "id" ("ib")? ("es"|"us")? <OptPeriod> >
-| < Kalends: (["c", "k"]) "al" (["e","i","n","d","s"])* ("arum")? <OptPeriod> >
+| < Kalends: ("k." | (["c", "k"]) "al" (["e","i","n","d","s"])* ("arum")? <OptPeriod> ) >
 | < Nones  : "non" (["a","e","i"] "s" | "arum")? <OptPeriod> >
 | < Pridie: "p" ("rop" | "ost")? "r" (["d","e","i"])* <OptPeriod> >
 }
@@ -233,21 +234,21 @@ YearMonthDay parseDate() :
     }
   |
     // e.g., "<Month>" as "Kal. <Month>" (which in turn means "1st of <Month>").
-    month=month() [[calendar(notes)] year=number(notes)]
+    month=month() [[calendar(notes)] [<Anno>] year=number(notes)]
     {
       result = inYear(year, lookup("KAL. " + month));
       notes.add("Missing day of month indication, assuming Kalends (first day of the month).");
     }
   |
     // e.g., "Kal. Mart.", "Id. Feb".
-    event = event() month=month() [[calendar(notes)] year=number(notes)]
+    event = event() month=month() [[calendar(notes)] [<Anno>] year=number(notes)]
     {
       final MonthDay md = lookup(event + " " + month);
       result = inYear(year, md);
     }
   |
     // e.g., "A.D. VII Ides Mart."
-    [<Ante> <Diem>] [bis=<Bis>] (roman=roman(notes) | arabic=arabic() | t1=<PseudoRoman>) [event=event()] month=month() [[calendar(notes)] year=number(notes) | t2=<PseudoRoman>]
+    [<Die>] [<Ante> <Diem>] [bis=<Bis>] (roman=roman(notes) | arabic=arabic() | t1=<PseudoRoman>) [event=event()] month=month() [[calendar(notes)] [<Anno>] year=number(notes) | t2=<PseudoRoman>]
     {
       if (t1 != null) {
         notes.add(ILLEGAL_ROMAN_NUMERAL + t1.image + ", winging it using count=" + DEFAULT_COUNT);

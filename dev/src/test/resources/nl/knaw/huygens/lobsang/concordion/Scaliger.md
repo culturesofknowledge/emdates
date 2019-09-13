@@ -74,6 +74,18 @@
 |VII Kal. Novembr. M D XCVII.|1597-10-26|1597-10-26| |
 |pridie Eid. Novemb. Iulianas 1597.|1597-11-12|1597-11-22| |
 |XV Kalend. Ianuarii Iuliani M D XCVIII.|1598-12-18|1597-12-28| |
+|III Eidus Ianuarias Iulianas, anno Christi Dionysiano millesimo quingentesimo nonagesimo octavo, qui erat a vero natali Messiae millesimus sexcentesimus.|1598-01-21|1598-01-21| |
+|III Non. Febr. M D XCVIII.|1598-02-03|1598-02-03| |
+|Pridie Kal. Febr. Iulianas|XXXX-02-09|1598-02-09| |
+|III Kal. Febr.|XXXX-01-30|1598-02-09| |
+|6 Kal. Mart. 1598.|1598-02-24|1598-02-24| |
+|die 14 Martii anni 1598.|1598-03-14|1598-03-14| |
+|Eidibus Martiis Iulianis M D XCVIII.|1598-03-25|1598-03-25| |
+|XV Kal. Maias.|XXXX-04-17|1598-04-17| |
+|18 Aprilis 98.|0098-04-18|1598-04-18| |
+|Id. Maias a. d. 1598.|1598-05-15|1598-05-15| |
+|die XXIII Mai. M D XCVIII.|1598-05-23|1598-05-23| |
+|IIII Kal. Iunias|XXXX-05-29|1598-05-29| |
 
 [parse]: - "#result = parse(#input)"
 [raw]: - "#input"
