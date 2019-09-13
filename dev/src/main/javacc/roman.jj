@@ -185,7 +185,7 @@ TOKEN :
 | < Ides   : ("e")? "id" ("ib")? ("es"|"us")? <OptPeriod> >
 | < Kalends: (["c", "k"]) "al" (["e","i","n","d","s"])* ("arum")? <OptPeriod> >
 | < Nones  : "non" (["a","e","i"] "s" | "arum")? <OptPeriod> >
-| < Pridie: ("pr") (["d","e","i"])* <OptPeriod> >
+| < Pridie: "p" ("rop" | "ost")? "r" (["d","e","i"])* <OptPeriod> >
 }
 
 TOKEN :
@@ -291,9 +291,17 @@ YearMonthDay parseDate() :
     }
   |
     // e.g., "Prid. Kal. Mart.", "Prid. Non. Apr."
-    <Pridie> event=event() month=month() [[calendar(notes)] year=number(notes)]
+    t1=<Pridie> event=event() month=month() [[calendar(notes)] year=number(notes)]
     {
-      final MonthDay md = table.lookup("PRID. " + event + " " + month);
+      MonthDay md = table.lookup("PRID. " + event + " " + month);
+      if (t1.image.startsWith("pro")) {
+        notes.add("Creative use of pridie (i.c. '" + t1.image + "') starts with 'pro': interpreting date to be the day before pridie");
+        md = md.withDayOfMonth(md.getDayOfMonth() - 1);
+      } else if (t1.image.startsWith("post")) {
+        notes.add("Creative use of pridie (i.c. '" + t1.image + "') starts with 'post': interpreting date to be the day after the event that pridie preceded");
+        md = table.lookup(event + " " + month);
+        md = md.withDayOfMonth(md.getDayOfMonth() + 1);
+      }
       result = inYear(year, md);
     }
   )
