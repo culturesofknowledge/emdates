@@ -67,7 +67,7 @@ public class RomanDateParser {
 
     if (year.isEmpty()) {
       result.setYearSpecified(false);
-      result.addNote("Missing year indication. Please specify.");
+      result.addNote("Missing year indication");
     }
 
     return result;
