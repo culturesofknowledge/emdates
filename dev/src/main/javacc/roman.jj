@@ -177,7 +177,7 @@ TOKEN :
 | < May: "ma" (["a","i","j","s"])* <OptPeriod> >
 | < Jun: (["i","j"]) (["u","v"]) "n" (["a","i","u","s"])* <OptPeriod> >
 | < Jul: ("iul"|"ivl") (["a","c","i","o","u","s"])* <OptPeriod> >
-| < Aug: ("aug"|"avg") (["i","s","t","u"])* <OptPeriod> >
+| < Aug: ("aug"|"avg") (["a","i","s","t","u"])* <OptPeriod> >
 | < Sep: "sep" (["b","e","m","i","r","s","t"])* <OptPeriod> >
 | < Oct: ("oct"|"okt") (["o","b","e","i","r","s","u"])* <OptPeriod> >
 | < Nov: ("nov"|"nou") (["b","e","i","m","r","s"])* <OptPeriod> >
@@ -199,9 +199,9 @@ TOKEN :
 
 TOKEN :
 {
-  < Julian: (["i","j"]) (["u","v"]) "lian" (["a","i","s"])* >
-| < Gregorian: "gregorian" (["a","i","s"])* >
-| < Stilo: "stilo" >
+  < Julian: (["i","j"]) (["u","v"]) "lian" (["a","i","s"])* <OptPeriod> >
+| < Gregorian: "gregorian" (["a","i","s"])* <OptPeriod> >
+| < Stilo: "st" (["i","y"]) "lo" >
 | < Novo: "novo" <OptPeriod> >
 }
 
