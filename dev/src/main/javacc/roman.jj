@@ -167,6 +167,9 @@ TOKEN :
 {
   <Quin: "q" ("u"|"v") "i" ("n")? ("c")? (["b","e","i","l","s","t","u"])* <OptPeriod> >
 | <Sext: "sex" (["e","i","l","s","t","u"])* <OptPeriod> >
+| <Octem: "iix" ([".","b","i","m","r","u"])+ >
+| <Novem: "ix" ([".","b","i","m","r","u"])+ >
+| <Decem: "x" <OptPeriod> (["b","i","m","r","u"])+ <OptPeriod> >
 }
 
 TOKEN :
@@ -348,9 +351,9 @@ String month() :
 | (<Jul> | <Quin>) { return "IVL."; }
 | (<Aug> | <Sext>) { return "AVG."; }
 | <Sep> { return "SEPT."; }
-| <Oct> { return "OCT."; }
-| <Nov> { return "NOV."; }
-| <Dec> { return "DEC."; }
+| (<Oct> | <Octem>) { return "OCT."; }
+| (<Nov> | <Novem>) { return "NOV."; }
+| (<Dec> | <Decem>) { return "DEC."; }
 }
 
 Integer year(Set<String> notes) :
