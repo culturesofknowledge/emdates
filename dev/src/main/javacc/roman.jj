@@ -227,28 +227,28 @@ YearMonthDay parseDate() :
   }
   (
     // e.g., "anno MDXCI" just a year with no further specification
-    <Anno> year=number(notes)
+    [calendar(notes)] <Anno> year=number(notes)
     {
       result = inYear(year, lookup("KAL. IAN.")); // hack to use 1st of Jan to create valid YMD
       notes.add("Missing day and month details, assuming 1 Jan.");
     }
   |
     // e.g., "<Month>" as "Kal. <Month>" (which in turn means "1st of <Month>").
-    month=month() [[calendar(notes)] [<Anno>] year=number(notes)]
+    month=month() [year=year(notes)]
     {
       result = inYear(year, lookup("KAL. " + month));
       notes.add("Missing day of month indication, assuming Kalends (first day of the month).");
     }
   |
     // e.g., "Kal. Mart.", "Id. Feb".
-    event = event() month=month() [[calendar(notes)] [<Anno>] year=number(notes)]
+    event = event() month=month() [year=year(notes)]
     {
       final MonthDay md = lookup(event + " " + month);
       result = inYear(year, md);
     }
   |
     // e.g., "A.D. VII Ides Mart."
-    [<Die>] [<Ante> <Diem>] [bis=<Bis>] (roman=roman(notes) | arabic=arabic() | t1=<PseudoRoman>) [event=event()] month=month() [[calendar(notes)] [<Anno>] year=number(notes) | t2=<PseudoRoman>]
+    [<Die>] [<Ante> <Diem>] [bis=<Bis>] (roman=roman(notes) | arabic=arabic() | t1=<PseudoRoman>) [event=event()] month=month() [year=year(notes) | t2=<PseudoRoman>]
     {
       if (t1 != null) {
         notes.add(ILLEGAL_ROMAN_NUMERAL + t1.image + ", winging it using count=" + DEFAULT_COUNT);
@@ -337,6 +337,14 @@ String month() :
 | <Oct> { return "OCT."; }
 | <Nov> { return "NOV."; }
 | <Dec> { return "DEC."; }
+}
+
+Integer year(Set<String> notes) :
+{
+  Integer year;
+}
+{
+ [calendar(notes)] [<Anno>] year=number(notes) { return year; }
 }
 
 void calendar(Set<String> notes) :
