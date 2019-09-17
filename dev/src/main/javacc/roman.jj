@@ -160,6 +160,7 @@ TOKEN :
 TOKEN :
 {
   <#OptPeriod: (".")? >
+| <#OptComma:  (",")? >
 }
 
 TOKEN :
@@ -201,7 +202,7 @@ TOKEN :
 
 TOKEN :
 {
-  < Julian: (["i","j"]) (["u","v"]) "lian" (["a","i","s"])* <OptPeriod> >
+  < Julian: (["i","j"]) (["u","v"]) "lian" (["a","i","s"])* <OptPeriod> <OptComma> >
 | < Gregorian: "gregorian" (["a","i","s"])* <OptPeriod> >
 | < Stilo: "st" (["i","y"]) "lo" >
 | < Novo: "novo" <OptPeriod> >
