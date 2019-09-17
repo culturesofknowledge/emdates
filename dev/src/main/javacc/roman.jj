@@ -367,7 +367,7 @@ Integer year(Set<String> notes) :
 void calendar(Set<String> notes) :
 {}
 {
-  <Julian>    { notes.add("In Julian calendar"); }
+  (<Jul> | <Julian>) { notes.add("In Julian calendar"); }
 | <Gregorian> { notes.add("In Gregorian calendar"); }
 | <Stilo> <Novo>  { notes.add("In New Style calendar"); }
 }
