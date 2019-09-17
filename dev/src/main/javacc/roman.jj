@@ -42,7 +42,15 @@ public class RomanDateParser {
 
   // Thanks! https://stackoverflow.com/a/29218799
   private static int evaluateRomanNumerals(String roman) {
-      return (int) evaluateNextRomanNumeral(roman.toUpperCase(), roman.length() - 1, 0);
+      final var normalized = roman.toUpperCase().replaceAll("[\\s]", "");
+      final var i = (int) evaluateNextRomanNumeral(normalized, normalized.length() - 1, 0);
+
+      // ad hoc 'repair' for creative use of 'subtract two from next number' in, e.g., 'anno M D IIC.'
+      if (normalized.endsWith("IIC") || normalized.endsWith("IIX")) {
+        return i - 2;
+      }
+
+      return i;
   }
 
   private static double evaluateNextRomanNumeral(String roman, int pos, double rightNumeral) {
@@ -125,7 +133,7 @@ TOKEN :
 | <#FOUR      : "iv" | "iiii" > // allow common variant of 'iiii' for 'iv'
 | <#ONES      : <ONES_REP> | <FOUR> | "v" (<ONES_REP>)? | "ix" >
 | <#TENS_REP  : "x" | "xx" | "xxx" >
-| <#TENS_PART : <TENS_REP> | "xl" | "l" (<TENS_REP>)? | "xc" | "ic" >
+| <#TENS_PART : <TENS_REP> | "xl" | "l" (<TENS_REP>)? | "xc" | "ic" | "iic" >
 | <#TENS      : <TENS_PART> <ONES> | <TENS_PART> | <ONES> >
 | <#HUNS_REP  : "c" | "cc" | "ccc" >
 | <#HUNS_PART : <HUNS_REP> | "cd" | "d" ([" "])? (<HUNS_REP>)? | "cm" >
