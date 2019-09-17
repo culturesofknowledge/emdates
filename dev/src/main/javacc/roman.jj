@@ -301,7 +301,7 @@ YearMonthDay parseDate() :
     }
   |
     // e.g., "Prid. Kal. Mart.", "Prid. Non. Apr."
-    t1=<Pridie> event=event() month=month() [[calendar(notes)] year=number(notes)]
+    t1=<Pridie> event=event() month=month() [year=year(notes)]
     {
       MonthDay md = table.lookup("PRID. " + event + " " + month);
       if (t1.image.startsWith("pro")) {
