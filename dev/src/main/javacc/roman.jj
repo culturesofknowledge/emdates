@@ -125,7 +125,7 @@ TOKEN :
 | <#FOUR      : "iv" | "iiii" > // allow common variant of 'iiii' for 'iv'
 | <#ONES      : <ONES_REP> | <FOUR> | "v" (<ONES_REP>)? | "ix" >
 | <#TENS_REP  : "x" | "xx" | "xxx" >
-| <#TENS_PART : <TENS_REP> | "xl" | "l" (<TENS_REP>)? | "xc" >
+| <#TENS_PART : <TENS_REP> | "xl" | "l" (<TENS_REP>)? | "xc" | "ic" >
 | <#TENS      : <TENS_PART> <ONES> | <TENS_PART> | <ONES> >
 | <#HUNS_REP  : "c" | "cc" | "ccc" >
 | <#HUNS_PART : <HUNS_REP> | "cd" | "d" ([" "])? (<HUNS_REP>)? | "cm" >
