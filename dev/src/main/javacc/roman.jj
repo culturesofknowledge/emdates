@@ -192,6 +192,7 @@ TOKEN :
 | < Anno: ("ann" ["i","o"] <OptPeriod>)>
 | < Ante: "ante" >
 | < Bis:  "bis" <OptPeriod> >
+| < Christ: "christi" >
 | < Die: "die" >
 | < Diem: "diem" >
 | < Ides   : ("e")? "id" ("ib")? ("es"|"us")? <OptPeriod> >
@@ -313,7 +314,7 @@ YearMonthDay parseDate() :
     }
   |
     // e.g., "anno MDXCI" just a year with no further specification
-    [calendar(notes)] (<Anno> | <A_dot> <D_dot>) year=number(notes)
+    [calendar(notes)] (<Anno> | <A_dot> <D_dot>) (<Christ>)? year=number(notes)
     {
       result = inYear(year, lookup("KAL. IAN.")); // hack to use 1st of Jan to create valid YMD
       notes.add("Missing day and month details, assuming 1 Jan.");
@@ -358,8 +359,8 @@ Integer year(Set<String> notes) :
 }
 {
   year=number(notes) { return year; }
-| (<Anno> | <A_dot> <D_dot>) year=number(notes) { return year; }
-| LOOKAHEAD(3) calendar(notes) [<Anno>] year=number(notes) { return year; }
+| (<Anno> [<Christ>] | <A_dot> <D_dot>) year=number(notes) { return year; }
+| LOOKAHEAD(3) calendar(notes) [<Anno> [<Christ>]] year=number(notes) { return year; }
 | calendar(notes) { return null; }
 }
 
