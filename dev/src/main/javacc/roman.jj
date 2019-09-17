@@ -131,7 +131,7 @@ TOKEN :
 {
   <#ONES_REP  : "i" | "ii" | "iii" >
 | <#FOUR      : "iv" | "iiii" > // allow common variant of 'iiii' for 'iv'
-| <#ONES      : <ONES_REP> | <FOUR> | "v" (<ONES_REP>)? | "ix" >
+| <#ONES      : <ONES_REP> | <FOUR> | "v" (<ONES_REP>)? | "ix" | "iix" >
 | <#TENS_REP  : "x" | "xx" | "xxx" >
 | <#TENS_PART : <TENS_REP> | "xl" | "l" (<TENS_REP>)? | "xc" | "ic" | "iic" >
 | <#TENS      : <TENS_PART> <ONES> | <TENS_PART> | <ONES> >
@@ -281,13 +281,14 @@ YearMonthDay parseDate() :
         result = inYear(year, md.withDayOfMonth(dayOfMonth));
       }
       else if (bis == null) {
-        final String daysBeforeEvent;
+        final int daysBeforeEvent;
         if (roman == null) {
-          daysBeforeEvent = asRomanForEvent(Integer.parseInt(arabic));
+          daysBeforeEvent = Integer.parseInt(arabic);
         } else {
-          daysBeforeEvent = roman.toUpperCase();
+          daysBeforeEvent = evaluateRomanNumerals(roman);
         }
-        final MonthDay md = lookup("A.D. " + daysBeforeEvent + " " + event + " " + month);
+        final String daysBeforeEventInRoman = asRomanForEvent(daysBeforeEvent);
+        final MonthDay md = lookup("A.D. " + daysBeforeEventInRoman + " " + event + " " + month);
         result = inYear(year, md);
       }
       else if (month.equals("MART.") && "VI".equals(roman) && "KAL.".equals(event)) {
@@ -372,14 +373,26 @@ String roman(Set<String> notes) :
 }
 {
   token=<Roman> ["."] {
-    String count = token.image.toUpperCase();
+    //String count = token.image.toUpperCase();
+    var count = token.image.toUpperCase();
     if (count.contains(" ")) {
       notes.add("Detected whitespace in roman numeral: '" + count + "'");
+      count = count.replaceAll("[\\s]", "");
     }
+
     if (count.contains("IIII")) {
       notes.add("Parsing 'IIII' as variant of 'IV' in: '" + count + "'");
-      return count = count.replaceAll("IIII", "IV");
+      count = count.replaceAll("IIII", "IV");
     }
+
+    if (count.endsWith("IIC")) {
+      notes.add("Parsing 'IIC' as 'XCVIII' (98) in: '" + count + "'");
+    }
+
+    if (count.endsWith("IIX")) {
+      notes.add("Parsing 'IIX' as 'XVIII' (8) in: '" + count + "'");
+    }
+
     return count;
   }
 }

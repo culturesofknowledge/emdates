@@ -100,7 +100,7 @@ class RomanDateParserTest {
 
   @Test
   void illegalRomanNumeralInCountProducesWarning() throws nl.knaw.huygens.lobsang.core.parsers.ParseException {
-    final YearMonthDay result = parse("a.d. IIX Kal. April. MDCLVII");
+    final YearMonthDay result = parse("a.d. IIIX Kal. April. MDCLVII");
     assertTrue(result.getNotes().stream().anyMatch(s -> s.startsWith(ILLEGAL_ROMAN_NUMERAL)));
     assertEquals(new YearMonthDay(1657, 3, 30), result); // III Kal. April = 30 March used instead
   }
