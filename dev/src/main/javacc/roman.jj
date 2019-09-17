@@ -241,8 +241,8 @@ YearMonthDay parseDate() :
       }
   }
   (
-    // e.g., "<Month>" as "Kal. <Month>" (which in turn means "1st of <Month>").
-    month=month() [year=year(notes)]
+    LOOKAHEAD(3) // needed to distinguish between "IUL." as a month and "IUL." as Julian calendar indication
+    month=month() [year=year(notes)] // e.g., "<Month>" as "Kal. <Month>" (which in turn means "1st of <Month>").
     {
       result = inYear(year, lookup("KAL. " + month));
       notes.add("Missing day of month indication, assuming Kalends (first day of the month).");
