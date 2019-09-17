@@ -136,6 +136,40 @@
 |VII Idibus Decemb.|XXXX-12-07|1600-12-07| |
 |Idib. Decembr. anno M D C.|1600-12-13|1600-12-13| |
 |XVII Kal. Ianuar. Iuliani, anno M D C.|1600-12-16|1600-12-26| |
+|VII Eid. Ianuarii M D CI.|1601-01-07|1601-01-07| |
+|a. d. 7 Februarii, anno sal. rep. 1601.|1601-02-07|1601-02-07| |
+|XV Kalend. Martias M D CI.|1601-02-15|1601-02-15| |
+|prid. Kal. Martias anno 1601.|1601-02-28|1601-02-28| |
+|prid. Kal. Martii Iuliani M D CI.|1601-02-28|1601-03-10| |
+|Kal. Martii Iuliani M D CI.|1601-03-01|1601-03-11| |
+|IV Aprilis M D CI.|1601-04-04|1601-04-04| |
+|XV Kal. Maii Iuliani M D CI.|1601-04-17|1601-04-27| |
+|XVII Kal. Iun. anno M D CI.|1601-05-16|1601-05-16| |
+|Idib. Aug. M D CI.|1601-08-13|1601-08-03| |
+|Nonis Sextilis Iuliani, die natalis mei LXII, M D CI.|1601-08-15|1601-08-15| |
+|Nonis Augusti Iuliani, die natalis mei LXII, M D CI.|1601-08-15|1601-08-15| |
+|Nonis Augusti Iuliani, natali meo LXII, M D CI.|1601-08-15|1601-08-15| |
+|Nonis Augusti Iuliani, die natali meo LXII, M D CI.|1601-08-15|1601-08-15| |
+|I Kal. Septemb. M D CI.|1601-08-31|1601-08-31| |
+|XI Kal. Septembris Iuliani, M D CI.|1601-08-22|1601-09-01| |
+|Non. Septembr. anno M D CI.|1601-09-05|1601-09-05| |
+|die mensis Septembris 12, anno 1601.|1601-09-12|1601-09-12| |
+|Kal. Octobris Iuliani, anno Christi M D CI.|1601-10-01|1601-10-11| |
+|VII Id. Novembr. anno M D CI.|1601-11-07|1601-11-07| |
+|XIII Kalend. Decembris M D CI.|1601-11-19|1601-11-19| |
+|V Eid. Novemb. Iuliani M D CI.|1601-11-09|1601-11-19| |
+|VI Kalend. Decembr. M D CI.|1601-11-26|1601-11-26| |
+|XVI Kal. Decembris Iuliani M D CI.|1601-11-16|1601-11-26| |
+|IIII Non. Decembris Iuliani M D CI.|1601-12-02|1601-12-12| |
+|prid. Eid. Decembris M D CI.|1601-12-12|1601-12-12| |
+|VI Eid. Decemb. Iuliani|XXXX-12-08|1601-12-18| |
+|XVI Kal. Ian. anno M D CI.|1601-12-17|1601-12-19| |
+|XII Kal. Ian. anno M D CI.|1601-12-21|1601-12-21| |
+|XVII Kalend. Ianuarii Iuliani M D CII.|1602-12-16|1601-12-26| |
+|postr. Kal. Ian. anni M D CII|1602-01-02|1602-01-02| |
+|X Kal. Febr. anno M D CII.|1602-01-23|1602-01-23| |
+|Eid. Ianuar. Iul. M D CII.|1602-01-13|1602-01-23| |
+
 
 
 [parse]: - "#result = parse(#input)"
