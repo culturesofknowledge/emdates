@@ -344,7 +344,10 @@ Integer year(Set<String> notes) :
   Integer year;
 }
 {
- [calendar(notes)] [<Anno>] year=number(notes) { return year; }
+  year=number(notes) { return year; }
+| <Anno> year=number(notes) { return year; }
+| LOOKAHEAD(3) calendar(notes) [<Anno>] year=number(notes) { return year; }
+| calendar(notes) { return null; }
 }
 
 void calendar(Set<String> notes) :
