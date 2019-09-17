@@ -76,16 +76,67 @@
 |XV Kalend. Ianuarii Iuliani M D XCVIII.|1598-12-18|1597-12-28| |
 |III Eidus Ianuarias Iulianas, anno Christi Dionysiano millesimo quingentesimo nonagesimo octavo, qui erat a vero natali Messiae millesimus sexcentesimus.|1598-01-21|1598-01-21| |
 |III Non. Febr. M D XCVIII.|1598-02-03|1598-02-03| |
-|Pridie Kal. Febr. Iulianas|XXXX-02-09|1598-02-09| |
+|Pridie Kal. Febr. Iulianas|XXXX-01-31|1598-02-09| |
 |III Kal. Febr.|XXXX-01-30|1598-02-09| |
 |6 Kal. Mart. 1598.|1598-02-24|1598-02-24| |
 |die 14 Martii anni 1598.|1598-03-14|1598-03-14| |
-|Eidibus Martiis Iulianis M D XCVIII.|1598-03-25|1598-03-25| |
+|Eidibus Martiis Iulianis M D XCVIII.|1598-03-15|1598-03-25| |
 |XV Kal. Maias.|XXXX-04-17|1598-04-17| |
 |18 Aprilis 98.|0098-04-18|1598-04-18| |
 |Id. Maias a. d. 1598.|1598-05-15|1598-05-15| |
 |die XXIII Mai. M D XCVIII.|1598-05-23|1598-05-23| |
 |IIII Kal. Iunias|XXXX-05-29|1598-05-29| |
+|IV Nonas Iulias, M D XCVIII.|1598-07-04|1598-07-04| |
+|VII Eid. Quintiles.|XXXX-07-09|1598-07-09| |
+|Nonis Quintil. Iulianis M D XCVIII.|1598-07-07|1598-07-17| |
+|IIII Nonas Augusti Iulianas M D XCVIII.|1598-08-02|1598-08-12| |
+|die 23 Augusti stylo veteri, anni Christiani vulgaris 1598.|1598-09-02|1598-09-02| |
+|V Id. Sept. anno M D IIC.|1598-09-09|1598-09-09| |
+|XIIII Kal. Novembris Iuliani|XXXX-10-19|1598-10-29| |
+|XIII Kal. Novemb. Iulianas M D XCVIII.|1598-10-20|1598-10-30| |
+|V Kalend. Decembr.|XXXX-11-27|1598-11-27| |
+|III Kalend. Martii Iuliani M D XCIX.|1599-02-27|1599-03-09| |
+|V Eid. Martii Iuliani M D XCIX.|1599-03-11|1599-03-21| |
+|XII Kal. Mai. XCIX.|0099-04-20|1599-04-20| |
+|XI K. Maias anno sesquimillesimo undecentesimo.|1599-04-21|1599-04-21| |
+|pridie Nonas Mai Iuliani M XCIX.|1099-05-06|1599-05-16| |
+|Nonis Quintilibus 1599.|1599-07-07|1599-07-07| |
+|VI Kalend. Augusti M D XCIX.|1599-07-27|1599-07-27| |
+|Kal. Augusti M D XCIX.|1599-08-01|1599-08-11| |
+|X Kal. Septembris Iuliani, M D XCIX.|1599-08-23|1599-08-23| |
+|VII Kal. Septembr. anno M D IC.|1599-08-26|1599-08-26| |
+|Kal. Septembr. anno M D IC.|1599-09-01|1599-09-01| |
+|V Kal. Octob. M D XCIX.|1599-09-27|1599-09-27| |
+|VIII Kalend. Octobr.|XXXX-09-24|1599-10-04| |
+|die 24 Octobris stylo novo anni 1599.|1599-10-24|1599-10-24| |
+|XVI Kal. Decembris Iuliani.|XXXX-11-16|1599-11-26| |
+|XII Kalend. Ianuarii Iuliani M D XCIX|1599-12-21|1599-12-31| |
+|Prid. Eid. Februarii Iuliani|XXXX-02-12|1600-02-22| |
+|V Kal. Martii M D C.|1600-02-25|1600-02-25| |
+|3 Martii 1600|1600-03-03|1600-03-03| |
+|Prid. Non. April. M D C.|1600-04-04|1600-04-04| |
+|XIIX K. Iul. anno M D C.|1600-06-14|1600-06-14| |
+|Nonis Iulii M D C.|1600-07-07|1600-07-07| |
+|XVI Kal. Augusti M D C.|1600-07-17|1600-07-17| |
+|23 Iul. 1600.|1600-07-23|1600-07-23| |
+|die 23 Iulii stylo novo, anno epochae Christianae Dionysicae et vulgatae 1600.|1600-07-23|1600-07-23| |
+|Prid. Eidus Iulii Iuliani M D C|1600-07-14|1600-07-24| |
+|VII Kalend. Augusti Iuliani M D C.|1600-07-26|1600-08-05| |
+|III Kalend. Sextilis Iuliani M D C.|1600-07-30|1600-08-09| |
+|Pridie Eid. Augustas, M D C.|1600-08-12|1600-08-12| |
+|VIII Eid. Augusti Iuliani, qui erat secundus dies natalis mei LXI, M D C.|1600-08-16|1600-08-16| |
+|VIII Eid. Augusti Iuliani, ..., M D C.|1600-08-16|1600-08-16| |
+|IIII Eid. Augusti Iuliani.|XXXX-08-10|1600-08-20| |
+|XIII Kalend. Septembr. Iuliani, eo ipse die quo tuas accepi, M D C.|1600-08-20|1600-08-30| |
+|VII Kal. Septemb. Iuliani M D C.|1600-08-26|1600-09-05| |
+|IIII Kal. Septembris Iuliani M D C|1600-08-29|1600-09-08| |
+|VI Id. Novembr. anno M D C.|1600-11-08|1600-11-08| |
+|Idib. Novemb.|XXXX-11-13|1600-11-13| |
+|XI Kal. Decemb., sub ipsum articulum quo tuas accepi, M D C.|1600-11-21|1600-11-21| |
+|VII Idibus Decemb.|XXXX-12-07|1600-12-07| |
+|Idib. Decembr. anno M D C.|1600-12-13|1600-12-13| |
+|XVII Kal. Ianuar. Iuliani, anno M D C.|1600-12-16|1600-12-26| |
+
 
 [parse]: - "#result = parse(#input)"
 [raw]: - "#input"

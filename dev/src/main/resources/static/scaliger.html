@@ -369,16 +369,9 @@ Was expecting one of:
     </tr>
     <tr>
       <td>XI Kal. Maii M D LXXXIIX.</td>
-      <td class="failure"><del class="expected">1588-04-21</del>
-<ins class="actual">????-??-??</ins></td>
-      <td class="failure"><del class="expected">1588-04-21</del>
-<ins class="actual">????-??-??</ins></td>
-      <td class="failure"><del class="expected">  </del>
-<ins class="actual">Encountered " &lt;Roman&gt; "X "" at line 1, column 24.
-Was expecting one of:
-    &lt;EOF&gt; 
-    "." ...
-    </ins></td>
+      <td class="success">1588-04-21</td>
+      <td class="success">1588-04-21</td>
+      <td class="success">  </td>
     </tr>
     <tr>
       <td>anno M D XCI.</td>
@@ -536,10 +529,8 @@ Was expecting one of:
 <ins class="actual">????-??-??</ins></td>
       <td class="failure"><del class="expected">  </del>
 <ins class="actual">Encountered " "." ". "" at line 1, column 30.
-Was expecting one of:
-    &lt;Arabic&gt; ...
-    &lt;Roman&gt; ...
-    &lt;Anno&gt; ...
+Was expecting:
+    &lt;EOF&gt; 
     </ins></td>
     </tr>
     <tr>
@@ -588,7 +579,7 @@ Was expecting one of:
     &lt;Anno&gt; ...
     &lt;Julian&gt; ...
     &lt;Gregorian&gt; ...
-    "stilo" ...
+    &lt;Stilo&gt; ...
     </ins></td>
     </tr>
     <tr>
@@ -646,10 +637,8 @@ Was expecting one of:
 <ins class="actual">????-??-??</ins></td>
       <td class="failure"><del class="expected">  </del>
 <ins class="actual">Encountered " &lt;Text&gt; "feria "" at line 1, column 24.
-Was expecting one of:
-    &lt;Arabic&gt; ...
-    &lt;Roman&gt; ...
-    &lt;Anno&gt; ...
+Was expecting:
+    &lt;EOF&gt; 
     </ins></td>
     </tr>
     <tr>
@@ -685,10 +674,9 @@ Was expecting one of:
       <td class="failure"><del class="expected">1598-01-21</del>
 <ins class="actual">????-??-??</ins></td>
       <td class="failure"><del class="expected">  </del>
-<ins class="actual">Encountered " &lt;Text&gt; "Christi "" at line 1, column 36.
-Was expecting one of:
-    &lt;Arabic&gt; ...
-    &lt;Roman&gt; ...
+<ins class="actual">Encountered " &lt;Anno&gt; "anno "" at line 1, column 31.
+Was expecting:
+    &lt;EOF&gt; 
     </ins></td>
     </tr>
     <tr>
@@ -699,16 +687,10 @@ Was expecting one of:
     </tr>
     <tr>
       <td>Pridie Kal. Febr. Iulianas</td>
-      <td class="failure"><del class="expected">XXXX-02-09</del>
-<ins class="actual">????-??-??</ins></td>
+      <td class="success">XXXX-01-31</td>
       <td class="failure"><del class="expected">1598-02-09</del>
-<ins class="actual">????-??-??</ins></td>
-      <td class="failure"><del class="expected">  </del>
-<ins class="actual">Encountered "&lt;EOF&gt;" at line 1, column 26.
-Was expecting one of:
-    &lt;Arabic&gt; ...
-    &lt;Roman&gt; ...
-    </ins></td>
+<ins class="actual">XXXX-01-31</ins></td>
+      <td class="success">  </td>
     </tr>
     <tr>
       <td>III Kal. Febr.</td>
@@ -731,8 +713,7 @@ Was expecting one of:
     </tr>
     <tr>
       <td>Eidibus Martiis Iulianis M D XCVIII.</td>
-      <td class="failure"><del class="expected">1598-03-25</del>
-<ins class="actual">1598-03-15</ins></td>
+      <td class="success">1598-03-15</td>
       <td class="failure"><del class="expected">1598-03-25</del>
 <ins class="actual">1598-03-15</ins></td>
       <td class="success">  </td>
@@ -766,7 +747,7 @@ Was expecting one of:
     &lt;Anno&gt; ...
     &lt;Julian&gt; ...
     &lt;Gregorian&gt; ...
-    "stilo" ...
+    &lt;Stilo&gt; ...
     </ins></td>
     </tr>
     <tr>
@@ -782,5 +763,381 @@ Was expecting one of:
 <ins class="actual">XXXX-05-29</ins></td>
       <td class="success">  </td>
     </tr>
+    <tr>
+      <td>IV Nonas Iulias, M D XCVIII.</td>
+      <td class="success">1598-07-04</td>
+      <td class="success">1598-07-04</td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>VII Eid. Quintiles.</td>
+      <td class="success">XXXX-07-09</td>
+      <td class="failure"><del class="expected">1598-07-09</del>
+<ins class="actual">XXXX-07-09</ins></td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>Nonis Quintil. Iulianis M D XCVIII.</td>
+      <td class="success">1598-07-07</td>
+      <td class="failure"><del class="expected">1598-07-17</del>
+<ins class="actual">1598-07-07</ins></td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>IIII Nonas Augusti Iulianas M D XCVIII.</td>
+      <td class="success">1598-08-02</td>
+      <td class="failure"><del class="expected">1598-08-12</del>
+<ins class="actual">1598-08-02</ins></td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>die 23 Augusti stylo veteri, anni Christiani vulgaris 1598.</td>
+      <td class="failure"><del class="expected">1598-09-02</del>
+<ins class="actual">????-??-??</ins></td>
+      <td class="failure"><del class="expected">1598-09-02</del>
+<ins class="actual">????-??-??</ins></td>
+      <td class="failure"><del class="expected">  </del>
+<ins class="actual">Encountered " &lt;Text&gt; "veteri "" at line 1, column 22.
+Was expecting one of:
+    &lt;Novo&gt; ...
+    &lt;Novo&gt; ...
+    </ins></td>
+    </tr>
+    <tr>
+      <td>V Id. Sept. anno M D IIC.</td>
+      <td class="success">1598-09-09</td>
+      <td class="success">1598-09-09</td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>XIIII Kal. Novembris Iuliani</td>
+      <td class="success">XXXX-10-19</td>
+      <td class="failure"><del class="expected">1598-10-29</del>
+<ins class="actual">XXXX-10-19</ins></td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>XIII Kal. Novemb. Iulianas M D XCVIII.</td>
+      <td class="success">1598-10-20</td>
+      <td class="failure"><del class="expected">1598-10-30</del>
+<ins class="actual">1598-10-20</ins></td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>V Kalend. Decembr.</td>
+      <td class="success">XXXX-11-27</td>
+      <td class="failure"><del class="expected">1598-11-27</del>
+<ins class="actual">XXXX-11-27</ins></td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>III Kalend. Martii Iuliani M D XCIX.</td>
+      <td class="success">1599-02-27</td>
+      <td class="failure"><del class="expected">1599-03-09</del>
+<ins class="actual">1599-02-27</ins></td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>V Eid. Martii Iuliani M D XCIX.</td>
+      <td class="success">1599-03-11</td>
+      <td class="failure"><del class="expected">1599-03-21</del>
+<ins class="actual">1599-03-11</ins></td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>XII Kal. Mai. XCIX.</td>
+      <td class="success">0099-04-20</td>
+      <td class="failure"><del class="expected">1599-04-20</del>
+<ins class="actual">0099-04-20</ins></td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>XI K. Maias anno sesquimillesimo undecentesimo.</td>
+      <td class="failure"><del class="expected">1599-04-21</del>
+<ins class="actual">????-??-??</ins></td>
+      <td class="failure"><del class="expected">1599-04-21</del>
+<ins class="actual">????-??-??</ins></td>
+      <td class="failure"><del class="expected">  </del>
+<ins class="actual">Encountered " &lt;Text&gt; "sesquimillesimo "" at line 1, column 18.
+Was expecting one of:
+    &lt;Arabic&gt; ...
+    &lt;Roman&gt; ...
+    </ins></td>
+    </tr>
+    <tr>
+      <td>pridie Nonas Mai Iuliani M XCIX.</td>
+      <td class="success">1099-05-06</td>
+      <td class="failure"><del class="expected">1599-05-16</del>
+<ins class="actual">1099-05-06</ins></td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>Nonis Quintilibus 1599.</td>
+      <td class="success">1599-07-07</td>
+      <td class="success">1599-07-07</td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>VI Kalend. Augusti M D XCIX.</td>
+      <td class="success">1599-07-27</td>
+      <td class="success">1599-07-27</td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>Kal. Augusti M D XCIX.</td>
+      <td class="success">1599-08-01</td>
+      <td class="failure"><del class="expected">1599-08-11</del>
+<ins class="actual">1599-08-01</ins></td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>X Kal. Septembris Iuliani, M D XCIX.</td>
+      <td class="success">1599-08-23</td>
+      <td class="success">1599-08-23</td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>VII Kal. Septembr. anno M D IC.</td>
+      <td class="success">1599-08-26</td>
+      <td class="success">1599-08-26</td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>Kal. Septembr. anno M D IC.</td>
+      <td class="success">1599-09-01</td>
+      <td class="success">1599-09-01</td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>V Kal. Octob. M D XCIX.</td>
+      <td class="success">1599-09-27</td>
+      <td class="success">1599-09-27</td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>VIII Kalend. Octobr.</td>
+      <td class="success">XXXX-09-24</td>
+      <td class="failure"><del class="expected">1599-10-04</del>
+<ins class="actual">XXXX-09-24</ins></td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>die 24 Octobris stylo novo anni 1599.</td>
+      <td class="success">1599-10-24</td>
+      <td class="success">1599-10-24</td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>XVI Kal. Decembris Iuliani.</td>
+      <td class="success">XXXX-11-16</td>
+      <td class="failure"><del class="expected">1599-11-26</del>
+<ins class="actual">XXXX-11-16</ins></td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>XII Kalend. Ianuarii Iuliani M D XCIX</td>
+      <td class="success">1599-12-21</td>
+      <td class="failure"><del class="expected">1599-12-31</del>
+<ins class="actual">1599-12-21</ins></td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>Prid. Eid. Februarii Iuliani</td>
+      <td class="success">XXXX-02-12</td>
+      <td class="failure"><del class="expected">1600-02-22</del>
+<ins class="actual">XXXX-02-12</ins></td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>V Kal. Martii M D C.</td>
+      <td class="success">1600-02-25</td>
+      <td class="success">1600-02-25</td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>3 Martii 1600</td>
+      <td class="success">1600-03-03</td>
+      <td class="success">1600-03-03</td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>Prid. Non. April. M D C.</td>
+      <td class="success">1600-04-04</td>
+      <td class="success">1600-04-04</td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>XIIX K. Iul. anno M D C.</td>
+      <td class="success">1600-06-14</td>
+      <td class="success">1600-06-14</td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>Nonis Iulii M D C.</td>
+      <td class="success">1600-07-07</td>
+      <td class="success">1600-07-07</td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>XVI Kal. Augusti M D C.</td>
+      <td class="success">1600-07-17</td>
+      <td class="success">1600-07-17</td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>23 Iul. 1600.</td>
+      <td class="success">1600-07-23</td>
+      <td class="success">1600-07-23</td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>die 23 Iulii stylo novo, anno epochae Christianae Dionysicae et vulgatae 1600.</td>
+      <td class="failure"><del class="expected">1600-07-23</del>
+<ins class="actual">????-??-??</ins></td>
+      <td class="failure"><del class="expected">1600-07-23</del>
+<ins class="actual">????-??-??</ins></td>
+      <td class="failure"><del class="expected">  </del>
+<ins class="actual">Encountered " &lt;Text&gt; "epochae "" at line 1, column 31.
+Was expecting one of:
+    &lt;Arabic&gt; ...
+    &lt;Roman&gt; ...
+    </ins></td>
+    </tr>
+    <tr>
+      <td>Prid. Eidus Iulii Iuliani M D C</td>
+      <td class="success">1600-07-14</td>
+      <td class="failure"><del class="expected">1600-07-24</del>
+<ins class="actual">1600-07-14</ins></td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>VII Kalend. Augusti Iuliani M D C.</td>
+      <td class="success">1600-07-26</td>
+      <td class="failure"><del class="expected">1600-08-05</del>
+<ins class="actual">1600-07-26</ins></td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>III Kalend. Sextilis Iuliani M D C.</td>
+      <td class="success">1600-07-30</td>
+      <td class="failure"><del class="expected">1600-08-09</del>
+<ins class="actual">1600-07-30</ins></td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>Pridie Eid. Augustas, M D C.</td>
+      <td class="success">1600-08-12</td>
+      <td class="success">1600-08-12</td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>VIII Eid. Augusti Iuliani, qui erat secundus dies natalis mei LXI, M D C.</td>
+      <td class="failure"><del class="expected">1600-08-16</del>
+<ins class="actual">????-??-??</ins></td>
+      <td class="failure"><del class="expected">1600-08-16</del>
+<ins class="actual">????-??-??</ins></td>
+      <td class="failure"><del class="expected">  </del>
+<ins class="actual">Encountered " &lt;Quin&gt; "qui "" at line 1, column 28.
+Was expecting:
+    &lt;EOF&gt; 
+    </ins></td>
+    </tr>
+    <tr>
+      <td>VIII Eid. Augusti Iuliani, ..., M D C.</td>
+      <td class="failure"><del class="expected">1600-08-16</del>
+<ins class="actual">????-??-??</ins></td>
+      <td class="failure"><del class="expected">1600-08-16</del>
+<ins class="actual">????-??-??</ins></td>
+      <td class="failure"><del class="expected">  </del>
+<ins class="actual">Encountered " "." ". "" at line 1, column 28.
+Was expecting:
+    &lt;EOF&gt; 
+    </ins></td>
+    </tr>
+    <tr>
+      <td>IIII Eid. Augusti Iuliani.</td>
+      <td class="success">XXXX-08-10</td>
+      <td class="failure"><del class="expected">1600-08-20</del>
+<ins class="actual">XXXX-08-10</ins></td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>XIII Kalend. Septembr. Iuliani, eo ipse die quo tuas accepi, M D C.</td>
+      <td class="failure"><del class="expected">1600-08-20</del>
+<ins class="actual">????-??-??</ins></td>
+      <td class="failure"><del class="expected">1600-08-30</del>
+<ins class="actual">????-??-??</ins></td>
+      <td class="failure"><del class="expected">  </del>
+<ins class="actual">Encountered " &lt;Text&gt; "eo "" at line 1, column 33.
+Was expecting:
+    &lt;EOF&gt; 
+    </ins></td>
+    </tr>
+    <tr>
+      <td>VII Kal. Septemb. Iuliani M D C.</td>
+      <td class="success">1600-08-26</td>
+      <td class="failure"><del class="expected">1600-09-05</del>
+<ins class="actual">1600-08-26</ins></td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>IIII Kal. Septembris Iuliani M D C</td>
+      <td class="success">1600-08-29</td>
+      <td class="failure"><del class="expected">1600-09-08</del>
+<ins class="actual">1600-08-29</ins></td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>VI Id. Novembr. anno M D C.</td>
+      <td class="success">1600-11-08</td>
+      <td class="success">1600-11-08</td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>Idib. Novemb.</td>
+      <td class="success">XXXX-11-13</td>
+      <td class="failure"><del class="expected">1600-11-13</del>
+<ins class="actual">XXXX-11-13</ins></td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>XI Kal. Decemb., sub ipsum articulum quo tuas accepi, M D C.</td>
+      <td class="failure"><del class="expected">1600-11-21</del>
+<ins class="actual">????-??-??</ins></td>
+      <td class="failure"><del class="expected">1600-11-21</del>
+<ins class="actual">????-??-??</ins></td>
+      <td class="failure"><del class="expected">  </del>
+<ins class="actual">Encountered " &lt;Text&gt; "sub "" at line 1, column 18.
+Was expecting one of:
+    &lt;EOF&gt; 
+    &lt;Arabic&gt; ...
+    &lt;Roman&gt; ...
+    &lt;PseudoRoman&gt; ...
+    &lt;Anno&gt; ...
+    &lt;Julian&gt; ...
+    &lt;Gregorian&gt; ...
+    &lt;Stilo&gt; ...
+    </ins></td>
+    </tr>
+    <tr>
+      <td>VII Idibus Decemb.</td>
+      <td class="success">XXXX-12-07</td>
+      <td class="failure"><del class="expected">1600-12-07</del>
+<ins class="actual">XXXX-12-07</ins></td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>Idib. Decembr. anno M D C.</td>
+      <td class="success">1600-12-13</td>
+      <td class="success">1600-12-13</td>
+      <td class="success">  </td>
+    </tr>
+    <tr>
+      <td>XVII Kal. Ianuar. Iuliani, anno M D C.</td>
+      <td class="success">1600-12-16</td>
+      <td class="failure"><del class="expected">1600-12-26</del>
+<ins class="actual">1600-12-16</ins></td>
+      <td class="success">  </td>
+    </tr>
   </tbody>
-</table></div><div class="footer">Results generated by <a href="http://www.concordion.org" style="font-weight: bold; text-decoration: none; color: #89C;">Concordion</a><div class="testTime">in 228 ms on 13-Sep-2019 at 12:50:25 CEST</div></div></body></html>
+</table></div><div class="footer">Results generated by <a href="http://www.concordion.org" style="font-weight: bold; text-decoration: none; color: #89C;">Concordion</a><div class="testTime">in 352 ms on 17-Sep-2019 at 13:35:11 CEST</div></div></body></html>
