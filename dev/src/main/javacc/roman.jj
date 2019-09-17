@@ -186,11 +186,13 @@ TOKEN :
 
 TOKEN :
 {
-  < Ante: ("ante" | ("a" ".")) >
-| < Anno: "ann" ["i","o"] <OptPeriod> >
+  < A_dot: "a." >
+| < D_dot: "d." >
+| < Anno: ("ann" ["i","o"] <OptPeriod>)>
+| < Ante: "ante" >
 | < Bis:  "bis" <OptPeriod> >
 | < Die: "die" >
-| < Diem: ("diem" | ("d" ".")) >
+| < Diem: "diem" >
 | < Ides   : ("e")? "id" ("ib")? ("es"|"us")? <OptPeriod> >
 | < Kalends: ("k." | (["c", "k"]) "al" (["e","i","n","d","s"])* ("arum")? <OptPeriod> ) >
 | < Nones  : "non" (["a","e","i"] "s" | "arum")? <OptPeriod> >
@@ -234,13 +236,6 @@ YearMonthDay parseDate() :
       }
   }
   (
-    // e.g., "anno MDXCI" just a year with no further specification
-    [calendar(notes)] <Anno> year=number(notes)
-    {
-      result = inYear(year, lookup("KAL. IAN.")); // hack to use 1st of Jan to create valid YMD
-      notes.add("Missing day and month details, assuming 1 Jan.");
-    }
-  |
     // e.g., "<Month>" as "Kal. <Month>" (which in turn means "1st of <Month>").
     month=month() [year=year(notes)]
     {
@@ -256,7 +251,8 @@ YearMonthDay parseDate() :
     }
   |
     // e.g., "A.D. VII Ides Mart."
-    [<Die>] [<Ante> <Diem>] [bis=<Bis>] (roman=roman(notes) | arabic=arabic() | t1=<PseudoRoman>) [event=event()] month=month() [year=year(notes) | t2=<PseudoRoman>]
+    LOOKAHEAD(3)
+    [<Die>] [(<Ante>|<A_dot>) (<Diem>|<D_dot>)] [bis=<Bis>] (roman=roman(notes) | arabic=arabic() | t1=<PseudoRoman>) [event=event()] month=month() [year=year(notes) | t2=<PseudoRoman>]
     {
       if (t1 != null) {
         notes.add(ILLEGAL_ROMAN_NUMERAL + t1.image + ", winging it using count=" + DEFAULT_COUNT);
@@ -314,6 +310,13 @@ YearMonthDay parseDate() :
       }
       result = inYear(year, md);
     }
+  |
+    // e.g., "anno MDXCI" just a year with no further specification
+    [calendar(notes)] (<Anno> | <A_dot> <D_dot>) year=number(notes)
+    {
+      result = inYear(year, lookup("KAL. IAN.")); // hack to use 1st of Jan to create valid YMD
+      notes.add("Missing day and month details, assuming 1 Jan.");
+    }
   )
   <EOF> {
     if (!notes.isEmpty()) {
@@ -354,7 +357,7 @@ Integer year(Set<String> notes) :
 }
 {
   year=number(notes) { return year; }
-| <Anno> year=number(notes) { return year; }
+| (<Anno> | <A_dot> <D_dot>) year=number(notes) { return year; }
 | LOOKAHEAD(3) calendar(notes) [<Anno>] year=number(notes) { return year; }
 | calendar(notes) { return null; }
 }
