@@ -36,7 +36,7 @@
   <h1>Convert table</h1>
       <label for="file">File</label>
       <input type="file" name="file" id="file">
-    
+
       <button id="fileConvert">Convert</button>
   <hr>
 
@@ -44,7 +44,7 @@
   <input type="text" value="V. Eid. Quin 1645." id="romanDate">
   <button id="parseRoman">Parse</button>
   <script type="application/javascript">
-    
+
   </script>
 
   <span id="romanDateParseResult"></span>
@@ -78,7 +78,7 @@
       var dates = data["dates"];
       var message = data["message"];
       if(dates) {
-        elementToAddTo.appendChild(createTable(dates));     
+        elementToAddTo.appendChild(createTable(dates));
       }
       else if(message) {
         result.appendChild(createTextElement("span", "errorMessage: " + message));
@@ -116,7 +116,7 @@
       var file = document.getElementById("file").files[0];
       var formData = new FormData();
       formData.append("file", file);
-      
+
       var xhr = new XMLHttpRequest();
       xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
