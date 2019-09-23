@@ -142,8 +142,7 @@ Suppose we have a CSV file `example.csv`:
 then we can have this spreadsheet converted via the ``/convert/table`` API endpoint:
 
 ----
-$ curl -s localhost:8080/convert/table -F file=@example.csv \
-  -F yearField=Year -F monthField=Month -F dayField=Day
+$ curl -s localhost:8080/convert/table -F file=@examples/buklconversion.csv \
 ----
 and end up with a converted CSV:
 
