@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bulk conversion</title>
+  <script src="https://cdn.zinggrid.com/zinggrid.min.js" defer></script>
+</head>
+<body>
+  <input type="file" id="file-input" />
+  <h3>Contents of the file:</h3>
+  <zing-grid id="file-content"></zing-grid>
+  <button id="fileConvert">Convert</button>
+  <script lang="javascript">
+    function readSingleFile(e) {
+      var file = e.target.files[0];
+      if (!file) {
+        return;
+      }
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var contents = e.target.result;
+        displayContents(contents);
+      };
+      reader.readAsText(file);
+    }
+
+    function displayContents(contents) {
+      // TODO add  validation
+      var lines = contents.split("\n");
+      var gridData = [];
+      var headers = [];
+      for (i = 0; i < lines.length; i++) {
+        var line = lines[i].split(",");
+        if (i === 0) {
+          headers = line;
+        } else if (line.length === headers.length ) {
+          var gridLine = {};
+          for (j = 0; j < line.length; j++) {
+            gridLine[headers[j]] = line[j];
+          }
+          gridData.push(gridLine);
+        }
+      }
+
+      var element = document.getElementById('file-content');
+      element.setAttribute('data', JSON.stringify(gridData));
+    }
+
+    document.getElementById('file-input')
+            .addEventListener('change', readSingleFile, false);
+
+    function convert() {
+      var data = document.getElementById('file-content').getAttribute('data');
+      var parsedData = JSON.parse(data);
+      var headers = Object.getOwnPropertyNames(parsedData[0]);
+      var csv = headers.join();
+
+      for (i = 0; i < parsedData.length; i++) {
+        csv += "\n";
+        csv += Object.values(parsedData[i]).join();
+      }
+
+      var formData = new FormData();
+      formData.append("file", csv);
+
+      var xhr = new XMLHttpRequest();
+
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          if (xhr.status == 200) {
+            displayContents(xhr.response);
+          }
+        }
+      }
+
+      xhr.open("POST", "/convert/table");
+      xhr.send(formData);
+    }
+
+    document.getElementById("fileConvert")
+            .addEventListener('click', convert, false);
+  </script>
+
+</body>
+</html>
