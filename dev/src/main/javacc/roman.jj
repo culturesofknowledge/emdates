@@ -374,7 +374,6 @@ String roman(Set<String> notes) :
 }
 {
   token=<Roman> ["."] {
-    //String count = token.image.toUpperCase();
     var count = token.image.toUpperCase();
     if (count.contains(" ")) {
       notes.add("Detected whitespace in roman numeral: '" + count + "'");
