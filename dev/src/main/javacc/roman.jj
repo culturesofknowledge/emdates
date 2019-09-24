@@ -114,7 +114,6 @@ PARSER_END(RomanDateParser)
 SKIP :
 {
   " "
-| ","
 | "\n"
 | "\r"
 | "\t"
@@ -159,57 +158,51 @@ TOKEN :
 
 TOKEN :
 {
-  <#OptPeriod: (".")? >
-| <#OptComma:  (",")? >
-}
-
-TOKEN :
-{
-  <Quin: "q" ("u"|"v") "i" ("n")? ("c")? (["b","e","i","l","s","t","u"])* <OptPeriod> >
-| <Sext: "sex" (["e","i","l","s","t","u"])* <OptPeriod> >
+  <Quin: "q" ("u"|"v") "i" ("n")? ("c")? (["b","e","i","l","s","t","u"])* (".")? >
+| <Sext: "sex" (["e","i","l","s","t","u"])* (".")? >
 | <Octem: "iix" ([".","b","i","m","r","u"])+ >
 | <Novem: "ix" ([".","b","i","m","r","u"])+ >
-| <Decem: "x" <OptPeriod> (["b","i","m","r","u"])+ <OptPeriod> >
+| <Decem: "x" (".")? (["b","i","m","r","u"])+ (".")? >
 }
 
 TOKEN :
 {
-  < Jan: ("ian" | "jan") (["a","i","r","s","u"])* <OptPeriod> >
-| < Feb: "feb" (["a","i","j","r","s","u"])* <OptPeriod> >
-| < Mar: ("mar" (["a","i","s","t","u"])* <OptPeriod>) | "m." >
-| < Apr: "apr" (["b","e","i","l","s","u"])* <OptPeriod> >
-| < May: "ma" (["a","i","j","s"])* <OptPeriod> >
-| < Jun: (["i","j"]) (["u","v"]) "n" (["a","i","u","s"])* <OptPeriod> >
-| < Jul: ("iul"|"ivl") (["a","c","i","o","u","s"])* <OptPeriod> >
-| < Aug: ("aug"|"avg") (["a","i","s","t","u"])* <OptPeriod> >
-| < Sep: "sep" (["b","e","m","i","r","s","t"])* <OptPeriod> >
-| < Oct: ("oct"|"okt") (["o","b","e","i","r","s","u"])* <OptPeriod> >
-| < Nov: ("nov"|"nou") (["b","e","i","m","r","s"])* <OptPeriod> >
-| < Dec: "dec" (["b","e","i","m","r","s"])* <OptPeriod> >
+  < Jan: ("ian" | "jan") (["a","i","r","s","u"])* (".")? >
+| < Feb: "feb" (["a","i","j","r","s","u"])* (".")? >
+| < Mar: ("mar" (["a","i","s","t","u"])* (".")?) | "m." >
+| < Apr: "apr" (["b","e","i","l","s","u"])* (".")? >
+| < May: "ma" (["a","i","j","s"])* (".")? >
+| < Jun: (["i","j"]) (["u","v"]) "n" (["a","i","u","s"])* (".")? >
+| < Jul: ("iul"|"ivl") (["a","c","i","o","u","s"])* (".")? >
+| < Aug: ("aug"|"avg") (["a","i","s","t","u"])* (".")? >
+| < Sep: "sep" (["b","e","m","i","r","s","t"])* (".")? >
+| < Oct: ("oct"|"okt") (["o","b","e","i","r","s","u"])* (".")? >
+| < Nov: ("nov"|"nou") (["b","e","i","m","r","s"])* (".")? >
+| < Dec: "dec" (["b","e","i","m","r","s"])* (".")? >
 }
 
 TOKEN :
 {
   < A_dot: "a." >
 | < D_dot: "d." >
-| < Anno: ("ann" ["i","o"] <OptPeriod>)>
+| < Anno: ("ann" ["i","o"] (".")?)>
 | < Ante: "ante" >
-| < Bis:  "bis" <OptPeriod> >
+| < Bis:  "bis" (".")? >
 | < Christ: "christi" >
 | < Die: "die" >
 | < Diem: "diem" >
-| < Ides   : ("e")? "id" ("ib")? ("es"|"us")? <OptPeriod> >
-| < Kalends: ("k." | (["c", "k"]) "al" (["e","i","n","d","s"])* ("arum")? <OptPeriod> ) >
-| < Nones  : "non" (["a","e","i"] "s" | "arum")? <OptPeriod> >
-| < Pridie: "p" ("rop" | "ost")? "r" (["d","e","i"])* <OptPeriod> >
+| < Ides   : ("e")? "id" ("ib")? ("es"|"us")? (".")? >
+| < Kalends: ("k." | (["c", "k"]) "al" (["e","i","n","d","s"])* ("arum")? (".")? ) >
+| < Nones  : "non" (["a","e","i"] "s" | "arum")? (".")? >
+| < Pridie: "p" ("rop" | "ost")? "r" (["d","e","i"])* (".")? >
 }
 
 TOKEN :
 {
-  < Julian: (["i","j"]) (["u","v"]) "lian" (["a","i","s"])* <OptPeriod> <OptComma> >
-| < Gregorian: "gregorian" (["a","i","s"])* <OptPeriod> >
+  < Julian: (["i","j"]) (["u","v"]) "lian" (["a","i","s"])* (".")? >
+| < Gregorian: "gregorian" (["a","i","s"])* (".")? >
 | < Stilo: "st" (["i","y"]) "lo" >
-| < Novo: "novo" <OptPeriod> >
+| < Novo: "novo" (".")? >
 }
 
 // If all of the above fails, it may just be (superfluous) text.
@@ -249,7 +242,7 @@ YearMonthDay parseDate() :
     }
   |
     // e.g., "Kal. Mart.", "Id. Feb".
-    event = event() month=month() [year=year(notes)]
+    event = event() month=month() [[","] year=year(notes)]
     {
       final MonthDay md = lookup(event + " " + month);
       result = inYear(year, md);
@@ -257,7 +250,7 @@ YearMonthDay parseDate() :
   |
     // e.g., "A.D. VII Ides Mart."
     LOOKAHEAD(3)
-    [<Die>] [(<Ante>|<A_dot>) (<Diem>|<D_dot>)] [bis=<Bis>] (roman=roman(notes) | arabic=arabic() | t1=<PseudoRoman>) [event=event()] month=month() [year=year(notes) | t2=<PseudoRoman>]
+    [<Die>] [(<Ante>|<A_dot>) (<Diem>|<D_dot>)] [bis=<Bis>] (roman=roman(notes) | arabic=arabic() | t1=<PseudoRoman>) [","] [event=event()] month=month() [[","] year=year(notes) | t2=<PseudoRoman>]
     {
       if (t1 != null) {
         notes.add(ILLEGAL_ROMAN_NUMERAL + t1.image + ", winging it using count=" + DEFAULT_COUNT);
@@ -302,7 +295,7 @@ YearMonthDay parseDate() :
     }
   |
     // e.g., "Prid. Kal. Mart.", "Prid. Non. Apr."
-    t1=<Pridie> event=event() month=month() [year=year(notes)]
+    t1=<Pridie> event=event() month=month() [[","] year=year(notes)]
     {
       MonthDay md = table.lookup("PRID. " + event + " " + month);
       if (t1.image.startsWith("pro")) {
@@ -363,7 +356,7 @@ Integer year(Set<String> notes) :
 {
   year=number(notes) { return year; }
 | (<Anno> [<Christ>] | <A_dot> <D_dot>) year=number(notes) { return year; }
-| LOOKAHEAD(3) calendar(notes) [<Anno> [<Christ>]] year=number(notes) { return year; }
+| LOOKAHEAD(3) calendar(notes) [","] [<Anno> [<Christ>]] year=number(notes) { return year; }
 | calendar(notes) { return null; }
 }
 
