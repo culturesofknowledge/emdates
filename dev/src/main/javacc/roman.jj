@@ -410,7 +410,7 @@ int number(Set<String> notes) :
   String str;
 }
 {
-  str=arabic() { return Integer.valueOf(str); }
+  str=arabic() { return Integer.parseInt(str); }
 | str=roman(notes)  { return evaluateRomanNumerals(str); }
 }
 
