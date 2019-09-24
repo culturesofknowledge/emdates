@@ -208,7 +208,7 @@ TOKEN :
 // If all of the above fails, it may just be (superfluous) text.
 TOKEN :
 {
-  <Text: (["a"-"z"])+ >
+  <Text: (["a"-"z","A"-"Z"])+ >
 }
 
 YearMonthDay parseDate() :
