@@ -11,7 +11,7 @@ The resource will offer a web form for converting single dates as well as bulk c
 Access to the tool for individual and bulk conversions will also be provided via an open [Timbuctoo][3] [GraphQL][21] API. Because EM Dates maintains an internal list of known-correct Roman date variants to normalised ISO 8601 transformations, adding an [OpenRefine][17] endpoint for reconciliation and/or sharing this data with the [GODOT][15] calendar gazetteer is also under active consideration.
 
 ## Status
-**December 2018**: Draft conversion API and Roman parser [available for testing][19] via Docker.
+**February 2019**: Conversion API and Roman parser [available for testing][19] via Docker.
 
 **November 2018**: Rewrite of conversion algorithms on the basis of [Rheingold & Derschowitz][16]
 
@@ -29,7 +29,7 @@ Arno Bosse (Oxford - Project Management), Howard Hotson (Oxford - Director), Gra
 
 ## Acknowledgements
 
-EM Places, EM People, and EM Dates are [funded by a grant][2] to the University of Oxford from the Andrew W. Mellon Foundation.
+EM Places, EM People, and EM Dates were [funded in 2017-2019 by a grant][2] to the University of Oxford from the Andrew W. Mellon Foundation.
 
 [1]: https://github.com/culturesofknowledge/emplaces
 [2]:  http://www.culturesofknowledge.org/?p=8455
