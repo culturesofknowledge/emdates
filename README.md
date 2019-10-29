@@ -2,7 +2,7 @@
 
 EM Dates is an early modern calendar conversion service for the sixteenth- to eighteenth-century under development by the [Cultures of Knowledge][1] project at Oxford University. It is the second of what will eventually become [three Linked Open Data resources][2] also comprising [EM Places][1] and EM People built on a [shared humanities infrastructure platform][3] in collaboration with the [Humanities Cluster][20] of the Royal Dutch Academy of Arts and Sciences (KNAW) in Amsterdam.
 
-You can read an overview of EM Dates in the 'Dates' chapter of Hotson & Wallnig (eds.) _[Reassembling the Republic of Letters in the Digital Age: Standards, Systems, Scholarship][31]_ (Göttingen, 2019).
+You can read an overview of EM Dates in the 'Dates' chapter of Hotson & Wallnig (eds.) _[Reassembling the Republic of Letters in the Digital Age: Standards, Systems, Scholarship][22]_ (Göttingen, 2019).
 
 ## Goals
 
@@ -49,3 +49,4 @@ EM Places, EM People, and EM Dates were [funded in 2017-2019 by a grant][2] to t
 [19]: https://github.com/culturesofknowledge/emdates/tree/master/dev
 [20]: https://huc.knaw.nl
 [21]: https://graphql.org
+[22]: https://www.univerlag.uni-goettingen.de/handle/3/isbn-978-3-86395-403-1?locale-attribute=en
