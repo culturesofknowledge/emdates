@@ -2,6 +2,8 @@
 
 EM Dates is an early modern calendar conversion service for the sixteenth- to eighteenth-century under development by the [Cultures of Knowledge][1] project at Oxford University. It is the second of what will eventually become [three Linked Open Data resources][2] also comprising [EM Places][1] and EM People built on a [shared humanities infrastructure platform][3] in collaboration with the [Humanities Cluster][20] of the Royal Dutch Academy of Arts and Sciences (KNAW) in Amsterdam.
 
+You can read an overview of EM Dates in the 'Dates' chapter of Hotson & Wallnig (eds.) _[Reassembling the Republic of Letters in the Digital Age: Standards, Systems, Scholarship][31]_ (Göttingen, 2019).
+
 ## Goals
 
 EM Dates is designed to provide a locale and period aware resource for individual and bulk early modern date conversions. To accomplish this, EM Dates draws on data collected in [EM Places][1] for the date(s) at which a historical place entity (e.g. the 'Republic of Venice') transitioned from one calendrical system to another (e.g. Julian to Gregorian). Given an [ISO 8601][5] formatted date and an gazetteer authority reference to either a known historical place entity (in EM Places) or to a name (e.g. in [GeoNames][6]) associated with a known place entity in [EM Places][1], it will infer the appropriate calendar and offer to make the suggested date conversion. In addition, it provides support for parsing early modern dates expessed in [Roman nomenclature][19] into ISO 8601. 
