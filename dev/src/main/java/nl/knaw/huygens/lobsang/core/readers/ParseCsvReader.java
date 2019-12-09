@@ -19,14 +19,14 @@ import java.util.stream.Stream;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class CsvReader {
-  private static final Logger LOG = getLogger(CsvReader.class);
+public class ParseCsvReader {
+  private static final Logger LOG = getLogger(ParseCsvReader.class);
 
   private final CSVFormat format;
   private final FieldNames fieldNames;
   private CSVParser parser;
 
-  private CsvReader(CSVFormat format, FieldNames fieldNames) {
+  private ParseCsvReader(CSVFormat format, FieldNames fieldNames) {
     this.format = format;
     this.fieldNames = fieldNames;
   }
@@ -68,8 +68,8 @@ public class CsvReader {
   }
 
   public static class Builder {
+    static final String DEFAULT_ID_NAME = "Id";
     static final String DEFAULT_DATE_NAME = "Date";
-    static final String DEFAULT_PLACE_NAME = "Place";
 
     private final Map<String, String> config;
 
@@ -77,7 +77,7 @@ public class CsvReader {
       this.config = config;
     }
 
-    public CsvReader build() {
+    public ParseCsvReader build() {
       final CSVFormat format = CSVFormat.EXCEL;
       applyFormatOption("delimiter", format::withDelimiter);
       applyFormatOption("quoteChar", format::withQuote);
@@ -92,10 +92,11 @@ public class CsvReader {
       applyFormatOption("trailingDelimiter", Boolean::valueOf, format::withTrailingDelimiter);
 
       final FieldNames fieldNames = new FieldNames(
-        config.getOrDefault("dateField", DEFAULT_DATE_NAME),
-        config.getOrDefault("placeField", DEFAULT_PLACE_NAME));
+        config.getOrDefault("idField", DEFAULT_ID_NAME),
+        config.getOrDefault("dateField", DEFAULT_DATE_NAME)
+      );
 
-      return new CsvReader(format.withAllowMissingColumnNames().withHeader(), fieldNames);
+      return new ParseCsvReader(format.withAllowMissingColumnNames().withHeader(), fieldNames);
     }
 
     private <T> void applyFormatOption(String key, Function<String, T> convertIt,
@@ -130,12 +131,12 @@ public class CsvReader {
   }
 
   public static class FieldNames {
-    private final String placeFieldName;
+    private final String idField;
     private final String dateField;
 
-    FieldNames(String dateField, String placeFieldName) {
+    FieldNames(String idField, String dateField) {
+      this.idField = idField;
       this.dateField = dateField;
-      this.placeFieldName = placeFieldName;
     }
 
 
@@ -143,19 +144,19 @@ public class CsvReader {
       return dateField;
     }
 
-    public String getPlaceFieldName() {
-      return placeFieldName;
+    public String getIdFieldName() {
+      return idField;
     }
 
     public Stream<String> stream() {
-      return Stream.of(dateField, placeFieldName);
+      return Stream.of(idField, dateField);
     }
 
     @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
                         .add("dateFieldName", dateField)
-                        .add("placeFieldName", placeFieldName)
+                        .add("idFieldName", idField)
                         .toString();
     }
 
