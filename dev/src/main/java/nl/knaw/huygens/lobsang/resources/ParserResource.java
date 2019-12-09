@@ -60,6 +60,7 @@ public class ParserResource {
     try {
 
       reader.parse(inputStream);
+      reader.validate();
 
       return Response.ok().entity((StreamingOutput) output -> {
         final CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(output), CSVFormat.EXCEL);
@@ -95,9 +96,11 @@ public class ParserResource {
         csvPrinter.flush();
         csvPrinter.close();
       }).build();
-    } catch (IOException e) {
+    } catch (IOException | IllegalStateException e) {
       LOG.error("Could not parse csv", e);
-      return Response.status(Response.Status.BAD_REQUEST).entity("Could not parse csv: " + e.getMessage()).build();
+      return Response.status(Response.Status.BAD_REQUEST)
+      .entity("Could not parse csv: " + e.getMessage() + "\n")
+      .build();
     }
   }
 }
