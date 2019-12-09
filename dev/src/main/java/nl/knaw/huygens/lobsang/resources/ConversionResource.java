@@ -193,7 +193,7 @@ public class ConversionResource {
 
     if (maxConversions > 0) {
       LOG.trace("limiting # conversions to: {}", maxConversions);
-      todo = todo.limit(maxConversions);
+      todo = todo.distinct().limit(maxConversions);
     }
 
     int shortBy = maxConversions;
