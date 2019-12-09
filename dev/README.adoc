@@ -184,21 +184,31 @@ curl -F file=@examples/bulkparse.csv http://localhost:8080/parse/roman/bulk
 The input looks something like this:
 
 ----
+|====
 |Id |Date
-|1 |IIII Idus Decemb. M D LXIIII.
-|2 |20 Junii
-|3 |"Nonis Aprilibus, stilo novo. ... 1595."
+
+|1  |IIII Idus Decemb. M D LXIIII.
+
+|2  |20 Junii
+
+|3  |"Nonis Aprilibus, stilo novo. ... 1595."
+|====
 ----
 
 This will yield the following output:
 ----
+|====
 |Id |Date |Result |Message
-|1 |IIII Idus Decemb. M D LXIIII.,1564-12-10 |"Parsing 'IIII' as variant of 'IV' in: 'MDLXIIII', Parsing 'IIII' as variant of 'IV' in: 'IIII', Detected whitespace in roman numeral: 'M D LXIIII'"
-|2 |20 Junii |XXXX-06-20 |Missing year indication
-|3 |"Nonis Aprilibus, stilo novo. ... 1595." | |"Encountered "" ""."" "". """" at line 1, column 30.
+
+|1  |IIII Idus Decemb. M D LXIIII. |1564-12-10 |"Parsing 'IIII' as variant of 'IV' in: 'MDLXIIII', Parsing 'IIII' as variant of 'IV' in: 'IIII', Detected whitespace in roman numeral: 'M D LXIIII'"
+
+|2  |20 Junii |XXXX-06-20 |Missing year indication
+
+|3  |"Nonis Aprilibus, stilo novo. ... 1595." | |"Encountered "" ""."" "". """" at line 1, column 30.
 Was expecting:
     <EOF>
     "
+|====
 ----
 
 == Using Timbuctoo (EMPlaces) as PlaceRegistry
