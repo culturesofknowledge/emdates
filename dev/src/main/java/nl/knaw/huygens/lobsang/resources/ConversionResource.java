@@ -134,6 +134,7 @@ public class ConversionResource {
                      }
                      for (int i = 0; i < maxConversions; i++) {
                        printer.print(format("%s_%d", fieldNames.getDateFieldName(), i));
+                       printer.print(format("Notes_%d", i));
                      }
                      printer.println();
                      reader.read(record -> {
@@ -201,11 +202,13 @@ public class ConversionResource {
     // avoid conversions.foreach() lest we end up with IOExceptions inside lambda
     for (YearMonthDay ymd : (Iterable<YearMonthDay>) todo::iterator) {
       printer.print(ymd.asIso8601String());
+      printer.print(String.join(", ", ymd.getNotes()));
       shortBy--;
     }
 
     for (int i = 0; i < shortBy; i++) {
-      printer.print("");
+      printer.print("");  // date
+      printer.print(""); // notes
     }
 
     // end record
