@@ -183,7 +183,6 @@ curl -F file=@examples/bulkparse.csv http://localhost:8080/parse/roman/bulk
 
 The input looks something like this:
 
-----
 |====
 |Id |Date
 
@@ -193,10 +192,8 @@ The input looks something like this:
 
 |3  |"Nonis Aprilibus, stilo novo. ... 1595."
 |====
-----
 
 This will yield the following output:
-----
 |====
 |Id |Date |Result |Message
 
@@ -209,7 +206,7 @@ Was expecting:
     <EOF>
     "
 |====
-----
+
 
 == Using Timbuctoo (EMPlaces) as PlaceRegistry
 To use Lobsang with the EMPlaces data set in Timbuctoo change the `placeRegistry` configuration to the next:
