@@ -1,6 +1,5 @@
 package nl.knaw.huygens.lobsang.core.readers;
 
-import com.google.common.base.MoreObjects;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -15,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -29,10 +27,6 @@ public class CsvReader {
   private CsvReader(CSVFormat format, FieldNames fieldNames) {
     this.format = format;
     this.fieldNames = fieldNames;
-  }
-
-  public FieldNames getFieldNames() {
-    return fieldNames;
   }
 
   public void parse(InputStream inputStream) throws IOException {
@@ -68,13 +62,13 @@ public class CsvReader {
   }
 
   public static class Builder {
-    static final String DEFAULT_DATE_NAME = "Date";
-    static final String DEFAULT_PLACE_NAME = "Place";
 
     private final Map<String, String> config;
+    private FieldNames fieldNames;
 
-    public Builder(Map<String, String> config) {
+    public Builder(Map<String, String> config, FieldNames fieldNames) {
       this.config = config;
+      this.fieldNames = fieldNames;
     }
 
     public CsvReader build() {
@@ -90,10 +84,6 @@ public class CsvReader {
       applyFormatOption("ignoreEmptyLines", Boolean::valueOf, format::withIgnoreEmptyLines);
       applyFormatOption("trim", Boolean::valueOf, format::withTrim);
       applyFormatOption("trailingDelimiter", Boolean::valueOf, format::withTrailingDelimiter);
-
-      final FieldNames fieldNames = new FieldNames(
-        config.getOrDefault("dateField", DEFAULT_DATE_NAME),
-        config.getOrDefault("placeField", DEFAULT_PLACE_NAME));
 
       return new CsvReader(format.withAllowMissingColumnNames().withHeader(), fieldNames);
     }
@@ -129,35 +119,4 @@ public class CsvReader {
     }
   }
 
-  public static class FieldNames {
-    private final String placeFieldName;
-    private final String dateField;
-
-    FieldNames(String dateField, String placeFieldName) {
-      this.dateField = dateField;
-      this.placeFieldName = placeFieldName;
-    }
-
-
-    public String getDateFieldName() {
-      return dateField;
-    }
-
-    public String getPlaceFieldName() {
-      return placeFieldName;
-    }
-
-    public Stream<String> stream() {
-      return Stream.of(dateField, placeFieldName);
-    }
-
-    @Override
-    public String toString() {
-      return MoreObjects.toStringHelper(this)
-                        .add("dateFieldName", dateField)
-                        .add("placeFieldName", placeFieldName)
-                        .toString();
-    }
-
-  }
 }
