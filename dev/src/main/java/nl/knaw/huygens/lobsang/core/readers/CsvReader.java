@@ -1,6 +1,5 @@
 package nl.knaw.huygens.lobsang.core.readers;
 
-import com.google.common.base.MoreObjects;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -15,24 +14,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class ParseCsvReader {
-  private static final Logger LOG = getLogger(ParseCsvReader.class);
+public class CsvReader {
+  private static final Logger LOG = getLogger(CsvReader.class);
 
   private final CSVFormat format;
   private final FieldNames fieldNames;
   private CSVParser parser;
 
-  private ParseCsvReader(CSVFormat format, FieldNames fieldNames) {
+  private CsvReader(CSVFormat format, FieldNames fieldNames) {
     this.format = format;
     this.fieldNames = fieldNames;
-  }
-
-  public FieldNames getFieldNames() {
-    return fieldNames;
   }
 
   public void parse(InputStream inputStream) throws IOException {
@@ -68,16 +62,16 @@ public class ParseCsvReader {
   }
 
   public static class Builder {
-    static final String DEFAULT_ID_NAME = "Id";
-    static final String DEFAULT_DATE_NAME = "Date";
 
     private final Map<String, String> config;
+    private FieldNames fieldNames;
 
-    public Builder(Map<String, String> config) {
+    public Builder(Map<String, String> config, FieldNames fieldNames) {
       this.config = config;
+      this.fieldNames = fieldNames;
     }
 
-    public ParseCsvReader build() {
+    public CsvReader build() {
       final CSVFormat format = CSVFormat.EXCEL;
       applyFormatOption("delimiter", format::withDelimiter);
       applyFormatOption("quoteChar", format::withQuote);
@@ -91,12 +85,7 @@ public class ParseCsvReader {
       applyFormatOption("trim", Boolean::valueOf, format::withTrim);
       applyFormatOption("trailingDelimiter", Boolean::valueOf, format::withTrailingDelimiter);
 
-      final FieldNames fieldNames = new FieldNames(
-        config.getOrDefault("idField", DEFAULT_ID_NAME),
-        config.getOrDefault("dateField", DEFAULT_DATE_NAME)
-      );
-
-      return new ParseCsvReader(format.withAllowMissingColumnNames().withHeader(), fieldNames);
+      return new CsvReader(format.withAllowMissingColumnNames().withHeader(), fieldNames);
     }
 
     private <T> void applyFormatOption(String key, Function<String, T> convertIt,
@@ -130,35 +119,4 @@ public class ParseCsvReader {
     }
   }
 
-  public static class FieldNames {
-    private final String idField;
-    private final String dateField;
-
-    FieldNames(String idField, String dateField) {
-      this.idField = idField;
-      this.dateField = dateField;
-    }
-
-
-    public String getDateFieldName() {
-      return dateField;
-    }
-
-    public String getIdFieldName() {
-      return idField;
-    }
-
-    public Stream<String> stream() {
-      return Stream.of(idField, dateField);
-    }
-
-    @Override
-    public String toString() {
-      return MoreObjects.toStringHelper(this)
-                        .add("dateFieldName", dateField)
-                        .add("idFieldName", idField)
-                        .toString();
-    }
-
-  }
 }

@@ -1,12 +1,12 @@
 package nl.knaw.huygens.lobsang.resources;
 
-import com.google.common.collect.Maps;
 import nl.knaw.huygens.lobsang.api.DateToParse;
 import nl.knaw.huygens.lobsang.api.ParsedDate;
 import nl.knaw.huygens.lobsang.api.YearMonthDay;
 import nl.knaw.huygens.lobsang.core.parsers.ParseException;
 import nl.knaw.huygens.lobsang.core.parsers.RomanDateParser;
-import nl.knaw.huygens.lobsang.core.readers.ParseCsvReader;
+import nl.knaw.huygens.lobsang.core.readers.CsvReader;
+import nl.knaw.huygens.lobsang.core.readers.ParseFieldNames;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
@@ -25,6 +25,7 @@ import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.util.HashMap;
 
 @Path("parse")
 public class ParserResource {
@@ -54,7 +55,8 @@ public class ParserResource {
       throw new BadRequestException("missing form param 'file=@<some_file>'");
     }
 
-    final ParseCsvReader reader = new ParseCsvReader.Builder(Maps.newHashMap()).build();
+    final ParseFieldNames fieldNames = new ParseFieldNames();
+    final CsvReader reader = new CsvReader.Builder(new HashMap<>(), fieldNames).build();
     try {
 
       reader.parse(inputStream);
@@ -76,7 +78,7 @@ public class ParserResource {
             csvPrinter.print(record.get(columnName));
           }
 
-          final String dateToParse = record.get(reader.getFieldNames().getDateFieldName());
+          final String dateToParse = record.get(fieldNames.getDateFieldName());
           try {
             final YearMonthDay result = RomanDateParser.parse(dateToParse);
             csvPrinter.print(result.asIso8601String());

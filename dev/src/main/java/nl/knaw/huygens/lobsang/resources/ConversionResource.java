@@ -7,7 +7,8 @@ import nl.knaw.huygens.lobsang.api.DateResult;
 import nl.knaw.huygens.lobsang.api.Place;
 import nl.knaw.huygens.lobsang.api.YearMonthDay;
 import nl.knaw.huygens.lobsang.core.ConversionService;
-import nl.knaw.huygens.lobsang.core.readers.ConversionCsvReader;
+import nl.knaw.huygens.lobsang.core.readers.CsvReader;
+import nl.knaw.huygens.lobsang.core.readers.ConvertFieldNames;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
@@ -116,11 +117,11 @@ public class ConversionResource {
 
     final int maxConversions = clampMaxConversions(options.get("maxConversions"));
 
-    final ConversionCsvReader reader = new ConversionCsvReader.Builder(options).build();
+    final ConvertFieldNames fieldNames = ConvertFieldNames.fromConfig(options);
+    final CsvReader reader = new CsvReader.Builder(options, fieldNames).build();
     prepareReader(inputStream, reader);
 
     // TODO: pass targetCalendar based on request parameters
-    final ConversionCsvReader.FieldNames fieldNames = reader.getFieldNames();
     final DateRequestBuilder dateRequestBuilder = new DateRequestBuilder(fieldNames);
 
 
@@ -150,7 +151,7 @@ public class ConversionResource {
                    .build();
   }
 
-  private void prepareReader(InputStream inputStream, ConversionCsvReader reader) {
+  private void prepareReader(InputStream inputStream, CsvReader reader) {
     try {
       reader.parse(inputStream);
     } catch (IOException e) {
@@ -178,7 +179,7 @@ public class ConversionResource {
     return maxConversions;
   }
 
-  private void copyExistingColumns(ConversionCsvReader reader, CSVRecord record, CSVPrinter printer) throws IOException {
+  private void copyExistingColumns(CsvReader reader, CSVRecord record, CSVPrinter printer) throws IOException {
     final int columnCount = reader.getColumnNames().size();
     for (int i = 0; i < columnCount; i++) {
       printer.print(record.get(i));
@@ -240,14 +241,14 @@ public class ConversionResource {
   }
 
   private class DateRequestBuilder {
-    private final ConversionCsvReader.FieldNames fieldNames;
+    private final ConvertFieldNames fieldNames;
     private final String targetCalendar;
 
-    private DateRequestBuilder(ConversionCsvReader.FieldNames fieldNames) {
+    private DateRequestBuilder(ConvertFieldNames fieldNames) {
       this(fieldNames, "gregorian");
     }
 
-    private DateRequestBuilder(ConversionCsvReader.FieldNames fieldNames, String targetCalendar) {
+    private DateRequestBuilder(ConvertFieldNames fieldNames, String targetCalendar) {
       this.fieldNames = fieldNames;
       this.targetCalendar = targetCalendar;
     }
