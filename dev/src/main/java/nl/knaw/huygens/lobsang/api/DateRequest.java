@@ -3,6 +3,7 @@ package nl.knaw.huygens.lobsang.api;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import nl.knaw.huygens.lobsang.iso8601.Iso8601Date;
 import nl.knaw.huygens.lobsang.iso8601.Iso8601ParserHelper;
+import nl.knaw.huygens.lobsang.iso8601.UnsupportedDateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +52,7 @@ public class DateRequest {
       .toString();
   }
 
-  public Iso8601Date asIso8601Date() {
+  public Iso8601Date asIso8601Date() throws UnsupportedDateException {
     return Iso8601ParserHelper.parse(getDate());
   }
 }

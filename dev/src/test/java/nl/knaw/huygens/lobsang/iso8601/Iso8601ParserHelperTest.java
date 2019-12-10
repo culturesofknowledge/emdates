@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class Iso8601ParserHelperTest {
   // level 0
   @Test
-  void year() {
+  void year() throws Exception {
     final String dateString = "2019";
     final LocalDate expectedStartDate = LocalDate.parse("2019-01-01");
     final LocalDate expectedEndDate = LocalDate.parse("2019-12-31");
@@ -26,7 +26,7 @@ class Iso8601ParserHelperTest {
 
 
   @Test
-  void yearMonth() {
+  void yearMonth() throws Exception {
     final String dateString = "2019-04";
     final LocalDate expectedStartDate = LocalDate.parse("2019-04-01");
     final LocalDate expectedEndDate = LocalDate.parse("2019-04-30");
@@ -39,7 +39,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void negativeYearMonth() {
+  void negativeYearMonth() throws Exception {
     final String dateString = "-2019-04";
     final LocalDate expectedStartDate = LocalDate.parse("-2019-04-01");
     final LocalDate expectedEndDate = LocalDate.parse("-2019-04-30");
@@ -52,7 +52,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void yearMonthDay() {
+  void yearMonthDay() throws Exception {
     final String dateString = "2019-04-19";
     final LocalDate expectedDate = LocalDate.parse(dateString);
 
@@ -64,7 +64,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void yearMonthDayCompact() {
+  void yearMonthDayCompact() throws Exception {
     final String dateString = "20190419";
     final LocalDate expectedDate = LocalDate.parse("2019-04-19");
 
@@ -77,7 +77,7 @@ class Iso8601ParserHelperTest {
 
   // level 1
   @Test
-  void yearUncertain() {
+  void yearUncertain() throws Exception {
     final String dateString = "2019?";
     final LocalDate expectedStartDate = LocalDate.parse("2019-01-01");
     final LocalDate expectedEndDate = LocalDate.parse("2019-12-31");
@@ -90,7 +90,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void yearApproximate() {
+  void yearApproximate() throws Exception {
     final String dateString = "2019~";
     final LocalDate expectedStartDate = LocalDate.parse("2019-01-01");
     final LocalDate expectedEndDate = LocalDate.parse("2019-12-31");
@@ -103,7 +103,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void yearUncertainApproximate() {
+  void yearUncertainApproximate() throws Exception {
     final String dateString = "2019%";
     final LocalDate expectedStartDate = LocalDate.parse("2019-01-01");
     final LocalDate expectedEndDate = LocalDate.parse("2019-12-31");
@@ -116,7 +116,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void yearMonthUncertain() {
+  void yearMonthUncertain() throws Exception {
     final String dateString = "2019-04?";
     final LocalDate expectedStartDate = LocalDate.parse("2019-04-01");
     final LocalDate expectedEndDate = LocalDate.parse("2019-04-30");
@@ -129,7 +129,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void yearMonthApproximate() {
+  void yearMonthApproximate() throws Exception {
     final String dateString = "2019-04~";
     final LocalDate expectedStartDate = LocalDate.parse("2019-04-01");
     final LocalDate expectedEndDate = LocalDate.parse("2019-04-30");
@@ -142,7 +142,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void yearMonthUncertainApproximate() {
+  void yearMonthUncertainApproximate() throws Exception {
     final String dateString = "2019-04%";
     final LocalDate expectedStartDate = LocalDate.parse("2019-04-01");
     final LocalDate expectedEndDate = LocalDate.parse("2019-04-30");
@@ -155,7 +155,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void yearMonthDayUncertain() {
+  void yearMonthDayUncertain() throws Exception {
     final String dateString = "2019-04-19?";
     final LocalDate expectedDate = LocalDate.parse("2019-04-19");
 
@@ -167,7 +167,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void yearMonthDayApproximate() {
+  void yearMonthDayApproximate() throws Exception {
     final String dateString = "2019-04-19~";
     final LocalDate expectedDate = LocalDate.parse("2019-04-19");
 
@@ -179,7 +179,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void yearMonthDayUncertainApproximate() {
+  void yearMonthDayUncertainApproximate() throws Exception {
     final String dateString = "2019-04-19%";
     final LocalDate expectedDate = LocalDate.parse("2019-04-19");
 
@@ -191,7 +191,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void yearMonthUnspecifiedDay() {
+  void yearMonthUnspecifiedDay() throws Exception {
     final String dateString = "2019-04-XX";
     final LocalDate startDate = LocalDate.parse("2019-04-01");
     final LocalDate endDate = LocalDate.parse("2019-04-30");
@@ -204,7 +204,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void negativeYearMonthUnspecifiedDay() {
+  void negativeYearMonthUnspecifiedDay() throws Exception {
     final String dateString = "-2019-04-XX";
     final LocalDate startDate = LocalDate.parse("-2019-04-01");
     final LocalDate endDate = LocalDate.parse("-2019-04-30");
@@ -217,7 +217,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void yearUnspecifiedMonthAndDay() {
+  void yearUnspecifiedMonthAndDay() throws Exception {
     final String dateString = "2019-XX-XX";
     final LocalDate startDate = LocalDate.parse("2019-01-01");
     final LocalDate endDate = LocalDate.parse("2019-12-31");
@@ -230,7 +230,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void negativeYearUnspecifiedMonthAndDay() {
+  void negativeYearUnspecifiedMonthAndDay() throws Exception {
     final String dateString = "-2019-XX-XX";
     final LocalDate startDate = LocalDate.parse("-2019-01-01");
     final LocalDate endDate = LocalDate.parse("-2019-12-31");
@@ -243,7 +243,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void unspecifiedYearAndMonthAndDay() {
+  void unspecifiedYearAndMonthAndDay() throws Exception {
     final String dateString = "XXXX-XX-XX";
     final LocalDate startDate = LocalDate.parse("-9999-01-01");
     final LocalDate endDate = LocalDate.parse("9999-12-31");
@@ -256,7 +256,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void yearUnspecifiedMonth() {
+  void yearUnspecifiedMonth() throws Exception {
     final String dateString = "2019-XX";
     final LocalDate startDate = LocalDate.parse("2019-01-01");
     final LocalDate endDate = LocalDate.parse("2019-12-31");
@@ -269,7 +269,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void negativeYearUnspecifiedMonth() {
+  void negativeYearUnspecifiedMonth() throws Exception {
     final String dateString = "-2019-XX";
     final LocalDate startDate = LocalDate.parse("-2019-01-01");
     final LocalDate endDate = LocalDate.parse("-2019-12-31");
@@ -282,7 +282,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void unspecifiedYearAndMonth() {
+  void unspecifiedYearAndMonth() throws Exception {
     final String dateString = "XXXX-XX";
     final LocalDate startDate = LocalDate.parse("-9999-01-01");
     final LocalDate endDate = LocalDate.parse("9999-12-31");
@@ -295,7 +295,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void unspecifiedSingleYear() {
+  void unspecifiedSingleYear() throws Exception {
     final String dateString = "201X";
     final LocalDate startDate = LocalDate.parse("2010-01-01");
     final LocalDate endDate = LocalDate.parse("2019-12-31");
@@ -308,7 +308,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void negativeUnspecifiedSingleYear() {
+  void negativeUnspecifiedSingleYear() throws Exception {
     final String dateString = "-201X";
     final LocalDate startDate = LocalDate.parse("-2019-01-01");
     final LocalDate endDate = LocalDate.parse("-2010-12-31");
@@ -321,7 +321,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void unspecifiedDecadeAndSingleYear() {
+  void unspecifiedDecadeAndSingleYear() throws Exception {
     final String dateString = "20XX";
     final LocalDate startDate = LocalDate.parse("2000-01-01");
     final LocalDate endDate = LocalDate.parse("2099-12-31");
@@ -334,7 +334,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void negativeDecadeAndSingleYear() {
+  void negativeDecadeAndSingleYear() throws Exception {
     final String dateString = "-20XX";
     final LocalDate startDate = LocalDate.parse("-2099-01-01");
     final LocalDate endDate = LocalDate.parse("-2000-12-31");
@@ -347,7 +347,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void unspecifiedCenturyAndDecadeAndSingleYear() {
+  void unspecifiedCenturyAndDecadeAndSingleYear() throws Exception {
     final String dateString = "2XXX";
     final LocalDate startDate = LocalDate.parse("2000-01-01");
     final LocalDate endDate = LocalDate.parse("2999-12-31");
@@ -360,7 +360,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void negativeCenturyAndDecadeAndSingleYear() {
+  void negativeCenturyAndDecadeAndSingleYear() throws Exception {
     final String dateString = "-2XXX";
     final LocalDate startDate = LocalDate.parse("-2999-01-01");
     final LocalDate endDate = LocalDate.parse("-2000-12-31");
@@ -373,7 +373,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void unspecifiedYear() {
+  void unspecifiedYear() throws Exception {
     final String dateString = "XXXX";
     final LocalDate startDate = LocalDate.parse("0000-01-01");
     final LocalDate endDate = LocalDate.parse("9999-12-31");
@@ -386,7 +386,7 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
-  void negativeYear() {
+  void negativeYear() throws Exception {
     final String dateString = "-XXXX";
     final LocalDate startDate = LocalDate.parse("-9999-01-01");
     final LocalDate endDate = LocalDate.parse("-0001-12-31");
@@ -397,5 +397,11 @@ class Iso8601ParserHelperTest {
     assertThat(date.getEnd(), is(endDate));
     assertThat(date.getUncertainty(), is(Uncertainty.NONE));
   }
-  
+
+  @Test
+  void unparsableDate() {
+    final String dateString = "not a date";
+
+    assertThrows(UnsupportedDateException.class, () -> parse(dateString));
+  }
 }
