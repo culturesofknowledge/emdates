@@ -7,8 +7,12 @@ import nl.knaw.huygens.lobsang.api.DateResult;
 import nl.knaw.huygens.lobsang.api.Place;
 import nl.knaw.huygens.lobsang.api.YearMonthDay;
 import nl.knaw.huygens.lobsang.core.ConversionService;
-import nl.knaw.huygens.lobsang.core.readers.CsvReader;
 import nl.knaw.huygens.lobsang.core.readers.ConvertFieldNames;
+import nl.knaw.huygens.lobsang.core.readers.CsvReader;
+import nl.knaw.huygens.lobsang.helpers.DateStringParser;
+import nl.knaw.huygens.lobsang.iso8601.Iso8601Date;
+import nl.knaw.huygens.lobsang.helpers.UnsupportedDateException;
+import nl.knaw.huygens.lobsang.iso8601.UnsupportedIso8601DateException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
@@ -27,7 +31,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -42,9 +45,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
-import static java.util.Comparator.comparing;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -66,13 +67,21 @@ public class ConversionResource {
 
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
-  public DateResult convert(@NotNull DateRequest dateRequest) {
+  public Response convert(@NotNull DateRequest dateRequest) {
     LOG.info("dateRequest: {}", dateRequest);
 
     final List<Place> consideredPlaces = new ArrayList<>();
 
+    Iso8601Date requestDate;
+    try {
+      requestDate = DateStringParser.parse(dateRequest.getDate());
+    } catch (UnsupportedDateException e) {
+      return Response.status(Response.Status.BAD_REQUEST)
+                     .entity(format("%s is an unsupported iso date: %s", dateRequest.getDate(), e.getMessage()))
+                     .build();
+    }
     final Map<YearMonthDay, Set<String>> results = conversions
-        .convertForMatchingPlaces(dateRequest.getPlaceTerms(), dateRequest.asIso8601Date(),
+        .convertForMatchingPlaces(dateRequest.getPlaceTerms(), requestDate,
             dateRequest.getTargetCalendar(), consideredPlaces::add
         )
         .collect(Collectors.toMap(ymd -> ymd, YearMonthDay::getNotes, Sets::union));
@@ -85,7 +94,7 @@ public class ConversionResource {
     final DateResult result;
     if (results.isEmpty()) {
       result = new DateResult(conversions.defaultConversion(
-          dateRequest.asIso8601Date(),
+          requestDate,
           dateRequest.getTargetCalendar()
       ).collect(Collectors.toList()));
       result.addHint("Requested date lies outside all defined calendar periods.");
@@ -100,7 +109,7 @@ public class ConversionResource {
       result.addHint(format(format, dateRequest.getPlaceTerms(), names));
     }
 
-    return result;
+    return Response.ok(result).build();
   }
 
   @POST
@@ -139,12 +148,7 @@ public class ConversionResource {
                      printer.println();
                      reader.read(record -> {
                        copyExistingColumns(reader, record, printer);
-                       convertToColumns(conversions
-                               .convertForMatchingPlaces(
-                                   dateRequestBuilder.build(record).getPlaceTerms(),
-                                   dateRequestBuilder.build(record).asIso8601Date(),
-                                   dateRequestBuilder.build(record).getTargetCalendar()),
-                         maxConversions, printer);
+                       addConversions(dateRequestBuilder.build(record), maxConversions, printer);
                      });
                      printer.flush();
                      printer.close();
@@ -187,22 +191,31 @@ public class ConversionResource {
     }
   }
 
-  private void convertToColumns(final Stream<YearMonthDay> conversions, int maxConversions, CSVPrinter printer)
+  private void addConversions(final DateRequest dateRequest, int maxConversions, CSVPrinter printer)
     throws IOException {
-
-    Stream<YearMonthDay> todo = conversions;
-
-    if (maxConversions > 0) {
-      LOG.trace("limiting # conversions to: {}", maxConversions);
-      todo = todo.distinct().limit(maxConversions);
-    }
 
     int shortBy = maxConversions;
 
-    // avoid conversions.foreach() lest we end up with IOExceptions inside lambda
-    for (YearMonthDay ymd : (Iterable<YearMonthDay>) todo::iterator) {
-      printer.print(ymd.asIso8601String());
-      printer.print(String.join(", ", ymd.getNotes()));
+    try {
+      Stream<YearMonthDay> todo = conversions.convertForMatchingPlaces(
+          dateRequest.getPlaceTerms(),
+          DateStringParser.parse(dateRequest.getDate()),
+          dateRequest.getTargetCalendar());
+      if (maxConversions > 0) {
+        LOG.trace("limiting # conversions to: {}", maxConversions);
+        todo = todo.distinct().limit(maxConversions);
+      }
+
+      // avoid conversions.foreach() lest we end up with IOExceptions inside lambda
+      for (YearMonthDay ymd : (Iterable<YearMonthDay>) todo::iterator) {
+        printer.print(ymd.asIso8601String());
+        printer.print(String.join(", ", ymd.getNotes()));
+        shortBy--;
+      }
+    } catch (UnsupportedDateException e) {
+      LOG.info(e.getMessage());
+      printer.print("");
+      printer.print(e.getMessage());
       shortBy--;
     }
 

@@ -11,6 +11,8 @@ import nl.knaw.huygens.lobsang.core.places.PlaceRegistry;
 import nl.knaw.huygens.lobsang.iso8601.Iso8601Date;
 import nl.knaw.huygens.lobsang.iso8601.Iso8601ParserHelper;
 import nl.knaw.huygens.lobsang.iso8601.Uncertainty;
+import nl.knaw.huygens.lobsang.helpers.UnsupportedDateException;
+import nl.knaw.huygens.lobsang.iso8601.UnsupportedIso8601DateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,25 +54,26 @@ public class ConversionService {
     if (handleNonPresentConverter(resultConverter, calendar)) {
       return Optional.empty();
     }
+
     final YearMonthDay result = resultConverter.get().fromRataDie(requestDate);
 
     // Determine if this calendar is applicable for the given date and annotate result as appropriate
     final String startDateAsString = calendarPeriod.getStartDate();
     final String endDateAsString = calendarPeriod.getEndDate();
     if (startDateAsString != null && endDateAsString != null) {
-      final int startDate = requestConverter.toRataDie(asYearMonthDayEarliestStart(startDateAsString));
-      final int endDate = requestConverter.toRataDie(asYearMonthDayLatestEnd(endDateAsString));
+      final int startDate = requestConverter.toRataDie(calendarEarliestStart(startDateAsString));
+      final int endDate = requestConverter.toRataDie(calendarLatestEnd(endDateAsString));
       if (requestDate >= startDate && requestDate <= endDate) {
         result.addNote(String.format("Date within %s calendar start and end bounds", calendarPeriod.getCalendar()));
         return Optional.of(result);
       }
     } else if (startDateAsString != null) {
-      if (requestDate >= requestConverter.toRataDie(asYearMonthDayEarliestStart(startDateAsString))) {
+      if (requestDate >= requestConverter.toRataDie(calendarEarliestStart(startDateAsString))) {
         result.addNote(String.format("Date on or after start of %s calendar", calendarPeriod.getCalendar()));
         return Optional.of(result);
       }
     } else if (endDateAsString != null) {
-      if (requestDate <= requestConverter.toRataDie(asYearMonthDayLatestEnd(endDateAsString))) {
+      if (requestDate <= requestConverter.toRataDie(calendarLatestEnd(endDateAsString))) {
         result.addNote(String.format("Date on or before end of %s calendar", calendarPeriod.getCalendar()));
         return Optional.of(result);
       }
@@ -90,14 +93,26 @@ public class ConversionService {
     return false;
   }
 
-  private YearMonthDay asYearMonthDayEarliestStart(String dateAsString) {
-    final LocalDate date = Iso8601ParserHelper.parse(dateAsString).getStart();
+  private YearMonthDay calendarEarliestStart(String dateAsString) {
+    final LocalDate date;
+    try {
+      date = Iso8601ParserHelper.parse(dateAsString).getStart();
+    } catch (UnsupportedIso8601DateException e) {
+      LOG.error("Cannot parse calendar start date '{}' exception thrown: {}", dateAsString, e.getMessage());
+      throw new RuntimeException(e); // configuration error, should be impossible
+    }
 
     return new YearMonthDay(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
   }
 
-  private YearMonthDay asYearMonthDayLatestEnd(String dateAsString) {
-    final LocalDate date = Iso8601ParserHelper.parse(dateAsString).getEnd();
+  private YearMonthDay calendarLatestEnd(String dateAsString) {
+    final LocalDate date;
+    try {
+      date = Iso8601ParserHelper.parse(dateAsString).getEnd();
+    } catch (UnsupportedIso8601DateException e) {
+      LOG.error("Cannot parse calendar end date '{}' exception thrown: {}", dateAsString, e.getMessage());
+      throw new RuntimeException(e); // configuration error, should be impossible
+    }
 
     return new YearMonthDay(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
   }
@@ -147,7 +162,7 @@ public class ConversionService {
              requestDate.getEndAsYearMonthDay(),
              placeToConvert.getStartOfYearList()
          ));
-      return Stream.concat(start, end);
+      return Stream.concat(start, end).distinct();
     };
   }
 
