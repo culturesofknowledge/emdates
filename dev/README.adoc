@@ -133,9 +133,9 @@ Suppose we have a CSV file `example.csv`:
 |===
 |Place |Date
 
-|Austria |1584-01-05
-
-|England |1648-01-30
+|Groningen (populated place) |1648-01-30
+|Opole (populated place) |0900-10-11
+|Asgard |1584-01-05
 
 |===
 
@@ -147,11 +147,10 @@ $ curl -s localhost:8080/convert/table -F file=@examples/bulkconversion.csv \
 and end up with a converted CSV:
 
 |====
-|Place   |Date |Date_0 |Date_1 |Date_2
-
-|Austria |1584-01-05 |1584-01-05 |1584-01-05 |1584-01-05
-
-|England |1648-01-30 |1649-02-09 | |
+|Place |Date |Date_0 |Notes_0 |Date_1 |Notes_1 |Date_2 |Notes_2
+|Groningen (populated place) |1648-01-30 |1648-02-09 |"Date within Julian calendar start and end bounds, Based on data for place: 'Groningen (populated place)'" | | | |
+|Opole (populated place) |0900-10-11 |0900-10-16 |"No place-specific data about when the New Year started, assuming 1 January (no adjustments), Date on or before end of Julian calendar, Based on data for place: 'Duchy of Opole'" | | | |
+|Asgard |1584-01-05 |1584-01-15 |Based on default calendar | | | |
 |====
 
 
