@@ -402,6 +402,6 @@ class Iso8601ParserHelperTest {
   void unparsableDate() {
     final String dateString = "not a date";
 
-    assertThrows(UnsupportedDateException.class, () -> parse(dateString));
+    assertThrows(UnsupportedIso8601DateException.class, () -> parse(dateString));
   }
 }

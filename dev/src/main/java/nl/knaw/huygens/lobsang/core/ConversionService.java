@@ -11,7 +11,8 @@ import nl.knaw.huygens.lobsang.core.places.PlaceRegistry;
 import nl.knaw.huygens.lobsang.iso8601.Iso8601Date;
 import nl.knaw.huygens.lobsang.iso8601.Iso8601ParserHelper;
 import nl.knaw.huygens.lobsang.iso8601.Uncertainty;
-import nl.knaw.huygens.lobsang.iso8601.UnsupportedDateException;
+import nl.knaw.huygens.lobsang.helpers.UnsupportedDateException;
+import nl.knaw.huygens.lobsang.iso8601.UnsupportedIso8601DateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +97,7 @@ public class ConversionService {
     final LocalDate date;
     try {
       date = Iso8601ParserHelper.parse(dateAsString).getStart();
-    } catch (UnsupportedDateException e) {
+    } catch (UnsupportedIso8601DateException e) {
       LOG.error("Cannot parse calendar start date '{}' exception thrown: {}", dateAsString, e.getMessage());
       throw new RuntimeException(e); // configuration error, should be impossible
     }
@@ -108,7 +109,7 @@ public class ConversionService {
     final LocalDate date;
     try {
       date = Iso8601ParserHelper.parse(dateAsString).getEnd();
-    } catch (UnsupportedDateException e) {
+    } catch (UnsupportedIso8601DateException e) {
       LOG.error("Cannot parse calendar end date '{}' exception thrown: {}", dateAsString, e.getMessage());
       throw new RuntimeException(e); // configuration error, should be impossible
     }

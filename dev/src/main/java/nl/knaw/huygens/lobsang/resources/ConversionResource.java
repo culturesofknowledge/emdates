@@ -9,8 +9,10 @@ import nl.knaw.huygens.lobsang.api.YearMonthDay;
 import nl.knaw.huygens.lobsang.core.ConversionService;
 import nl.knaw.huygens.lobsang.core.readers.ConvertFieldNames;
 import nl.knaw.huygens.lobsang.core.readers.CsvReader;
+import nl.knaw.huygens.lobsang.helpers.DateStringParser;
 import nl.knaw.huygens.lobsang.iso8601.Iso8601Date;
-import nl.knaw.huygens.lobsang.iso8601.UnsupportedDateException;
+import nl.knaw.huygens.lobsang.helpers.UnsupportedDateException;
+import nl.knaw.huygens.lobsang.iso8601.UnsupportedIso8601DateException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
@@ -70,12 +72,12 @@ public class ConversionResource {
 
     final List<Place> consideredPlaces = new ArrayList<>();
 
-    final Iso8601Date requestDate;
+    Iso8601Date requestDate;
     try {
-      requestDate = dateRequest.asIso8601Date();
+      requestDate = DateStringParser.parse(dateRequest.getDate());
     } catch (UnsupportedDateException e) {
       return Response.status(Response.Status.BAD_REQUEST)
-                     .entity(format("%s is an unsupported date: %s", dateRequest.getDate(), e.getMessage()))
+                     .entity(format("%s is an unsupported iso date: %s", dateRequest.getDate(), e.getMessage()))
                      .build();
     }
     final Map<YearMonthDay, Set<String>> results = conversions
@@ -197,7 +199,7 @@ public class ConversionResource {
     try {
       Stream<YearMonthDay> todo = conversions.convertForMatchingPlaces(
           dateRequest.getPlaceTerms(),
-          dateRequest.asIso8601Date(),
+          DateStringParser.parse(dateRequest.getDate()),
           dateRequest.getTargetCalendar());
       if (maxConversions > 0) {
         LOG.trace("limiting # conversions to: {}", maxConversions);
@@ -211,7 +213,7 @@ public class ConversionResource {
         shortBy--;
       }
     } catch (UnsupportedDateException e) {
-      LOG.info("Unsupported date '{}': {}", dateRequest.getDate(), e.getMessage());
+      LOG.info(e.getMessage());
       printer.print("");
       printer.print(e.getMessage());
       shortBy--;

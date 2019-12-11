@@ -17,7 +17,7 @@ public class Iso8601ParserHelper {
 
   }
 
-  public static Iso8601Date parse(String dateString) throws UnsupportedDateException {
+  public static Iso8601Date parse(String dateString) throws UnsupportedIso8601DateException {
     final Iso8601FormatLexer lexer = new Iso8601FormatLexer(CharStreams.fromString(dateString));
     final CommonTokenStream tokens = new CommonTokenStream(lexer);
     final Iso8601FormatParser iso8601FormatParser = new Iso8601FormatParser(tokens);
@@ -47,7 +47,7 @@ public class Iso8601ParserHelper {
 
     final Iso8601FormatParser.Iso8601Context iso8601 = iso8601FormatParser.iso8601();
     if (errorMessages.length() > 0) {
-      throw new UnsupportedDateException(errorMessages.toString());
+      throw new UnsupportedIso8601DateException(errorMessages.toString());
     }
     final Iso8601Date.Iso8601DateBuilder builder = Iso8601Date.builder();
     final Iso8601DateListener listener = new Iso8601DateListener(builder);
