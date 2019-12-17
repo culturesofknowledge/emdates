@@ -48,6 +48,13 @@
   </script>
 
   <span id="romanDateParseResult"></span>
+  <hr>
+  <h1>Parse multiple</h1>
+  <label for="file">File</label>
+  <input type="file" name="file" id="parseFile">
+
+  <button id="fileParse">Convert</button>
+  <hr>
 
   <script type="application/javascript">
     document.getElementById("convertSingle").onclick = function(e) {
@@ -126,21 +133,21 @@
         }
       }
 
-      function download(filename, text) {
-        var element = document.createElement('a');
-        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-        element.setAttribute('download', filename);
-
-        element.style.display = 'none';
-        document.body.appendChild(element);
-
-        element.click();
-
-        document.body.removeChild(element);
-      }
-
       xhr.open("POST", "/convert/table");
       xhr.send(formData);
+    }
+
+    function download(filename, text) {
+      var element = document.createElement('a');
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+      element.setAttribute('download', filename);
+
+      element.style.display = 'none';
+      document.body.appendChild(element);
+
+      element.click();
+
+      document.body.removeChild(element);
     }
 
     document.getElementById("parseRoman").onclick = function(e) {
@@ -170,6 +177,23 @@
       xhr.send(JSON.stringify({
         "date": document.getElementById("romanDate").value
       }));
+    }
+
+    document.getElementById("fileParse").onclick = function(e) {
+      var file = document.getElementById("parseFile").files[0];
+      var formData = new FormData();
+      formData.append("file", file);
+
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          if (xhr.status == 200) {
+            download("response.csv", xhr.response);
+          }
+        }
+      }
+      xhr.open("POST", "/parse/roman/bulk");
+      xhr.send(formData);
     }
   </script>
 </body>
