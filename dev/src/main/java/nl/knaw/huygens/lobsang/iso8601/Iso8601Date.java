@@ -19,14 +19,6 @@ public class Iso8601Date {
     return new Iso8601DateBuilder();
   }
 
-  public static Iso8601Date fromYearMonthDay(YearMonthDay ymd) {
-    final Iso8601Date.Iso8601DateBuilder builder = Iso8601Date.builder();
-    final LocalDate localDate = LocalDate.of(ymd.getYear(), ymd.getMonth(), ymd.getDay());
-    builder.start(localDate);
-    builder.end(localDate);
-    return builder.build();
-  }
-
   public LocalDate getStart() {
     return start;
   }
