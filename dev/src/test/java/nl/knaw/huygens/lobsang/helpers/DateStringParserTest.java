@@ -35,6 +35,16 @@ class DateStringParserTest {
   }
 
   @Test
+  void createsAnIso8601DateFromSupportedHalfRomanDateString() throws Exception {
+
+    final Iso8601Date iso8601Date = DateStringParser.parse("V. Eid. Quin 1645.");
+
+    assertThat(iso8601Date.getStart(), is(LocalDate.of(1645, 07, 11)));
+    assertThat(iso8601Date.getEnd(), is(LocalDate.of(1645, 07, 11)));
+    assertThat(iso8601Date.getUncertainty(), is(Uncertainty.NONE));
+  }
+
+  @Test
   void throwsAnExceptionWhenTheStringNeitherSupportedIso8601NorSupportedRoman() {
     Exception exception = assertThrows(UnsupportedDateException.class, () -> DateStringParser.parse("Not a date"));
 

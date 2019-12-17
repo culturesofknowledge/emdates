@@ -19,10 +19,27 @@ public class Iso8601ParserHelper {
 
   public static Iso8601Date parse(String dateString) throws UnsupportedIso8601DateException {
     final Iso8601FormatLexer lexer = new Iso8601FormatLexer(CharStreams.fromString(dateString));
+    final StringBuilder errorMessages = new StringBuilder();
+    final ANTLRErrorListener errorListener = createErrorListener(errorMessages);
+    lexer.addErrorListener(errorListener);
     final CommonTokenStream tokens = new CommonTokenStream(lexer);
     final Iso8601FormatParser iso8601FormatParser = new Iso8601FormatParser(tokens);
-    final StringBuilder errorMessages = new StringBuilder();
-    iso8601FormatParser.addErrorListener(new ANTLRErrorListener() {
+    iso8601FormatParser.addErrorListener(errorListener);
+
+    final Iso8601FormatParser.Iso8601Context iso8601 = iso8601FormatParser.iso8601();
+    if (errorMessages.length() > 0) {
+      throw new UnsupportedIso8601DateException(errorMessages.toString());
+    }
+    final Iso8601Date.Iso8601DateBuilder builder = Iso8601Date.builder();
+    final Iso8601DateListener listener = new Iso8601DateListener(builder);
+    final ParseTreeWalker parseTreeWalker = new ParseTreeWalker();
+    parseTreeWalker.walk(listener, iso8601);
+
+    return builder.build();
+  }
+
+  private static ANTLRErrorListener createErrorListener(StringBuilder errorMessages) {
+    return new ANTLRErrorListener() {
       @Override
       public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine,
                               String msg, RecognitionException e) {
@@ -43,17 +60,6 @@ public class Iso8601ParserHelper {
       public void reportContextSensitivity(Parser recognizer, DFA dfa, int startIndex, int stopIndex, int prediction,
                                            ATNConfigSet configs) {
       }
-    });
-
-    final Iso8601FormatParser.Iso8601Context iso8601 = iso8601FormatParser.iso8601();
-    if (errorMessages.length() > 0) {
-      throw new UnsupportedIso8601DateException(errorMessages.toString());
-    }
-    final Iso8601Date.Iso8601DateBuilder builder = Iso8601Date.builder();
-    final Iso8601DateListener listener = new Iso8601DateListener(builder);
-    final ParseTreeWalker parseTreeWalker = new ParseTreeWalker();
-    parseTreeWalker.walk(listener, iso8601);
-
-    return builder.build();
+    };
   }
 }

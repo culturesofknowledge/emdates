@@ -404,4 +404,11 @@ class Iso8601ParserHelperTest {
 
     assertThrows(UnsupportedIso8601DateException.class, () -> parse(dateString));
   }
+
+  @Test
+  void halfRomanDate() {
+    final String dateString = "V. Eid. Quin 1645.";
+
+    assertThrows(UnsupportedIso8601DateException.class, () -> parse(dateString));
+  }
 }
