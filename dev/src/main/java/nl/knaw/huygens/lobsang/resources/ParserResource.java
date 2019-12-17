@@ -5,6 +5,7 @@ import nl.knaw.huygens.lobsang.api.ParsedDate;
 import nl.knaw.huygens.lobsang.api.YearMonthDay;
 import nl.knaw.huygens.lobsang.core.parsers.ParseException;
 import nl.knaw.huygens.lobsang.core.parsers.RomanDateParser;
+import nl.knaw.huygens.lobsang.core.parsers.TokenMgrError;
 import nl.knaw.huygens.lobsang.core.readers.CsvReader;
 import nl.knaw.huygens.lobsang.core.readers.ParseFieldNames;
 import org.apache.commons.csv.CSVFormat;
@@ -39,7 +40,7 @@ public class ParserResource {
     try {
       YearMonthDay parsedDate = RomanDateParser.parse(dateToParse.getDate());
       return Response.ok(ParsedDate.forDate(parsedDate)).build();
-    } catch (ParseException ex) {
+    } catch (ParseException | TokenMgrError ex) {
       final var message = ex.getMessage();
       LOG.error("Could not parse date: {}", message);
       return Response.ok(ParsedDate.forError(message)).build();

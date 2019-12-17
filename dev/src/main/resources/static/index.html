@@ -152,6 +152,7 @@
       xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
           var responseData = JSON.parse(xhr.response);
+          console.log("responseData: ", responseData);
           if(responseData.parsedDate) {
             result.appendChild(document.createTextNode(JSON.stringify(responseData.parsedDate).replace("{", "").replace("}", "").replace(/\"/g, "").replace(/,/g, " ")));
             if (responseData.notes) {
@@ -160,7 +161,7 @@
               responseData["notes"].forEach(note => list.appendChild(createTextElement("li", note)));
             }
           } else {
-            result.appendChild(document.createTextNode("error: " + responseData.message));
+            result.appendChild(document.createTextNode("error: " + responseData.errorMessage));
           }
         }
       }

@@ -13,17 +13,17 @@ public class ParsedDate {
   @JsonProperty
   private final String errorMessage;
 
-  private ParsedDate(YearMonthDay parsedDate, String errorMessage) {
-    this.parsedDate = parsedDate.asIso8601String();
-    this.notes = parsedDate.getNotes();
+  private ParsedDate(String parsedDate, Set<String> notes, String errorMessage) {
+    this.parsedDate = parsedDate;
+    this.notes = notes;
     this.errorMessage = errorMessage;
   }
 
   public static ParsedDate forDate(YearMonthDay parsedDate) {
-    return new ParsedDate(parsedDate, null);
+    return new ParsedDate(parsedDate.asIso8601String(), parsedDate.getNotes(), null);
   }
 
   public static ParsedDate forError(String message) {
-    return new ParsedDate(null, message);
+    return new ParsedDate(null, null, message);
   }
 }
