@@ -13,6 +13,8 @@ The resource will offer a web form for converting single dates as well as bulk c
 Access to the tool for individual and bulk conversions will also be provided via an open [Timbuctoo][3] [GraphQL][21] API. Because EM Dates maintains an internal list of known-correct Roman date variants to normalised ISO 8601 transformations, adding an [OpenRefine][17] endpoint for reconciliation and/or sharing this data with the [GODOT][15] calendar gazetteer is also under active consideration.
 
 ## Status
+**November 2019**: Began work on a limited demo w/single & bulk parsing and conversion for Q1 2020.
+
 **February 2019**: Conversion API and Roman parser [available for testing][19] via Docker.
 
 **November 2018**: Rewrite of conversion algorithms on the basis of [Rheingold & Derschowitz][16]
