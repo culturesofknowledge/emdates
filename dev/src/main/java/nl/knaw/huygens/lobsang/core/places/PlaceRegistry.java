@@ -6,4 +6,5 @@ import java.util.stream.Stream;
 
 public interface PlaceRegistry {
   Stream<Place> searchPlaces(String placeTerms);
+  Stream<Place> allPlaces();
 }

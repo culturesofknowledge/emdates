@@ -13,6 +13,7 @@ import nl.knaw.huygens.lobsang.core.places.PlaceRegistry;
 import nl.knaw.huygens.lobsang.resources.AboutResource;
 import nl.knaw.huygens.lobsang.resources.ConversionResource;
 import nl.knaw.huygens.lobsang.resources.ParserResource;
+import nl.knaw.huygens.lobsang.resources.PlacesResource;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.glassfish.jersey.logging.LoggingFeature;
@@ -81,6 +82,7 @@ public class LobsangApplication extends Application<LobsangConfiguration> {
     jersey.register(new AboutResource(findManifest(getName())));
     jersey.register(new ConversionResource(createConversionService()));
     jersey.register(new ParserResource());
+    jersey.register(new PlacesResource(placeRegistry));
   }
 
   private ConversionService createConversionService() {
