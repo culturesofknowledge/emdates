@@ -209,16 +209,13 @@ Was expecting:
 
 ----
 ...
-placeRegistry:
-  "@class": nl.knaw.huygens.lobsang.core.places.local.LocalPlaceRegistryFactory
-  places:
-    - name: 'Helsinki (populated place)'
-      placeId: '658225'
+- name: 'Helsinki (populated place)'
+      placeId: 'https://www.geonames.org/658225'
     - name: 'Opole (populated place)'
-      placeId: '3090048'
-      parent: 'emdatesIdDuchyOfOpole'
+      placeId: 'https://www.geonames.org/3090048'
+      parent: 'https://emdates.org/1'
     - name: 'Duchy of Opole'
-      placeId: 'emdatesIdDuchyOfOpole'
+      placeId: 'https://emdates.org/1'
       calendarPeriods:
         - calendar: 'Julian'
           endDate: '1584-01-29'
@@ -230,7 +227,7 @@ placeRegistry:
         - when: --01-01
           since: 1584
     - name: 'Groningen (populated place)'
-      placeId: '2755251'
+      placeId: 'https://www.geonames.org/2755251'
       calendarPeriods:
         - calendar: 'Julian'
           endDate: '1583-02-28'
