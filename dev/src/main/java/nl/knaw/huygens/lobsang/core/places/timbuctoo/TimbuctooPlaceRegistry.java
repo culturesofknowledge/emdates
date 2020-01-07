@@ -53,4 +53,10 @@ public class TimbuctooPlaceRegistry implements PlaceRegistry {
 
     return Stream.empty();
   }
+
+  @Override
+  public Stream<Place> allPlaces() {
+    throw new UnsupportedOperationException("Not yet implemented");//FIXME: implement
+  }
+
 }

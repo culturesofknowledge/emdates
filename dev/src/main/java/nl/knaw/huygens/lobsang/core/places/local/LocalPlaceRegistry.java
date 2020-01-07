@@ -23,6 +23,11 @@ public class LocalPlaceRegistry implements PlaceRegistry {
     return Stream.empty();
   }
 
+  @Override
+  public Stream<Place> allPlaces() {
+    return placesByGeoNamesId.values().stream();
+  }
+
   private void addPlace(Place place) {
     placesByGeoNamesId.put(place.getPlaceId(), place);
   }
