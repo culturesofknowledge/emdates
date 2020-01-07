@@ -1,4 +1,5 @@
 = Building and running emdates
+:toc:
 
 == To build and run the Docker image
 
@@ -205,6 +206,60 @@ Was expecting:
     <EOF>
     "
 |====
+
+== Using a local PlaceRegistry
+
+----
+...
+placeRegistry:
+  "@class": nl.knaw.huygens.lobsang.core.places.local.LocalPlaceRegistryFactory
+  places:
+    - name: 'Helsinki (populated place)'
+      placeId: '658225'
+    - name: 'Opole (populated place)'
+      placeId: '3090048'
+      parent: 'emdatesIdDuchyOfOpole'
+    - name: 'Duchy of Opole'
+      placeId: 'emdatesIdDuchyOfOpole'
+      calendarPeriods:
+        - calendar: 'Julian'
+          endDate: '1584-01-29'
+          provenance: 'EM Places'
+        - calendar: 'Gregorian'
+          startDate: '1582-02-08'
+          provenance: 'EM Places'
+      startOfYear:
+        - when: --01-01
+          since: 1584
+    - name: 'Groningen (populated place)'
+      placeId: '2755251'
+      calendarPeriods:
+        - calendar: 'Julian'
+          endDate: '1583-02-28'
+          provenance: 'EM Places'
+        - calendar: 'Gregorian'
+          startDate: '1582-03-11'
+          endDate: '1594-11-19'
+          provenance: 'EM Places'
+        - calendar: 'Julian'
+          startDate: '1594-11-10'
+          endDate: '1700-01-XX'
+          provenance: 'EM Places'
+        - calendar: 'Gregorian'
+          startDate: '1700-01-XX'
+          provenance: 'EM Places'
+      startOfYear:
+        - when: --01-01
+          since: 1583
+...
+----
+Above is an excerpt of the  current `PlaceRegistry`.
+Every place needs a placeId.
+This could be a GeoNames id, make one up if you do not have an id.
+This is what happened for `Duchy of Opole`.
+
+`calendarPeriods` are the are the calendars used over time.
+These have optional properties `beginDate` and `endDate`, both use an ISO-8601 date expressed in the Gregorian calendar.
 
 
 == Using Timbuctoo (EMPlaces) as PlaceRegistry

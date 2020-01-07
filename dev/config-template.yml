@@ -29,11 +29,12 @@ placeRegistry:
   "@class": nl.knaw.huygens.lobsang.core.places.local.LocalPlaceRegistryFactory
   places:
     - name: 'Helsinki (populated place)'
-      geoNamesID: '658225'
+      placeId: '658225'
     - name: 'Opole (populated place)'
-      geoNamesID: '3090048'
-      parent: 'Duchy of Opole'
+      placeId: '3090048'
+      parent: 'emdatesIdDuchyOfOpole'
     - name: 'Duchy of Opole'
+      placeId: 'emdatesIdDuchyOfOpole'
       calendarPeriods:
         - calendar: 'Julian'
           endDate: '1584-01-29'
@@ -45,7 +46,7 @@ placeRegistry:
         - when: --01-01
           since: 1584
     - name: 'Groningen (populated place)'
-      geoNamesID: '2755251'
+      placeId: '2755251'
       calendarPeriods:
         - calendar: 'Julian'
           endDate: '1583-02-28'
