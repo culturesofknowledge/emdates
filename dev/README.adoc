@@ -132,12 +132,10 @@ This will yield:
 
 Suppose we have a CSV file `example.csv`:
 |===
-|Place |Date
-
-|Groningen (populated place) |1648-01-30
-|Opole (populated place) |0900-10-11
-|Asgard |1584-01-05
-
+|placeId |placeLabel |targetCalendar |inputDate
+|658225 |Groningen (populated place) |Julian |1648-01-30
+|3090048 |Opole (populated place) |Julian |0900-10-11
+|no-id |Asgard |Julian |1584-01-05
 |===
 
 then we can have this spreadsheet converted via the ``/convert/table`` API endpoint:
@@ -148,10 +146,10 @@ $ curl -s localhost:8080/convert/table -F file=@examples/bulkconversion.csv \
 and end up with a converted CSV:
 
 |====
-|Place |Date |Date_0 |Notes_0 |Date_1 |Notes_1 |Date_2 |Notes_2
-|Groningen (populated place) |1648-01-30 |1648-02-09 |"Date within Julian calendar start and end bounds, Based on data for place: 'Groningen (populated place)'" | | | |
-|Opole (populated place) |0900-10-11 |0900-10-16 |"No place-specific data about when the New Year started, assuming 1 January (no adjustments), Date on or before end of Julian calendar, Based on data for place: 'Duchy of Opole'" | | | |
-|Asgard |1584-01-05 |1584-01-15 |Based on default calendar | | | |
+|placeId |placeLabel |targetCalendar |inputDate |outputDate_0 |notes_0 |outputDate_1 |notes_1 |outputDate_2 |notes_2
+|658225 |Groningen (populated place) |Julian |1648-01-30 |1648-01-30 |Based on default calendar | | | |
+|3090048 |Opole (populated place) |Julian |0900-10-11 |0900-10-11 |"No place-specific data about when the New Year started, assuming 1 January (no adjustments), Date on or before end of Julian calendar, Based on data for place: 'Duchy of Opole'" | | | |
+|no-id |Asgard |Julian |1584-01-05 |1584-01-05 |Based on default calendar | | | |
 |====
 
 
