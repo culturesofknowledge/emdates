@@ -142,8 +142,8 @@ public class ConversionResource {
                        printer.print(column);
                      }
                      for (int i = 0; i < maxConversions; i++) {
-                       printer.print(format("%s_%d", fieldNames.getDateFieldName(), i));
-                       printer.print(format("Notes_%d", i));
+                       printer.print(format("outputDate_%d", i));
+                       printer.print(format("notes_%d", i));
                      }
                      printer.println();
                      reader.read(record -> {
