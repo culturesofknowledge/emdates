@@ -258,15 +258,9 @@ public class ConversionResource {
 
   private class DateRequestBuilder {
     private final ConvertFieldNames fieldNames;
-    private final String targetCalendar;
 
     private DateRequestBuilder(ConvertFieldNames fieldNames) {
-      this(fieldNames, "gregorian");
-    }
-
-    private DateRequestBuilder(ConvertFieldNames fieldNames, String targetCalendar) {
       this.fieldNames = fieldNames;
-      this.targetCalendar = targetCalendar;
     }
 
     DateRequest build(CSVRecord record) {
@@ -274,7 +268,7 @@ public class ConversionResource {
       return new DateRequest(
         record.get(fieldNames.getDateFieldName()),
         record.get(fieldNames.getPlaceFieldName()),
-        targetCalendar);
+        record.get(fieldNames.getTargetCalendarField()));
     }
 
   }

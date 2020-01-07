@@ -8,18 +8,23 @@ import java.util.stream.Stream;
 public class ConvertFieldNames implements FieldNames {
   private static final String DEFAULT_DATE_NAME = "Date";
   private static final String DEFAULT_PLACE_NAME = "Place";
+  private static final String TARGET_CALENDAR = "targetCalendar";
+
   private final String placeFieldName;
+  private final String targetCalendarField;
   private final String dateField;
 
-  ConvertFieldNames(String dateField, String placeFieldName) {
+  ConvertFieldNames(String dateField, String placeFieldName, String targetCalendarField) {
     this.dateField = dateField;
     this.placeFieldName = placeFieldName;
+    this.targetCalendarField = targetCalendarField;
   }
 
   public static ConvertFieldNames fromConfig(Map<String, String> config) {
     return new ConvertFieldNames(
         config.getOrDefault("dateField", DEFAULT_DATE_NAME),
-        config.getOrDefault("placeField", DEFAULT_PLACE_NAME)
+        config.getOrDefault("placeField", DEFAULT_PLACE_NAME),
+        config.getOrDefault("targetCalendarField", TARGET_CALENDAR)
     );
   }
 
@@ -30,6 +35,10 @@ public class ConvertFieldNames implements FieldNames {
 
   public String getPlaceFieldName() {
     return placeFieldName;
+  }
+
+  public String getTargetCalendarField() {
+    return targetCalendarField;
   }
 
   @Override
