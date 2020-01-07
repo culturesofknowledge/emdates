@@ -142,8 +142,8 @@ public class ConversionResource {
                        printer.print(column);
                      }
                      for (int i = 0; i < maxConversions; i++) {
-                       printer.print(format("%s_%d", fieldNames.getDateFieldName(), i));
-                       printer.print(format("Notes_%d", i));
+                       printer.print(format("outputDate_%d", i));
+                       printer.print(format("notes_%d", i));
                      }
                      printer.println();
                      reader.read(record -> {
@@ -258,15 +258,9 @@ public class ConversionResource {
 
   private class DateRequestBuilder {
     private final ConvertFieldNames fieldNames;
-    private final String targetCalendar;
 
     private DateRequestBuilder(ConvertFieldNames fieldNames) {
-      this(fieldNames, "gregorian");
-    }
-
-    private DateRequestBuilder(ConvertFieldNames fieldNames, String targetCalendar) {
       this.fieldNames = fieldNames;
-      this.targetCalendar = targetCalendar;
     }
 
     DateRequest build(CSVRecord record) {
@@ -274,7 +268,7 @@ public class ConversionResource {
       return new DateRequest(
         record.get(fieldNames.getDateFieldName()),
         record.get(fieldNames.getPlaceFieldName()),
-        targetCalendar);
+        record.get(fieldNames.getTargetCalendarField()));
     }
 
   }
