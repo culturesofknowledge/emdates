@@ -11,6 +11,7 @@ import nl.knaw.huygens.lobsang.core.ConversionService;
 import nl.knaw.huygens.lobsang.core.ConverterRegistry;
 import nl.knaw.huygens.lobsang.core.places.PlaceRegistry;
 import nl.knaw.huygens.lobsang.resources.AboutResource;
+import nl.knaw.huygens.lobsang.resources.CalendarsResource;
 import nl.knaw.huygens.lobsang.resources.ConversionResource;
 import nl.knaw.huygens.lobsang.resources.ParserResource;
 import nl.knaw.huygens.lobsang.resources.PlacesResource;
@@ -83,6 +84,7 @@ public class LobsangApplication extends Application<LobsangConfiguration> {
     jersey.register(new ConversionResource(createConversionService()));
     jersey.register(new ParserResource());
     jersey.register(new PlacesResource(placeRegistry));
+    jersey.register(new CalendarsResource(converterRegistry.availableCalendars()));
   }
 
   private ConversionService createConversionService() {

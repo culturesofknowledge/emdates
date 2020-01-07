@@ -6,6 +6,7 @@ import nl.knaw.huygens.lobsang.core.converters.CalendarConverter;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class ConverterRegistry {
   private final Map<String, CalendarConverter> convertersByType;
@@ -38,5 +39,9 @@ public class ConverterRegistry {
 
   public CalendarConverter defaultConverter() {
     return defaultConverter;
+  }
+
+  public Stream<String> availableCalendars() {
+    return convertersByType.keySet().stream();
   }
 }

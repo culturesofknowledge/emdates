@@ -26,9 +26,9 @@
 
 <body>
   <h1>Convert date to other calendar</h1>
-  <span>Date: </span><input type="text" value="0000-01-01" name="year" id="date"/>
-  <span>Place: </span><select name="place" id="place"/>
-  <span>Target Calendar: </span><input type="text" value="Gregorian" name="targetCalendar" id="targetCalendar"/>
+  <span>Date: </span><input type="text" value="0000-01-01" name="year" id="date">
+  <span>Place: </span><select name="place" id="place"></select>
+  <span>Target Calendar: </span><select name="targetCalendar" id="targetCalendar"></select>
   <button id="convertSingle">Convert</button>
   <div id="convertResult"></div>
   <hr>
@@ -71,8 +71,27 @@
       }
     };
 
-    placesRequest.open("GET","/places");
+
+    placesRequest.open("GET", "/places");
     placesRequest.send(null);
+
+
+    var calendarsRequest = new XMLHttpRequest();
+    calendarsRequest.onreadystatechange = function() {
+      if (calendarsRequest.readyState === 4) {
+        var responseData = JSON.parse(calendarsRequest.response);
+        var calSelect = document.getElementById("targetCalendar");
+        responseData.forEach(function(calendar) {
+          var option = document.createElement("option");
+          option.textContent = calendar;
+          option.value = calendar;
+          calSelect.appendChild(option);
+        });
+      }
+    };
+
+    calendarsRequest.open("GET", "/calendars");
+    calendarsRequest.send(null);
 
     document.getElementById("convertSingle").onclick = function(e) {
       var result = document.getElementById("convertResult");
