@@ -7,6 +7,7 @@ import io.dropwizard.forms.MultiPartBundle;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import nl.knaw.huygens.lobsang.api.Place;
 import nl.knaw.huygens.lobsang.core.ConversionService;
 import nl.knaw.huygens.lobsang.core.ConverterRegistry;
 import nl.knaw.huygens.lobsang.core.places.PlaceRegistry;
@@ -15,14 +16,12 @@ import nl.knaw.huygens.lobsang.resources.CalendarsResource;
 import nl.knaw.huygens.lobsang.resources.ConversionResource;
 import nl.knaw.huygens.lobsang.resources.ParserResource;
 import nl.knaw.huygens.lobsang.resources.PlacesResource;
-import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
@@ -76,19 +75,19 @@ public class LobsangApplication extends Application<LobsangConfiguration> {
     CloseableHttpClient httpClient = new HttpClientBuilder(environment).using(lobsangConfiguration.getHttpClient())
                                                                        .build(getName());
     placeRegistry = lobsangConfiguration.getPlaceRegistry(httpClient);
-    registerResources(environment.jersey());
+    registerResources(environment.jersey(), lobsangConfiguration.getDefaultRule());
   }
 
-  private void registerResources(JerseyEnvironment jersey) throws IOException {
+  private void registerResources(JerseyEnvironment jersey, Place defaultRule) throws IOException {
     jersey.register(new AboutResource(findManifest(getName())));
-    jersey.register(new ConversionResource(createConversionService()));
+    jersey.register(new ConversionResource(createConversionService(defaultRule)));
     jersey.register(new ParserResource());
     jersey.register(new PlacesResource(placeRegistry));
     jersey.register(new CalendarsResource(converterRegistry.availableCalendars()));
   }
 
-  private ConversionService createConversionService() {
-    return new ConversionService(converterRegistry, placeRegistry);
+  private ConversionService createConversionService(Place defaultRule) {
+    return new ConversionService(converterRegistry, placeRegistry, defaultRule);
   }
 
   private void setupLogging(Environment environment) {
@@ -96,6 +95,6 @@ public class LobsangApplication extends Application<LobsangConfiguration> {
     MDC.put("commit_hash", commitHash);
 
     environment.jersey().register(new LoggingFeature(java.util.logging.Logger.getLogger(getClass().getName()),
-      Level.FINE, LoggingFeature.Verbosity.PAYLOAD_ANY, 1024));
+        Level.FINE, LoggingFeature.Verbosity.PAYLOAD_ANY, 1024));
   }
 }

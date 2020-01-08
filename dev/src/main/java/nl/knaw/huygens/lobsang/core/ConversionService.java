@@ -11,7 +11,6 @@ import nl.knaw.huygens.lobsang.core.places.PlaceRegistry;
 import nl.knaw.huygens.lobsang.iso8601.Iso8601Date;
 import nl.knaw.huygens.lobsang.iso8601.Iso8601ParserHelper;
 import nl.knaw.huygens.lobsang.iso8601.Uncertainty;
-import nl.knaw.huygens.lobsang.helpers.UnsupportedDateException;
 import nl.knaw.huygens.lobsang.iso8601.UnsupportedIso8601DateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,11 +33,12 @@ public class ConversionService {
 
   private final ConverterRegistry converters;
   private final PlaceRegistry placeRegistry;
+  private final Place defaultRule;
 
-  public ConversionService(ConverterRegistry converterRetriever,
-                           PlaceRegistry placeRegistry) {
+  public ConversionService(ConverterRegistry converterRetriever, PlaceRegistry placeRegistry, Place defaultRule) {
     this.converters = converterRetriever;
     this.placeRegistry = placeRegistry;
+    this.defaultRule = defaultRule;
   }
 
   private Optional<YearMonthDay> convert(CalendarPeriod calendarPeriod, YearMonthDay date, String calendar) {
@@ -169,7 +169,7 @@ public class ConversionService {
   private Optional<Place> getParentWithCalendarPeriods(Place place) {
     final Optional<String> parentName = place.getParent();
     if(parentName.isPresent()) {
-      final Stream<Place> placeStream = placeRegistry.searchPlaces(parentName.get());
+      final Stream<Place> placeStream = placeRegistry.searchPlacesById(parentName.get());
       final Optional<Place> first = placeStream.findFirst();
       if(first.isPresent()) {
         final Place parent = first.get();
@@ -217,7 +217,7 @@ public class ConversionService {
 
   public Stream<YearMonthDay> convertForMatchingPlaces(String placeTerms, Iso8601Date requestDate,
                                                        String targetCalendar, Consumer<Place> peepingTom) {
-    Stream<Place> matchingPlaces = placeRegistry.searchPlaces(placeTerms);
+    Stream<Place> matchingPlaces = placeRegistry.searchPlacesById(placeTerms);
 
     if (peepingTom != null) {
       matchingPlaces = matchingPlaces.peek(peepingTom);
@@ -225,7 +225,7 @@ public class ConversionService {
 
     return defaultIfEmpty(matchingPlaces.map(convertForPlace(requestDate,
         targetCalendar)).flatMap(Function.identity()),
-        () -> defaultConversion(requestDate, targetCalendar));
+        () -> Stream.of(defaultRule).map(convertForPlace(requestDate, targetCalendar)).flatMap(Function.identity()));
   }
 
   public Stream<YearMonthDay> convertForMatchingPlaces(String placeTerms, Iso8601Date requestDate,

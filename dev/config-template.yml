@@ -25,6 +25,18 @@ converterRegistry:
     julian:
       "@class": nl.knaw.huygens.lobsang.core.converters.JulianConverter
 
+# this rule will be used when no calendar data is known for a certain place
+defaultRule:
+  name: 'Popes Rule'
+  placeId: 'https://emdates.org/2'
+  calendarPeriods:
+    - calendar: 'Julian'
+      endDate: '1582-10-04'
+      provenance: 'EM Places'
+    - calendar: 'Gregorian'
+      startDate: '1582-10-15'
+      provenance: 'EM Places'
+
 placeRegistry:
   "@class": nl.knaw.huygens.lobsang.core.places.local.LocalPlaceRegistryFactory
   places:

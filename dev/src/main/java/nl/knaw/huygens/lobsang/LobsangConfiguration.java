@@ -3,6 +3,7 @@ package nl.knaw.huygens.lobsang;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
 import io.dropwizard.client.HttpClientConfiguration;
+import nl.knaw.huygens.lobsang.api.Place;
 import nl.knaw.huygens.lobsang.core.ConverterRegistry;
 import nl.knaw.huygens.lobsang.core.places.PlaceRegistry;
 import nl.knaw.huygens.lobsang.core.places.PlaceRegistryFactory;
@@ -25,6 +26,10 @@ class LobsangConfiguration extends Configuration {
   @NotNull
   private HttpClientConfiguration httpClient;
 
+  @NotNull
+  @JsonProperty("defaultRule")
+  private Place defaultRule;
+
   @JsonProperty
   PlaceRegistry getPlaceRegistry(CloseableHttpClient httpClient) {
     return placeRegistryFactory.createPlaceRegistry(httpClient);
@@ -38,5 +43,9 @@ class LobsangConfiguration extends Configuration {
   @JsonProperty
   HttpClientConfiguration getHttpClient() {
     return httpClient;
+  }
+
+  public Place getDefaultRule() {
+    return defaultRule;
   }
 }
