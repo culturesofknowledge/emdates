@@ -10,15 +10,17 @@ import java.util.stream.Stream;
 
 public class LocalPlaceRegistry implements PlaceRegistry {
   private final Map<String, Place> placesByGeoNamesId = new HashMap<>();
+  private final Place defaultPlace;
 
-  LocalPlaceRegistry(List<Place> places) {
+  LocalPlaceRegistry(List<Place> places, Place defaultPlace) {
+    this.defaultPlace = defaultPlace;
     places.forEach(this::addPlace);
   }
 
   @Override
-  public Stream<Place> searchPlaces(String placeTerms) {
-    if (placesByGeoNamesId.containsKey(placeTerms)) {
-      return Stream.of(placesByGeoNamesId.get(placeTerms));
+  public Stream<Place> searchPlacesById(String placeId) {
+    if (placesByGeoNamesId.containsKey(placeId)) {
+      return Stream.of(placesByGeoNamesId.get(placeId));
     }
     return Stream.empty();
   }
@@ -30,5 +32,10 @@ public class LocalPlaceRegistry implements PlaceRegistry {
 
   private void addPlace(Place place) {
     placesByGeoNamesId.put(place.getPlaceId(), place);
+  }
+
+  @Override
+  public Place getDefaultPlace() {
+    return defaultPlace;
   }
 }

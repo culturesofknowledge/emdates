@@ -5,6 +5,8 @@ import nl.knaw.huygens.lobsang.api.Place;
 import java.util.stream.Stream;
 
 public interface PlaceRegistry {
-  Stream<Place> searchPlaces(String placeTerms);
+  Stream<Place> searchPlacesById(String placeId);
   Stream<Place> allPlaces();
+
+  Place getDefaultPlace();
 }

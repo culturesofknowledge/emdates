@@ -33,8 +33,8 @@ public class TimbuctooPlaceRegistry implements PlaceRegistry {
   }
 
   @Override // TODO add exception handling / Provenance
-  public Stream<Place> searchPlaces(String placeTerms) {
-    String requestEntity = requestEntityBuilder.apply(placeTerms);
+  public Stream<Place> searchPlacesById(String placeId) {
+    String requestEntity = requestEntityBuilder.apply(placeId);
 
     HttpPost request = new HttpPost(uri);
     request.setEntity(new StringEntity(requestEntity, ContentType.APPLICATION_JSON));
@@ -56,6 +56,11 @@ public class TimbuctooPlaceRegistry implements PlaceRegistry {
 
   @Override
   public Stream<Place> allPlaces() {
+    throw new UnsupportedOperationException("Not yet implemented");//FIXME: implement
+  }
+
+  @Override
+  public Place getDefaultPlace() {
     throw new UnsupportedOperationException("Not yet implemented");//FIXME: implement
   }
 
