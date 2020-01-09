@@ -411,4 +411,18 @@ class Iso8601ParserHelperTest {
 
     assertThrows(UnsupportedIso8601DateException.class, () -> parse(dateString));
   }
+
+  @Test
+  void nonValidDate() {
+    final String dateString = "2019-01-32";
+
+    assertThrows(UnsupportedIso8601DateException.class, () -> parse(dateString));
+  }
+
+  @Test
+  void nonValidDate2() {
+    final String dateString = "20190132";
+
+    assertThrows(UnsupportedIso8601DateException.class, () -> parse(dateString));
+  }
 }

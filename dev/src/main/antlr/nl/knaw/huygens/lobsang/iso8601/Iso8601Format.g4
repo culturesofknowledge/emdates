@@ -6,7 +6,7 @@
 grammar Iso8601Format;
 
 /** Parser rule wrapper **/
-iso8601: level0 | level1;
+iso8601: level0 EOF | level1 EOF;
 
 /** Level 0: Tokens **/
 Dash : '-';
