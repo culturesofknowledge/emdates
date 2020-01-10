@@ -76,8 +76,9 @@ public class ConversionResource {
     try {
       requestDate = DateStringParser.parse(dateRequest.getDate());
     } catch (UnsupportedDateException e) {
+
       return Response.status(Response.Status.BAD_REQUEST)
-                     .entity(format("%s is an unsupported iso date: %s", dateRequest.getDate(), e.getMessage()))
+                     .entity(e.getMessage())
                      .build();
     }
     final Map<YearMonthDay, Set<String>> results = conversions

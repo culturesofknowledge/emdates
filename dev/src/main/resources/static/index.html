@@ -103,8 +103,14 @@
       var xhr = new XMLHttpRequest();
       xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
-          var responseData = JSON.parse(xhr.response);
-          processConvertResponse(responseData, result);
+
+          if (xhr.status === 200) {
+            var responseData = JSON.parse(xhr.response);
+            processConvertResponse(responseData, result);
+          }
+          else {
+            document.getElementById("convertResult").appendChild(createTextElement("span", "error message: " + xhr.response));
+          }
         }
       }
       xhr.open("POST", "/convert");
