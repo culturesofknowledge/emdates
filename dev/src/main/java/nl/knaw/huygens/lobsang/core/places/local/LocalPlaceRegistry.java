@@ -10,10 +10,8 @@ import java.util.stream.Stream;
 
 public class LocalPlaceRegistry implements PlaceRegistry {
   private final Map<String, Place> placesByGeoNamesId = new HashMap<>();
-  private final Place defaultPlace;
 
-  LocalPlaceRegistry(List<Place> places, Place defaultPlace) {
-    this.defaultPlace = defaultPlace;
+  LocalPlaceRegistry(List<Place> places) {
     places.forEach(this::addPlace);
   }
 
@@ -34,8 +32,4 @@ public class LocalPlaceRegistry implements PlaceRegistry {
     placesByGeoNamesId.put(place.getPlaceId(), place);
   }
 
-  @Override
-  public Place getDefaultPlace() {
-    return defaultPlace;
-  }
 }

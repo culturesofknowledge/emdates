@@ -59,9 +59,4 @@ public class TimbuctooPlaceRegistry implements PlaceRegistry {
     throw new UnsupportedOperationException("Not yet implemented");//FIXME: implement
   }
 
-  @Override
-  public Place getDefaultPlace() {
-    throw new UnsupportedOperationException("Not yet implemented");//FIXME: implement
-  }
-
 }

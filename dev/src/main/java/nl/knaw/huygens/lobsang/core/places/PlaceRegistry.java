@@ -8,5 +8,4 @@ public interface PlaceRegistry {
   Stream<Place> searchPlacesById(String placeId);
   Stream<Place> allPlaces();
 
-  Place getDefaultPlace();
 }
