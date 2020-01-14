@@ -199,7 +199,7 @@ public class ConversionService {
   }
 
   private YearMonthDay addPlaceNameNote(YearMonthDay result, Place place) {
-    result.addNote(format("Based on data for place: '%s'", place.getName()));
+    result.addNote(format("Based on data for: \"%s\"", place.getName()));
     return result;
   }
 

@@ -27,7 +27,7 @@ converterRegistry:
 
 # this rule will be used when no calendar data is known for a certain place
 defaultRule:
-  name: 'Popes Rule'
+  name: "Pope's Rule"
   placeId: 'https://emdates.org/2'
   calendarPeriods:
     - calendar: 'Julian'
