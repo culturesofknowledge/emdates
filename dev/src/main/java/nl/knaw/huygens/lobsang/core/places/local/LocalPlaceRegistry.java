@@ -18,10 +18,20 @@ public class LocalPlaceRegistry implements PlaceRegistry {
   @Override
   public Stream<Place> searchPlacesById(String placeId) {
     if (placesByGeoNamesId.containsKey(placeId)) {
-      return Stream.of(placesByGeoNamesId.get(placeId));
+      final Place place = placesByGeoNamesId.get(placeId);
+      if (place.getCalendarPeriods().isEmpty()) {
+        if (place.getParent().isPresent()) {
+          return searchPlacesById(place.getParent().get());
+        }
+      } else {
+        return Stream.of(place);
+      }
     }
     return Stream.empty();
   }
+
+
+
 
   @Override
   public Stream<Place> allPlaces() {
