@@ -6,6 +6,11 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.LeapYearMonthDayApproximateContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.LeapYearMonthDayCompactContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.LeapYearMonthDayContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.LeapYearMonthDayUncertainApproximateContext;
+import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.LeapYearMonthDayUncertainContext;
 import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.UnspecifiedCenturyAndDecadeAndSingleYearContext;
 import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.UnspecifiedDecadeAndSingleYearContext;
 import static nl.knaw.huygens.lobsang.iso8601.Iso8601FormatParser.UnspecifiedNegativeYearContext;
@@ -59,8 +64,23 @@ public class Iso8601DateListener extends Iso8601FormatBaseListener {
   }
 
   @Override
+  public void enterLeapYearMonthDay(LeapYearMonthDayContext ctx) {
+    createYearMonthDay(ctx.LeapYearMonthDay().getText(), Uncertainty.NONE);
+  }
+
+  @Override
   public void enterYearMonthDayCompact(YearMonthDayCompactContext ctx) {
     final String text = ctx.YearMonthDayCompact().getText();
+
+    final LocalDate date = LocalDate.parse(text, DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+    dateBuilder.start(date);
+    dateBuilder.end(date);
+  }
+
+  @Override
+  public void enterLeapYearMonthDayCompact(LeapYearMonthDayCompactContext ctx) {
+    final String text = ctx.LeapYearMonthDayCompact().getText();
 
     final LocalDate date = LocalDate.parse(text, DateTimeFormatter.ofPattern("yyyyMMdd"));
 
@@ -105,13 +125,28 @@ public class Iso8601DateListener extends Iso8601FormatBaseListener {
   }
 
   @Override
+  public void enterLeapYearMonthDayUncertain(LeapYearMonthDayUncertainContext ctx) {
+    createYearMonthDay(ctx.LeapYearMonthDay().getText(), Uncertainty.UNCERTAIN);
+  }
+
+  @Override
   public void enterYearMonthDayApproximate(YearMonthDayApproximateContext ctx) {
     createYearMonthDay(ctx.YearMonthDay().getText(), Uncertainty.APPROXIMATE);
   }
 
   @Override
+  public void enterLeapYearMonthDayApproximate(LeapYearMonthDayApproximateContext ctx) {
+    createYearMonthDay(ctx.LeapYearMonthDay().getText(), Uncertainty.APPROXIMATE);
+  }
+
+  @Override
   public void enterYearMonthDayUncertainApproximate(YearMonthDayUncertainApproximateContext ctx) {
     createYearMonthDay(ctx.YearMonthDay().getText(), Uncertainty.UNCERTAIN_APPROXIMATE);
+  }
+
+  @Override
+  public void enterLeapYearMonthDayUncertainApproximate(LeapYearMonthDayUncertainApproximateContext ctx) {
+    createYearMonthDay(ctx.LeapYearMonthDay().getText(), Uncertainty.UNCERTAIN_APPROXIMATE);
   }
 
   @Override
