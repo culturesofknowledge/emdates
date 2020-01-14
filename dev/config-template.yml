@@ -52,7 +52,7 @@ placeRegistry:
           endDate: '1584-01-29'
           provenance: 'EM Places'
         - calendar: 'Gregorian'
-          startDate: '1582-02-08'
+          startDate: '1584-02-08'
           provenance: 'EM Places'
       startOfYear:
         - when: --01-01
@@ -64,7 +64,7 @@ placeRegistry:
           endDate: '1583-02-28'
           provenance: 'EM Places'
         - calendar: 'Gregorian'
-          startDate: '1582-03-11'
+          startDate: '1583-03-11'
           endDate: '1594-11-19'
           provenance: 'EM Places'
         - calendar: 'Julian'
