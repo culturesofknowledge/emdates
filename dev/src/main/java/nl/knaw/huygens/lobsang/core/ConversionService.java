@@ -137,12 +137,26 @@ public class ConversionService {
         return Stream.empty();
       }
 
+      if (requestDate.getStart().equals(requestDate.getEnd())) {
+        return place.getCalendarPeriods().stream()
+                    .map(calendarPeriod -> convert(calendarPeriod, requestDate.getStartAsYearMonthDay(), targetCalendar))
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .map(resultDate -> addUncertaintyNote(resultDate, requestDate))
+                    .map(resultDate -> addPlaceNameNote(resultDate, place))
+                    .map(resultDate -> adjustForNewYearsDay(
+                        resultDate,
+                        requestDate.getStartAsYearMonthDay(),
+                        place.getStartOfYearList()
+                    ));
+      }
       final Stream<YearMonthDay> start = place.getCalendarPeriods().stream()
            .map(calendarPeriod -> convert(calendarPeriod, requestDate.getStartAsYearMonthDay(), targetCalendar))
            .filter(Optional::isPresent)
            .map(Optional::get)
            .map(resultDate -> addUncertaintyNote(resultDate, requestDate))
            .map(resultDate -> addPlaceNameNote(resultDate, place))
+           .map(this::addStartDateNote)
            .map(resultDate -> adjustForNewYearsDay(
                resultDate,
                requestDate.getStartAsYearMonthDay(),
@@ -152,7 +166,9 @@ public class ConversionService {
          .map(calendarPeriod -> convert(calendarPeriod, requestDate.getEndAsYearMonthDay(), targetCalendar))
          .filter(Optional::isPresent)
          .map(Optional::get)
+         .map(resultDate -> addUncertaintyNote(resultDate, requestDate))
          .map(resultDate -> addPlaceNameNote(resultDate, place))
+         .map(this::addEndDateNote)
          .map(resultDate -> adjustForNewYearsDay(
              resultDate,
              requestDate.getEndAsYearMonthDay(),
@@ -160,6 +176,18 @@ public class ConversionService {
          ));
       return Stream.concat(start, end).distinct();
     };
+  }
+
+  private YearMonthDay addEndDateNote(YearMonthDay yearMonthDay) {
+    yearMonthDay.addNote("Date is the latest end of a period contained in the ISO date");
+
+    return yearMonthDay;
+  }
+
+  private YearMonthDay addStartDateNote(YearMonthDay yearMonthDay) {
+    yearMonthDay.addNote("Date is the earliest start of a period contained in the ISO date");
+
+    return yearMonthDay;
   }
 
   private YearMonthDay addUncertaintyNote(YearMonthDay resultDate, Iso8601Date requestDate) {
