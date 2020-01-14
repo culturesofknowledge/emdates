@@ -70,8 +70,6 @@ public class ConversionResource {
   public Response convert(@NotNull DateRequest dateRequest) {
     LOG.info("dateRequest: {}", dateRequest);
 
-    final List<Place> consideredPlaces = new ArrayList<>();
-
     Iso8601Date requestDate;
     try {
       requestDate = DateStringParser.parse(dateRequest.getDate());
@@ -82,9 +80,7 @@ public class ConversionResource {
                      .build();
     }
     final Map<YearMonthDay, Set<String>> results = conversions
-        .convertForMatchingPlaces(dateRequest.getPlaceTerms(), requestDate,
-            dateRequest.getTargetCalendar(), consideredPlaces::add
-        )
+        .convertForMatchingPlaces(dateRequest.getPlaceTerms(), requestDate, dateRequest.getTargetCalendar())
         .collect(Collectors.toMap(ymd -> ymd, YearMonthDay::getNotes, Sets::union));
 
     // collate notes
@@ -102,12 +98,6 @@ public class ConversionResource {
     } else {
       LOG.debug("results (size {}): {}", results.size(), results);
       result = new DateResult(Lists.newArrayList(results.keySet()));
-    }
-
-    if (consideredPlaces.size() > 1) {
-      final String names = joinPlaces(consideredPlaces);
-      final String format = "Multiple places matched '%s': %s. Being more specific may increase accuracy.";
-      result.addHint(format(format, dateRequest.getPlaceTerms(), names));
     }
 
     return Response.ok(result).build();

@@ -6,6 +6,7 @@ import nl.knaw.huygens.lobsang.core.places.PlaceRegistry;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class LocalPlaceRegistry implements PlaceRegistry {
@@ -16,22 +17,19 @@ public class LocalPlaceRegistry implements PlaceRegistry {
   }
 
   @Override
-  public Stream<Place> searchPlacesById(String placeId) {
+  public Optional<Place> searchPlaceById(String placeId) {
     if (placesByGeoNamesId.containsKey(placeId)) {
       final Place place = placesByGeoNamesId.get(placeId);
       if (place.getCalendarPeriods().isEmpty()) {
         if (place.getParent().isPresent()) {
-          return searchPlacesById(place.getParent().get());
+          return searchPlaceById(place.getParent().get());
         }
       } else {
-        return Stream.of(place);
+        return Optional.of(place);
       }
     }
-    return Stream.empty();
+    return Optional.empty();
   }
-
-
-
 
   @Override
   public Stream<Place> allPlaces() {

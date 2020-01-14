@@ -26,7 +26,7 @@ class LocalPlaceRegistryTest {
     );
     final LocalPlaceRegistry instance = new LocalPlaceRegistry(Lists.newArrayList(place));
 
-    assertThat(instance.searchPlacesById(PLACE_ID).findFirst().isPresent(), is(true));
+    assertThat(instance.searchPlaceById(PLACE_ID).isPresent(), is(true));
   }
 
   @Test
@@ -41,7 +41,7 @@ class LocalPlaceRegistryTest {
     );
     final LocalPlaceRegistry instance = new LocalPlaceRegistry(Lists.newArrayList(place, parent));
 
-    final Optional<Place> returnPlace = instance.searchPlacesById(PLACE_ID).findFirst();
+    final Optional<Place> returnPlace = instance.searchPlaceById(PLACE_ID);
 
     assertThat(returnPlace.isPresent(), is(true));
     assertThat(returnPlace.get().getPlaceId(), is(PARENT_ID));
@@ -55,9 +55,7 @@ class LocalPlaceRegistryTest {
     );
     final LocalPlaceRegistry instance = new LocalPlaceRegistry(Lists.newArrayList(place, parent));
 
-    final Optional<Place> returnPlace = instance.searchPlacesById(PLACE_ID).findFirst();
-
-    assertThat(returnPlace.isPresent(), is(false));
+    assertThat(instance.searchPlaceById(PLACE_ID).isPresent(), is(false));
   }
 
 }

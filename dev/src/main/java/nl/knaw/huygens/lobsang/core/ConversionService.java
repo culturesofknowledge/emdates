@@ -196,20 +196,10 @@ public class ConversionService {
   }
 
   public Stream<YearMonthDay> convertForMatchingPlaces(String placeTerms, Iso8601Date requestDate,
-                                                       String targetCalendar, Consumer<Place> peepingTom) {
-    Stream<Place> matchingPlaces = placeRegistry.searchPlacesById(placeTerms);
-
-    if (peepingTom != null) {
-      matchingPlaces = matchingPlaces.peek(peepingTom);
-    }
-
-    return defaultIfEmpty(matchingPlaces.map(convertForPlace(requestDate,
-        targetCalendar)).flatMap(Function.identity()),
-        () -> Stream.of(defaultRule).map(convertForPlace(requestDate, targetCalendar)).flatMap(Function.identity()));
-  }
-
-  public Stream<YearMonthDay> convertForMatchingPlaces(String placeTerms, Iso8601Date requestDate,
                                                        String targetCalendar) {
-    return convertForMatchingPlaces(placeTerms, requestDate, targetCalendar, null);
+    Optional<Place> placeOptional = placeRegistry.searchPlaceById(placeTerms);
+
+    return placeOptional.map(convertForPlace(requestDate, targetCalendar)::apply)
+                        .orElse(convertForPlace(requestDate, targetCalendar).apply(defaultRule));
   }
 }
