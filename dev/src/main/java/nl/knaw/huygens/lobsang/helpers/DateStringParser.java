@@ -3,6 +3,7 @@ package nl.knaw.huygens.lobsang.helpers;
 import nl.knaw.huygens.lobsang.api.YearMonthDay;
 import nl.knaw.huygens.lobsang.core.parsers.ParseException;
 import nl.knaw.huygens.lobsang.core.parsers.RomanDateParser;
+import nl.knaw.huygens.lobsang.core.parsers.TokenMgrError;
 import nl.knaw.huygens.lobsang.iso8601.Iso8601Date;
 import nl.knaw.huygens.lobsang.iso8601.Iso8601ParserHelper;
 import nl.knaw.huygens.lobsang.iso8601.UnsupportedIso8601DateException;
@@ -43,6 +44,8 @@ public class DateStringParser {
           ex.getMessage()
       );
       throw new RuntimeException(ex);
+    } catch (TokenMgrError tokenMgrError) {
+      throw new ParseException(tokenMgrError.getMessage());
     } catch (ParseException pe) {
       throw pe;
     }

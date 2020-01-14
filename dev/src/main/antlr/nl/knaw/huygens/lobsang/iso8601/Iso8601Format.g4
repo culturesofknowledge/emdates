@@ -6,11 +6,11 @@
 grammar Iso8601Format;
 
 /** Parser rule wrapper **/
-iso8601: level0 | level1;
+iso8601: level0 EOF | level1 EOF;
 
 /** Level 0: Tokens **/
 Dash : '-';
-
+LeapYear : Year {!"".equals(getText()) && (Integer.valueOf(getText()) % 400 == 0 || (Integer.valueOf(getText()) % 100 != 0 && Integer.valueOf(getText()) % 4 == 0))}?;
 Year : PositiveYear | NegativeYear | YearZero;
 NegativeYear : Dash PositiveYear;
 PositiveYear
@@ -26,9 +26,19 @@ Month : OneThru12;
 MonthDay
     : ( '01' | '03' | '05' | '07' | '08' | '10' | '12' ) Dash OneThru31
     | ( '04' | '06' | '09' | '11' ) Dash OneThru30
-    | '02' Dash OneThru29
+    | '02' Dash OneThru28
     ;
 MonthDayCompact
+    : ( '01' | '03' | '05' | '07' | '08' | '10' | '12' ) OneThru31
+    | ( '04' | '06' | '09' | '11' ) OneThru30
+    | '02' OneThru28
+    ;
+LeapMonthDay
+    : ( '01' | '03' | '05' | '07' | '08' | '10' | '12' ) Dash OneThru31
+    | ( '04' | '06' | '09' | '11' ) Dash OneThru30
+    | '02' Dash OneThru29
+    ;
+LeapMonthDayCompact
     : ( '01' | '03' | '05' | '07' | '08' | '10' | '12' ) OneThru31
     | ( '04' | '06' | '09' | '11' ) OneThru30
     | '02' OneThru29
@@ -36,6 +46,8 @@ MonthDayCompact
 YearMonth : Year Dash Month;
 YearMonthDay : Year Dash MonthDay;
 YearMonthDayCompact : Year MonthDayCompact;
+LeapYearMonthDay: LeapYear Dash LeapMonthDay;
+LeapYearMonthDayCompact: LeapYear LeapMonthDayCompact;
 OneThru12
     : '01' | '02' | '03' | '04' | '05' | '06'  | '07' | '08' | '09' | '10'
     | '11' | '12'
@@ -46,7 +58,8 @@ OneThru23
     | '22' | '23'
     ;
 ZeroThru23 : '00' | OneThru23;
-OneThru29 : OneThru23 | '24' | '25' | '26' | '27' | '28' | '29';
+OneThru28 : OneThru23 | '24' | '25' | '26' | '27' | '28';
+OneThru29 : OneThru28 | '29';
 OneThru30 : OneThru29 | '30';
 OneThru31 : OneThru30 | '31';
 OneThru59 : OneThru31
@@ -56,11 +69,13 @@ OneThru59 : OneThru31
     ;
 
 /** Level 0 Parser rules **/
-level0 : year | yearMonth | yearMonthDay | yearMonthDayCompact;
+level0 : year | yearMonth | yearMonthDay | leapYearMonthDay | yearMonthDayCompact | leapYearMonthDayCompact;
 year : Year;
 yearMonth : YearMonth;
 yearMonthDay : YearMonthDay;
+leapYearMonthDay : LeapYearMonthDay;
 yearMonthDayCompact : YearMonthDayCompact;
+leapYearMonthDayCompact : LeapYearMonthDayCompact;
 
 /** Level 1: Tokens **/
 Questionmark : '?';
@@ -109,8 +124,11 @@ level1
     | yearMonthApproximate
     | yearMonthUncertainApproximate
     | yearMonthDayUncertain
+    | leapYearMonthDayUncertain
     | yearMonthDayApproximate
+    | leapYearMonthDayApproximate
     | yearMonthDayUncertainApproximate
+    | leapYearMonthDayUncertainApproximate
     | yearMonthUnspecifiedDay
     | yearUnspecifiedMonthAndDay
     | unspecifiedYearAndMonthAndDay
@@ -129,8 +147,11 @@ yearMonthUncertain : YearMonth Questionmark;
 yearMonthApproximate : YearMonth Tilde;
 yearMonthUncertainApproximate : YearMonth PercentSign;
 yearMonthDayUncertain : YearMonthDay Questionmark;
+leapYearMonthDayUncertain : LeapYearMonthDay Questionmark;
 yearMonthDayApproximate : YearMonthDay Tilde;
+leapYearMonthDayApproximate : LeapYearMonthDay Tilde;
 yearMonthDayUncertainApproximate : YearMonthDay PercentSign;
+leapYearMonthDayUncertainApproximate : LeapYearMonthDay PercentSign;
 yearMonthUnspecifiedDay : YearMonthUnspecifiedDay;
 yearUnspecifiedMonthAndDay : YearUnspecifiedMonthAndDay;
 unspecifiedYearAndMonthAndDay : UnspecifiedYearAndMonthAndDay;

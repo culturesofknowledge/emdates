@@ -52,4 +52,12 @@ class DateStringParserTest {
         containsStringIgnoringCase("unsupported roman date")));
   }
 
+  @Test
+  void throwsAnExceptionWhenDateIsNonValidISO8601Date() {
+    Exception exception = assertThrows(UnsupportedDateException.class, () -> DateStringParser.parse("0000-01-32"));
+
+    assertThat(exception.getMessage(), allOf(containsStringIgnoringCase("unsupported iso8601 date"),
+        containsStringIgnoringCase("unsupported roman date")));
+  }
+
 }

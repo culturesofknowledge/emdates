@@ -64,6 +64,26 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
+  void leapDay() throws Exception {
+    final String dateString = "2000-02-29";
+
+    final LocalDate expectedDate = LocalDate.parse("2000-02-29");
+
+    final Iso8601Date date = parse(dateString);
+
+    assertThat(date.getStart(), is(expectedDate));
+    assertThat(date.getEnd(), is(expectedDate));
+    assertThat(date.getUncertainty(), is(Uncertainty.NONE));
+  }
+
+  @Test
+  void nonLeapYearFeb29() {
+    final String dateString = "2019-02-29";
+
+    assertThrows(UnsupportedIso8601DateException.class, () -> parse(dateString));
+  }
+
+  @Test
   void yearMonthDayCompact() throws Exception {
     final String dateString = "20190419";
     final LocalDate expectedDate = LocalDate.parse("2019-04-19");
@@ -73,6 +93,26 @@ class Iso8601ParserHelperTest {
     assertThat(date.getStart(), is(expectedDate));
     assertThat(date.getEnd(), is(expectedDate));
     assertThat(date.getUncertainty(), is(Uncertainty.NONE));
+  }
+
+  @Test
+  void LeapDayCompact() throws Exception {
+    final String dateString = "20000229";
+
+    final LocalDate expectedDate = LocalDate.parse("2000-02-29");
+
+    final Iso8601Date date = parse(dateString);
+
+    assertThat(date.getStart(), is(expectedDate));
+    assertThat(date.getEnd(), is(expectedDate));
+    assertThat(date.getUncertainty(), is(Uncertainty.NONE));
+  }
+
+  @Test
+  void nonLeapYearFeb29Compact() {
+    final String dateString = "20190229";
+
+    assertThrows(UnsupportedIso8601DateException.class, () -> parse(dateString));
   }
 
   // level 1
@@ -167,6 +207,19 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
+  void leapYearMonthDayUncertain() throws Exception {
+    final String dateString = "2000-02-29?";
+    final LocalDate expectedDate = LocalDate.parse("2000-02-29");
+
+    final Iso8601Date date = parse(dateString);
+
+    assertThat(date.getStart(), is(expectedDate));
+    assertThat(date.getEnd(), is(expectedDate));
+    assertThat(date.getUncertainty(), is(Uncertainty.UNCERTAIN));
+  }
+
+
+  @Test
   void yearMonthDayApproximate() throws Exception {
     final String dateString = "2019-04-19~";
     final LocalDate expectedDate = LocalDate.parse("2019-04-19");
@@ -179,9 +232,33 @@ class Iso8601ParserHelperTest {
   }
 
   @Test
+  void leapYearMonthDayApproximate() throws Exception {
+    final String dateString = "2000-02-29~";
+    final LocalDate expectedDate = LocalDate.parse("2000-02-29");
+
+    final Iso8601Date date = parse(dateString);
+
+    assertThat(date.getStart(), is(expectedDate));
+    assertThat(date.getEnd(), is(expectedDate));
+    assertThat(date.getUncertainty(), is(Uncertainty.APPROXIMATE));
+  }
+
+  @Test
   void yearMonthDayUncertainApproximate() throws Exception {
     final String dateString = "2019-04-19%";
     final LocalDate expectedDate = LocalDate.parse("2019-04-19");
+
+    final Iso8601Date date = parse(dateString);
+
+    assertThat(date.getStart(), is(expectedDate));
+    assertThat(date.getEnd(), is(expectedDate));
+    assertThat(date.getUncertainty(), is(Uncertainty.UNCERTAIN_APPROXIMATE));
+  }
+
+  @Test
+  void leapYearMonthDayUncertainApproximate() throws Exception {
+    final String dateString = "2000-02-29%";
+    final LocalDate expectedDate = LocalDate.parse("2000-02-29");
 
     final Iso8601Date date = parse(dateString);
 
@@ -411,4 +488,22 @@ class Iso8601ParserHelperTest {
 
     assertThrows(UnsupportedIso8601DateException.class, () -> parse(dateString));
   }
+
+  @Test
+  void nonValidYearMonthDay() {
+    final String dateString = "2019-01-32";
+
+    assertThrows(UnsupportedIso8601DateException.class, () -> parse(dateString));
+  }
+
+  @Test
+  void nonValidYearMonthDayCompact() {
+    final String dateString = "20190132";
+
+    assertThrows(UnsupportedIso8601DateException.class, () -> parse(dateString));
+  }
+
+
+
+
 }
