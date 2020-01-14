@@ -2,11 +2,11 @@ package nl.knaw.huygens.lobsang.core.places;
 
 import nl.knaw.huygens.lobsang.api.Place;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public interface PlaceRegistry {
-  Stream<Place> searchPlacesById(String placeId);
+  Optional<Place> searchPlaceById(String placeId);
   Stream<Place> allPlaces();
 
-  Place getDefaultPlace();
 }

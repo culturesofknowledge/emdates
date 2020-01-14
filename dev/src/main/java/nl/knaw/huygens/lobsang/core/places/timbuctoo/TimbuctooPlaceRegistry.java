@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -33,7 +34,7 @@ public class TimbuctooPlaceRegistry implements PlaceRegistry {
   }
 
   @Override // TODO add exception handling / Provenance
-  public Stream<Place> searchPlacesById(String placeId) {
+  public Optional<Place> searchPlaceById(String placeId) {
     String requestEntity = requestEntityBuilder.apply(placeId);
 
     HttpPost request = new HttpPost(uri);
@@ -44,23 +45,20 @@ public class TimbuctooPlaceRegistry implements PlaceRegistry {
         JsonNode responseEntity = new ObjectMapper().readTree(response.getEntity().getContent());
 
         return calendarRetriever.getCalendarPeriods(responseEntity).entrySet().stream()
-                                .map(entry -> new Place(entry.getKey(), null, null, entry.getValue(), Lists.newArrayList()));
+                                .map(entry -> new Place(entry.getKey(), null, null, entry.getValue(),
+                                    Lists.newArrayList()))
+                                .findFirst();
 
       }
     } catch (IOException e) {
       LOG.error("Could not retrieve places", e);
     }
 
-    return Stream.empty();
+    return Optional.empty();
   }
 
   @Override
   public Stream<Place> allPlaces() {
-    throw new UnsupportedOperationException("Not yet implemented");//FIXME: implement
-  }
-
-  @Override
-  public Place getDefaultPlace() {
     throw new UnsupportedOperationException("Not yet implemented");//FIXME: implement
   }
 

@@ -133,53 +133,61 @@ public class ConversionService {
 
   private Function<Place, Stream<YearMonthDay>> convertForPlace(Iso8601Date requestDate, String targetCalendar) {
     return place -> {
-      Place placeToConvert;
       if (place.getCalendarPeriods().isEmpty()) {
-        Optional<Place> parent = getParentWithCalendarPeriods(place);
-        placeToConvert = parent.orElse(place);
-      } else {
-        placeToConvert = place;
+        return Stream.empty();
       }
 
-      final Stream<YearMonthDay> start = placeToConvert.getCalendarPeriods().stream()
+      if (requestDate.getStart().equals(requestDate.getEnd())) {
+        return place.getCalendarPeriods().stream()
+                    .map(calendarPeriod -> convert(calendarPeriod, requestDate.getStartAsYearMonthDay(), targetCalendar))
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .map(resultDate -> addUncertaintyNote(resultDate, requestDate))
+                    .map(resultDate -> addPlaceNameNote(resultDate, place))
+                    .map(resultDate -> adjustForNewYearsDay(
+                        resultDate,
+                        requestDate.getStartAsYearMonthDay(),
+                        place.getStartOfYearList()
+                    ));
+      }
+      final Stream<YearMonthDay> start = place.getCalendarPeriods().stream()
            .map(calendarPeriod -> convert(calendarPeriod, requestDate.getStartAsYearMonthDay(), targetCalendar))
            .filter(Optional::isPresent)
            .map(Optional::get)
            .map(resultDate -> addUncertaintyNote(resultDate, requestDate))
-           .map(resultDate -> addPlaceNameNote(resultDate, placeToConvert))
+           .map(resultDate -> addPlaceNameNote(resultDate, place))
+           .map(this::addStartDateNote)
            .map(resultDate -> adjustForNewYearsDay(
                resultDate,
                requestDate.getStartAsYearMonthDay(),
-               placeToConvert.getStartOfYearList()
+               place.getStartOfYearList()
            ));
-      final Stream<YearMonthDay> end = placeToConvert.getCalendarPeriods().stream()
+      final Stream<YearMonthDay> end = place.getCalendarPeriods().stream()
          .map(calendarPeriod -> convert(calendarPeriod, requestDate.getEndAsYearMonthDay(), targetCalendar))
          .filter(Optional::isPresent)
          .map(Optional::get)
-         .map(resultDate -> addPlaceNameNote(resultDate, placeToConvert))
+         .map(resultDate -> addUncertaintyNote(resultDate, requestDate))
+         .map(resultDate -> addPlaceNameNote(resultDate, place))
+         .map(this::addEndDateNote)
          .map(resultDate -> adjustForNewYearsDay(
              resultDate,
              requestDate.getEndAsYearMonthDay(),
-             placeToConvert.getStartOfYearList()
+             place.getStartOfYearList()
          ));
       return Stream.concat(start, end).distinct();
     };
   }
 
-  private Optional<Place> getParentWithCalendarPeriods(Place place) {
-    final Optional<String> parentName = place.getParent();
-    if(parentName.isPresent()) {
-      final Stream<Place> placeStream = placeRegistry.searchPlacesById(parentName.get());
-      final Optional<Place> first = placeStream.findFirst();
-      if(first.isPresent()) {
-        final Place parent = first.get();
-        if(parent.getCalendarPeriods().isEmpty()) {
-          return getParentWithCalendarPeriods(parent);
-        }
-        return Optional.of(parent);
-      }
-    }
-    return Optional.empty();
+  private YearMonthDay addEndDateNote(YearMonthDay yearMonthDay) {
+    yearMonthDay.addNote("Date is the latest end of a period contained in the ISO date");
+
+    return yearMonthDay;
+  }
+
+  private YearMonthDay addStartDateNote(YearMonthDay yearMonthDay) {
+    yearMonthDay.addNote("Date is the earliest start of a period contained in the ISO date");
+
+    return yearMonthDay;
   }
 
   private YearMonthDay addUncertaintyNote(YearMonthDay resultDate, Iso8601Date requestDate) {
@@ -216,20 +224,10 @@ public class ConversionService {
   }
 
   public Stream<YearMonthDay> convertForMatchingPlaces(String placeTerms, Iso8601Date requestDate,
-                                                       String targetCalendar, Consumer<Place> peepingTom) {
-    Stream<Place> matchingPlaces = placeRegistry.searchPlacesById(placeTerms);
-
-    if (peepingTom != null) {
-      matchingPlaces = matchingPlaces.peek(peepingTom);
-    }
-
-    return defaultIfEmpty(matchingPlaces.map(convertForPlace(requestDate,
-        targetCalendar)).flatMap(Function.identity()),
-        () -> Stream.of(defaultRule).map(convertForPlace(requestDate, targetCalendar)).flatMap(Function.identity()));
-  }
-
-  public Stream<YearMonthDay> convertForMatchingPlaces(String placeTerms, Iso8601Date requestDate,
                                                        String targetCalendar) {
-    return convertForMatchingPlaces(placeTerms, requestDate, targetCalendar, null);
+    Optional<Place> placeOptional = placeRegistry.searchPlaceById(placeTerms);
+
+    return placeOptional.map(convertForPlace(requestDate, targetCalendar)::apply)
+                        .orElse(convertForPlace(requestDate, targetCalendar).apply(defaultRule));
   }
 }
